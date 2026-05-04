@@ -1,7 +1,8 @@
 {% extends base_template|default:'base_erp.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Ro'yxatdan o'tish — Bittada Marketplace{% endblock %}
+{% block title %}{% trans "Ro'yxatdan o'tish" %} — Bittada Marketplace{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -76,71 +77,66 @@
 <div class="reg-card">
     <div class="reg-logo">B</div>
 
-    <!-- Step progress bar -->
     <div class="step-bar">
         <div class="step-dot done" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
         <div class="step-dot" id="dot-3"></div>
     </div>
 
-    <!-- ═══ STEP 1: ROL TANLASH ═══ -->
     <div class="step active" id="step-1">
-        <h1 class="reg-title">Siz kimsiz?</h1>
-        <p class="reg-sub">Platformadagi faoliyat turini tanlang</p>
+        <h1 class="reg-title">{% trans "Siz kimsiz?" %}</h1>
+        <p class="reg-sub">{% trans "Platformadagi faoliyat turini tanlang" %}</p>
 
         <div class="role-grid">
             <div class="role-card active" id="role-customer" onclick="selectRole('customer')">
                 <span class="role-icon">🛒</span>
-                <span class="role-name">Mijoz</span>
-                <span class="role-desc">Mebel sotib olish uchun</span>
+                <span class="role-name">{% trans "Mijoz" %}</span>
+                <span class="role-desc">{% trans "Mebel sotib olish uchun" %}</span>
             </div>
             <div class="role-card" id="role-seller" onclick="selectRole('seller')">
                 <span class="role-icon">🏭</span>
-                <span class="role-name">Sotuvchi</span>
-                <span class="role-desc">Mahsulot yoki xizmat sotuvi</span>
+                <span class="role-name">{% trans "Sotuvchi" %}</span>
+                <span class="role-desc">{% trans "Mahsulot yoki xizmat sotuvi" %}</span>
             </div>
             <div class="role-card" id="role-internal_supplier" onclick="selectRole('internal_supplier')">
                 <span class="role-icon">📦</span>
-                <span class="role-name">Hamkor ta'minotchi</span>
-                <span class="role-desc">Taklif kodi talab qilinadi</span>
+                <span class="role-name">{% trans "Hamkor ta'minotchi" %}</span>
+                <span class="role-desc">{% trans "Taklif kodi talab qilinadi" %}</span>
             </div>
             <div class="role-card" id="role-designer" onclick="selectRole('designer')">
                 <span class="role-icon">🎨</span>
-                <span class="role-name">Dizayner / Usta</span>
-                <span class="role-desc">Interyer va professional xizmat</span>
+                <span class="role-name">{% trans "Dizayner / Usta" %}</span>
+                <span class="role-desc">{% trans "Interyer va professional xizmat" %}</span>
             </div>
         </div>
 
-        <!-- Hisob turi (TZ §6.2) -->
-        <p style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Hisob turi</p>
+        <p style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">{% trans "Hisob turi" %}</p>
         <div class="acct-toggle">
-            <button class="acct-btn active" id="acct-individual" onclick="selectAcct('individual')">👤 Jismoniy shaxs</button>
-            <button class="acct-btn" id="acct-company" onclick="selectAcct('company')">🏢 Yuridik shaxs</button>
+            <button class="acct-btn active" id="acct-individual" onclick="selectAcct('individual')">👤 {% trans "Jismoniy shaxs" %}</button>
+            <button class="acct-btn" id="acct-company" onclick="selectAcct('company')">🏢 {% trans "Yuridik shaxs" %}</button>
         </div>
 
-        <button class="reg-btn" onclick="goStep2()">Davom etish <i class="bi bi-arrow-right"></i></button>
+        <button class="reg-btn" onclick="goStep2()">{% trans "Davom etish" %} <i class="bi bi-arrow-right"></i></button>
     </div>
 
-    <!-- ═══ STEP 2: MUTAXASSISLIK (faqat seller) ═══ -->
     <div class="step" id="step-2">
-        <h1 class="reg-title">Mutaxassisligingiz?</h1>
-        <p class="reg-sub">Bir yoki bir nechta kasb tanlang — TZ §6.3</p>
+        <h1 class="reg-title">{% trans "Mutaxassisligingiz?" %}</h1>
+        <p class="reg-sub">{% trans "Bir yoki bir nechta kasb tanlang — TZ §6.3" %}</p>
 
         <div class="prof-grid">
-            <div class="prof-item" id="prof-manufacturer" onclick="toggleProf('manufacturer')">🏭 Ishlab chiqaruvchi</div>
-            <div class="prof-item" id="prof-supplier" onclick="toggleProf('supplier')">🚚 Yetkazib beruvchi</div>
-            <div class="prof-item" id="prof-master" onclick="toggleProf('master')">🔧 Usta (o'rnatuvchi)</div>
-            <div class="prof-item" id="prof-designer" onclick="toggleProf('designer')">🎨 Dizayner</div>
+            <div class="prof-item" id="prof-manufacturer" onclick="toggleProf('manufacturer')">🏭 {% trans "Ishlab chiqaruvchi" %}</div>
+            <div class="prof-item" id="prof-supplier" onclick="toggleProf('supplier')">🚚 {% trans "Yetkazib beruvchi" %}</div>
+            <div class="prof-item" id="prof-master" onclick="toggleProf('master')">🔧 {% trans "Usta (o'rnatuvchi)" %}</div>
+            <div class="prof-item" id="prof-designer" onclick="toggleProf('designer')">🎨 {% trans "Dizayner" %}</div>
         </div>
 
-        <button class="reg-btn" onclick="goStep3()">Davom etish <i class="bi bi-arrow-right"></i></button>
-        <button class="btn-back" onclick="goStep(1)">← Orqaga</button>
+        <button class="reg-btn" onclick="goStep3()">{% trans "Davom etish" %} <i class="bi bi-arrow-right"></i></button>
+        <button class="btn-back" onclick="goStep(1)">← {% trans "Orqaga" %}</button>
     </div>
 
-    <!-- ═══ STEP 3: MA'LUMOTLAR FORMASI ═══ -->
     <div class="step" id="step-3">
-        <h1 class="reg-title">Ma'lumotlar</h1>
-        <p class="reg-sub" id="step3-sub">Akkaunt yaratish uchun ma'lumotlarni to'ldiring</p>
+        <h1 class="reg-title">{% trans "Ma'lumotlar" %}</h1>
+        <p class="reg-sub" id="step3-sub">{% trans "Akkaunt yaratish uchun ma'lumotlarni to'ldiring" %}</p>
 
         <form id="reg-form" onsubmit="handleSubmit(event)" novalidate>
             {% csrf_token %}
@@ -148,60 +144,89 @@
             <input type="hidden" name="account_type" id="inp-acct" value="individual">
             <input type="hidden" name="professions" id="inp-profs" value="">
 
+            {% trans "To'liq ismingiz" as ph_full_name %}
+            {% trans "foydalanuvchi_nomi" as ph_username %}
+            {% trans "misol@mail.com" as ph_email %}
+            {% trans "Kompaniya LLC" as ph_company %}
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">Ism va familiya *</label>
-                    <input type="text" name="first_name" id="inp-name" class="form-input" placeholder="To'liq ismingiz" required>
+                    <label class="form-label">{% trans "Ism va familiya" %} *</label>
+                    <input type="text" name="first_name" id="inp-name" class="form-input" placeholder="{{ ph_full_name }}" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Username *</label>
-                    <input type="text" name="username" id="inp-username" class="form-input" placeholder="foydalanuvchi_nomi" required>
+                    <label class="form-label">{% trans "Username" %} *</label>
+                    <input type="text" name="username" id="inp-username" class="form-input" placeholder="{{ ph_username }}" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Email *</label>
-                    <input type="email" name="email" id="inp-email" class="form-input" placeholder="misol@mail.com">
+                    <label class="form-label">{% trans "Email" %} *</label>
+                    <input type="email" name="email" id="inp-email" class="form-input" placeholder="{{ ph_email }}">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Telefon</label>
+                    <label class="form-label">{% trans "Telefon" %}</label>
                     <input type="tel" name="phone" id="inp-phone" class="form-input" placeholder="+998 90 000 00 00">
                 </div>
                 <div class="form-group" id="company-field" style="display:none;">
-                    <label class="form-label">Kompaniya nomi</label>
-                    <input type="text" name="company_name" class="form-input" placeholder="Kompaniya LLC">
+                    <label class="form-label">{% trans "Kompaniya nomi" %}</label>
+                    <input type="text" name="company_name" class="form-input" placeholder="{{ ph_company }}">
                 </div>
                 <div class="form-group full">
-                    <label class="form-label">Parol * <span style="font-weight:500;text-transform:none;font-size:11px;">(10+ belgi, raqam, maxsus belgi)</span></label>
+                    <label class="form-label">{% trans "Parol" %} * <span style="font-weight:500;text-transform:none;font-size:11px;">{% trans "(10+ belgi, raqam, maxsus belgi)" %}</span></label>
                     <input type="password" name="password" id="inp-pw" class="form-input" placeholder="••••••••••••" oninput="checkStrength(this.value)" required>
                     <div class="pw-bar"><div class="pw-seg" id="pw-s1"></div><div class="pw-seg" id="pw-s2"></div><div class="pw-seg" id="pw-s3"></div><div class="pw-seg" id="pw-s4"></div></div>
-                    <div class="pw-label" id="pw-label" style="color:var(--muted);">Parol kuchini ko'rsatadi</div>
+                    <div class="pw-label" id="pw-label" style="color:var(--muted);">{% trans "Parol kuchini ko'rsatadi" %}</div>
                 </div>
                 <div class="form-group full">
-                    <label class="form-label">Parolni tasdiqlang *</label>
+                    <label class="form-label">{% trans "Parolni tasdiqlang" %} *</label>
                     <input type="password" name="password2" id="inp-pw2" class="form-input" placeholder="••••••••••••" required>
                 </div>
             </div>
 
             <div class="err-banner" id="err-banner"></div>
-            <button type="submit" class="reg-btn" id="submit-btn">Akkauntni yaratish</button>
+            <button type="submit" class="reg-btn" id="submit-btn">{% trans "Akkauntni yaratish" %}</button>
         </form>
 
-        <div class="divider">yoki kirish usuli</div>
-        <div class="oauth-row">
-            <button class="oauth-btn" onclick="alert('Google OAuth — tez kunda')">
-                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Google
-            </button>
-            <button class="oauth-btn" onclick="alert('Telegram Login — tez kunda')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#229ED9"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.015 9.499c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L6.248 14.51l-2.95-.924c-.642-.2-.654-.642.136-.953l11.52-4.44c.537-.194 1.006.131.608.055z"/></svg>
-                Telegram
-            </button>
-        </div>
+            <div class="divider">{% trans "yoki kirish usuli" %}</div>
+            <div class="oauth-row">
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-context="signup"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLogin"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signup_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     style="width: 100%; margin-bottom: 12px; display: flex; justify-content: center;">
+                </div>
+                
+                <div id="tg-login-widget-wrapper" style="display: flex; justify-content: center; flex-direction: column; gap: 8px; min-height: 56px;">
+                    <script async src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="marketing_orign_bot"
+                        data-size="large"
+                        data-radius="13"
+                        data-auth-url="/api/v1/auth/telegram-callback/"
+                        data-request-access="write"></script>
+                    <a id="reg-telegram-fallback" href="https://t.me/marketing_orign_bot?start=register" target="_blank" rel="noopener"
+                       style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 50px; background: linear-gradient(135deg, #0088cc, #005580); color: white; border-radius: 14px; font-weight: 800; font-size: 14px; text-decoration: none; padding: 0 20px; transition: all 0.2s;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+                        </svg>
+                        {% trans "Telegram bilan kirish" %}
+                    </a>
+                </div>
+            </div>
 
-        <button class="btn-back" onclick="goStep(currentRole==='seller'||currentRole==='designer'?2:1)">← Orqaga</button>
+        <button class="btn-back" onclick="goStep(currentRole==='seller'||currentRole==='designer'?2:1)">← {% trans "Orqaga" %}</button>
     </div>
 
     <div style="text-align:center;margin-top:28px;font-size:14px;color:var(--muted);">
-        Akkauntingiz bormi? <a href="{% url 'login' %}" style="color:var(--secondary);font-weight:800;text-decoration:none;">Kirish</a>
+        {% trans "Akkauntingiz bormi?" %} <a href="{% url 'login' %}" style="color:var(--secondary);font-weight:800;text-decoration:none;">{% trans "Kirish" %}</a>
     </div>
 </div>
 </div>
@@ -318,6 +343,9 @@ async function handleSubmit(e) {
     const banner = document.getElementById('err-banner');
     banner.style.display = 'none';
 
+    // State tekshiruvi: yuborishdan oldin hidden inputlarni albatta yangilash!
+    fillHiddenInputs();
+
     // Client-side parol tekshiruvi
     const pw = document.getElementById('inp-pw').value;
     const pw2 = document.getElementById('inp-pw2').value;
@@ -350,6 +378,45 @@ async function handleSubmit(e) {
         if (btn.innerHTML.includes('Yuklanmoqda')) {
             btn.disabled = false;
             btn.innerHTML = 'Akkauntni yaratish';
+        }
+    }
+}
+
+async function handleGoogleLogin(response) {
+    if (response.credential) {
+        try {
+            const btn = document.getElementById('submit-btn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span style="display:inline-block;animation:spin .6s linear infinite">⏳</span> Yuklanmoqda...';
+            }
+            const result = await fetch('/api/v1/auth/social-login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    provider: 'google',
+                    credential: response.credential
+                })
+            }).then(r => r.json());
+            
+            if (result.access) {
+                localStorage.setItem('accessToken', result.access);
+                localStorage.setItem('refreshToken', result.refresh);
+                window.location.href = result.redirect || '/';
+            } else {
+                showError(result.error || 'Google orqali kirishda xatolik yuz berdi');
+                if(btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Akkauntni yaratish';
+                }
+            }
+        } catch (error) {
+            showError('Server bilan aloqa yo\'q. Iltimos, qayta urinib ko\'ring.');
+            const btn = document.getElementById('submit-btn');
+            if(btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Akkauntni yaratish';
+            }
         }
     }
 }

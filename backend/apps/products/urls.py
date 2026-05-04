@@ -17,9 +17,11 @@ from .views import (
     login_view,
     register_view,
     profile_view,
+    profile_edit_view,  # Profilni tahrirlash (alohida sahifa)
     orders_view,
     logout_view,
     seller_profile_view,
+    customer_register_view,  # Mijozlar uchun alohida ro'yxatdan o'tish
     escrow_view,
     manufacturing_view,
     download_catalog,
@@ -35,6 +37,7 @@ from .views import (
 urlpatterns: list = [
     # Template Views
     path("", home_view, name="home"),
+    path("select-role/", login_view, name="select-role"),  # Role selection page before register
     path("category/<slug:category_slug>/", category_detail_view, name="category_detail"),
     path("product/<str:uuid>/", product_detail_view, name="product_detail"),
     path("services/", services_view, name="services"),
@@ -43,6 +46,8 @@ urlpatterns: list = [
     path("wishlist/", wishlist_view, name="wishlist"),
     path("login/", login_view, name="login"),
     path("register/", register_view, name="register"),
+    path("register/customer/", customer_register_view, name="customer-register"),  # Mijoz uchun soddalashtirilgan ro'yxatdan o'tish
+    path("profile/edit/", profile_edit_view, name="profile_edit"),  # Profilni tahrirlash (alohida sahifa)
     path("profile/", profile_view, name="profile"),
     path("orders/", orders_view, name="orders"),
     path("logout/", logout_view, name="logout"),

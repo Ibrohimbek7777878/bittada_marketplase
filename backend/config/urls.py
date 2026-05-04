@@ -56,6 +56,7 @@ def api_root(_request):
 
 
 api_v1_patterns = [
+    path('admin/', admin.site.urls),
     path("auth/", include("apps.auth_methods.urls")),
     path("users/", include("apps.users.urls")),
     path("categories/", include("apps.categories.urls")),
@@ -90,6 +91,7 @@ template_patterns = [
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),  # Tilni o'zgartirish uchun
     path("healthz", healthz, name="healthz"),
+    path("telegram-callback/", include("apps.auth_methods.urls")), # Root level callback for Telegram
     path("api/v1/", api_root, name="api-root"),
     path("api/v1/", include((api_v1_patterns, "api"), namespace="v1")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

@@ -1,7 +1,8 @@
 {% extends base_template|default:'base_erp.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Kirish — Bittada Marketplace{% endblock %}
+{% block title %}{% trans "Kirish" %} — Bittada Marketplace{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -66,6 +67,37 @@
         margin-top: 12px;
     }
     .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(164,212,108,0.2); }
+
+    /* Telegram Widget Styles */
+    #telegram-widget-container {
+        position: relative;
+        margin-bottom: 12px;
+        min-height: 56px;
+    }
+
+    /* Social auth divider */
+    .social-divider {
+        text-align: center; 
+        margin: 24px 0; 
+        position: relative;
+    }
+
+    .social-divider span {
+        background: white; 
+        padding: 0 12px; 
+        color: var(--text-muted); 
+        font-size: 14px;
+    }
+
+    .social-divider div {
+        content: ''; 
+        position: absolute; 
+        top: 50%; 
+        left: 0; 
+        right: 0; 
+        height: 1px; 
+        background: var(--border-color);
+    }
 </style>
 {% endblock %}
 
@@ -74,8 +106,8 @@
     <div class="auth-card">
         <div class="auth-header">
             <div class="auth-logo-icon">B</div>
-            <h1 class="auth-title">Xush kelibsiz</h1>
-            <p class="auth-subtitle">Bittada Command Center'ga kiring</p>
+            <h1 class="auth-title">{% trans "Xush kelibsiz" %}</h1>
+            <p class="auth-subtitle">{% trans "Bittada Command Center'ga kiring" %}</p>
         </div>
 
         {% if error %}
@@ -86,30 +118,64 @@
 
         <form id="login-form" method="POST" action="{% url 'login' %}">
             {% csrf_token %}
-            
+
             <div class="form-group">
-                <label class="form-label">Email yoki Username</label>
-                <input type="text" name="username" class="form-input" placeholder="admin yoki email@.com" required>
+                <label class="form-label">{% trans "Email yoki Username" %}</label>
+                <input type="text" name="username" class="form-input" placeholder="{% trans 'admin yoki email@.com' %}" required>
             </div>
 
             <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <label class="form-label" style="margin-bottom: 0;">Parol</label>
-                    <a href="#" style="font-size: 13px; color: var(--text-muted); text-decoration: none;">Unutdingizmi?</a>
+                    <label class="form-label" style="margin-bottom: 0;">{% trans "Parol" %}</label>
+                    <a href="#" style="font-size: 13px; color: var(--text-muted); text-decoration: none;">{% trans "Unutdingizmi?" %}</a>
                 </div>
                 <input type="password" name="password" class="form-input" placeholder="••••••••" required>
             </div>
 
+            <div class="social-divider">
+                <span>{% trans "yoki" %}</span>
+                <div></div>
+            </div>
+
+            <!-- Google Identity Services -->
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
+                <div id="g_id_onload"
+                     data-client_id="{{ GOOGLE_CLIENT_ID|default:"YOUR_GOOGLE_CLIENT_ID" }}"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleLogin"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     style="width: 100%; margin-bottom: 12px;">
+                </div>
+
+                <div id="telegram-widget-container">
+                    <script async src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="marketing_orign_bot"
+                        data-size="large"
+                        data-radius="14"
+                        data-auth-url="/telegram-callback/"
+                        data-request-access="write"
+                        data-lang="uz"></script>
+                </div>
+
             <button type="submit" class="auth-btn" id="submit-btn">
-                <span class="btn-text">Tizimga kirish</span>
+                <span class="btn-text">{% trans "Tizimga kirish" %}</span>
                 <span class="btn-loader" style="display:none; align-items:center; justify-content:center; gap:8px;">
-                    <i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> Authenticating...
+                    <i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite;"></i> {% trans "Tekshirilmoqda..." %}
                 </span>
             </button>
         </form>
 
         <div class="auth-footer" style="text-align: center; margin-top: 32px; color: var(--text-muted); font-size: 14px;">
-            Profilingiz yo'qmi? <a href="{% url 'register' %}" style="color: var(--secondary); font-weight: 800; text-decoration: none;">Ro'yxatdan o'ting</a>
+            {% trans "Profilingiz yo'qmi?" %} <a href="{% url 'register' %}" style="color: var(--secondary); font-weight: 800; text-decoration: none;">{% trans "Ro'yxatdan o'ting" %}</a>
         </div>
     </div>
 </div>
@@ -139,6 +205,52 @@
             HTMLFormElement.prototype.submit.call(form);
         }, 1000);
     });
-</script>
 
+    // Google Identity Services handler
+    async function handleGoogleLogin(response) {
+        if (response.credential) {
+            try {
+                const btn = document.getElementById('submit-btn');
+                if(btn) {
+                    btn.classList.add('loading');
+                    btn.disabled = true;
+                    btn.querySelector('.btn-text').style.display = 'none';
+                    btn.querySelector('.btn-loader').style.display = 'flex';
+                }
+                
+                const result = await fetch('/api/v1/auth/social-login/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        provider: 'google',
+                        credential: response.credential
+                    })
+                }).then(r => r.json());
+                
+                if (result.access) {
+                    localStorage.setItem('accessToken', result.access);
+                    localStorage.setItem('refreshToken', result.refresh);
+                    window.location.href = result.redirect || '/';
+                } else {
+                    alert(result.error || 'Google orqali kirishda xatolik');
+                    if(btn) {
+                        btn.classList.remove('loading');
+                        btn.disabled = false;
+                        btn.querySelector('.btn-text').style.display = 'block';
+                        btn.querySelector('.btn-loader').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                alert('Server bilan aloqa yo\'q. Iltimos qayta urinib ko\'ring.');
+                const btn = document.getElementById('submit-btn');
+                if(btn) {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    btn.querySelector('.btn-text').style.display = 'block';
+                    btn.querySelector('.btn-loader').style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,314 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Profil" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Back button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        margin-bottom: 24px;
+    }
+
+    .back-btn:hover {
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563EB;
+        transform: translateX(-4px);
+    }
+
+    /* Profile layout */
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 32px;
+    }
+
+    /* Sidebar */
+    .profile-sidebar {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        color: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 800;
+        margin: 0 auto 16px;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        color: #475569;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border-radius: 10px;
+        margin: 4px 12px;
+    }
+
+    .sidebar-link:hover {
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563EB;
+    }
+
+    .sidebar-link.active {
+        background: #2563EB;
+        color: white;
+    }
+
+    /* Main content cards */
+    .profile-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 31, 63, 0.08);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        background: #F8FAFC;
+    }
+
+    .form-input:focus {
+        border-color: #2563EB;
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-primary {
+        background: #2563EB;
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- Back Button -->
+    <a href="{% url 'home' %}" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        {% trans "Ortga" %}
+    </a>
+
+    <div class="profile-layout">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div style="padding: 32px 24px; text-align: center; border-bottom: 1px solid #F1F5F9;">
+                <div class="profile-avatar">
+                    {{ user.username|first|upper|default:"U" }}
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin-bottom: 4px;">
+                    {{ user.username|default:"User" }}
+                </h3>
+                <p style="font-size: 13px; color: #64748B;">
+                    {{ user.email|default:"user@example.com" }}
+                </p>
+            </div>
+            <nav style="padding: 16px 0;">
+                <a href="{% url 'profile' %}" class="sidebar-link active">
+                    <span>👤</span> {% trans "Profil" %}
+                </a>
+                <a href="{% url 'orders' %}" class="sidebar-link">
+                    <span>📦</span> {% trans "Buyurtmalar" %}
+                </a>
+                <a href="{% url 'cart' %}" class="sidebar-link">
+                    <span>🛒</span> {% trans "Savat" %}
+                </a>
+                <a href="{% url 'wishlist' %}" class="sidebar-link">
+                    <span>❤️</span> {% trans "Sevimlilar" %}
+                </a>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #F1F5F9;">
+                    <form action="{% url 'logout' %}" method="POST" style="padding: 0 12px;">
+                        {% csrf_token %}
+                        <button type="submit" class="sidebar-link" style="width: 100%; border: none; background: none; cursor: pointer; color: #EF4444;">
+                            <span>🚪</span> {% trans "Chiqish" %}
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Profile Info Card -->
+            <div class="profile-card">
+                <h2 style="font-size: 20px; font-weight: 700; color: #0F172A; margin-bottom: 24px;">
+                    {% trans "Shaxsiy ma'lumotlar" %}
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Ism" %}</label>
+                        <input type="text" class="form-input" value="{{ user.first_name|default:"Bittada" }}" placeholder="{% trans "Ismingiz" %}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Familiya" %}</label>
+                        <input type="text" class="form-input" value="{{ user.last_name|default:"User" }}" placeholder="{% trans "Familiyangiz" %}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Email" %}</label>
+                        <input type="email" class="form-input" value="{{ user.email|default:"user@bittada.uz" }}" placeholder="{% trans "Email manzili" %}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{% trans "Telefon" %}</label>
+                        <input type="tel" class="form-input" value="{{ user.phone|default:"+998 90 123 45 67" }}" placeholder="{% trans "Telefon raqami" %}">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">{% trans "Manzil" %}</label>
+                    <textarea class="form-input" rows="3" placeholder="{% trans "To'liq manzilingiz" %}" style="resize: none;">{{ user.address|default:"Toshkent sh., Chilonzor tumani, Bunyodkor ko'chasi, 12-uy" }}</textarea>
+                </div>
+
+                <div style="margin-top: 24px; text-align: right;">
+                    <button class="btn-primary">{% trans "Saqlash" %}</button>
+                </div>
+            </div>
+
+            <!-- Demo Orders Preview Card -->
+            <div class="profile-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #0F172A;">
+                        {% trans "So'nggi buyurtmalar" %}
+                    </h2>
+                    <a href="{% url 'orders' %}" style="color: #2563EB; font-weight: 600; font-size: 14px; text-decoration: none;">
+                        {% trans "Barchasini ko'rish →" %}
+                    </a>
+                </div>
+
+                <!-- Demo Order 1 -->
+                <div style="display: flex; align-items: center; padding: 16px; background: #F8FAFC; border-radius: 12px; margin-bottom: 12px;">
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #A4D46C 0%, #88c343 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px;">
+                        🛋️
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #0F172A;">{% trans "Divan kreslo + Oshxona stullari" %}</div>
+                        <div style="font-size: 13px; color: #64748B;">15.04.2026 • 5,200,000 {% trans "so'm" %}</div>
+                    </div>
+                    <span style="padding: 6px 12px; background: rgba(164, 212, 108, 0.15); color: #5a9a1f; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                        {% trans "Yetkazildi" %}
+                    </span>
+                </div>
+
+                <!-- Demo Order 2 -->
+                <div style="display: flex; align-items: center; padding: 16px; background: #F8FAFC; border-radius: 12px; margin-bottom: 12px;">
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px;">
+                        🛏️
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #0F172A;">{% trans "Yotoqxona to'plami" %}</div>
+                        <div style="font-size: 13px; color: #64748B;">02.04.2026 • 8,900,000 {% trans "so'm" %}</div>
+                    </div>
+                    <span style="padding: 6px 12px; background: rgba(37, 99, 235, 0.1); color: #2563EB; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                        {% trans "Yetkazilmoqda" %}
+                    </span>
+                </div>
+
+                <!-- Demo Order 3 -->
+                <div style="display: flex; align-items: center; padding: 16px; background: #F8FAFC; border-radius: 12px;">
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px;">
+                        🚪
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #0F172A;">{% trans "Shkaf-kupe + Dekorlar" %}</div>
+                        <div style="font-size: 13px; color: #64748B;">28.03.2026 • 5,520,000 {% trans "so'm" %}</div>
+                    </div>
+                    <span style="padding: 6px 12px; background: rgba(245, 158, 11, 0.1); color: #D97706; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                        {% trans "Tayyorlanmoqda" %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Stats Card -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                <div class="profile-card" style="text-align: center; padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">📦</div>
+                    <div style="font-size: 24px; font-weight: 800; color: #0F172A;">3</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Faol buyurtma" %}</div>
+                </div>
+                <div class="profile-card" style="text-align: center; padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">💰</div>
+                    <div style="font-size: 24px; font-weight: 800; color: #0F172A;">19.6M</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Jami xaridlar" %}</div>
+                </div>
+                <div class="profile-card" style="text-align: center; padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">⭐</div>
+                    <div style="font-size: 24px; font-weight: 800; color: #0F172A;">12</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Sevimli mahsulotlar" %}</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

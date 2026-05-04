@@ -1,6 +1,6 @@
-"""
+'''
 Base settings for Bittada Marketplace.
-"""
+'''
 import os
 from pathlib import Path
 import environ
@@ -11,8 +11,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 env = environ.Env()
 # We don't read .env here; dev.py and prod.py will do it if needed.
 
-# Vaqtincha xavfsizlik va xatolikni oldini olish uchun Hardcoded SECRET_KEY
-SECRET_KEY = 'django-insecure-temporary-key-for-dev'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-temporary-key-for-dev')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
@@ -31,7 +36,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "mptt",
     "django_filters",
-    # "django_extensions", # O'chirilgan (ModuleNotFoundError bermasligi uchun)
     "axes",
     "drf_spectacular",
     
@@ -61,30 +65,21 @@ INSTALLED_APPS = [
     "apps.i18n_extra",
     "apps.variants",
     "apps.marketplace",
-    # ─────────────────────────────────────────────────────────────────────
-    # Bittada ERP — alohida boshqaruv ekotizimi (2026-05-02 qo'shildi)
-    # /dashboard/* HTML sahifalar va /dashboard/api/v1/* DRF API
-    # Mustaqil yangi ilova — Django'ning standart admin'iga bog'liq emas.
-    # ─────────────────────────────────────────────────────────────────────
-    "apps.management",  # AppConfig: apps.management.apps.ManagementConfig
+    "apps.management",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.locale.LocaleMiddleware",  # MUHIM: CommonMiddleware dan OLDIN bo'lishi shart
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",  # request.user'ni o'rnatadi
-    # ─────────────────────────────────────────────────────────────────────
-    # Bittada ERP — Firewall middleware (2026-05-02)
-    # AuthenticationMiddleware'dan KEYIN bo'lishi shart (request.user'ga ehtiyoji bor).
-    # /dashboard/* yo'llariga ruxsatsiz so'rovlarni /login/ ga yo'naltiradi.
-    # ─────────────────────────────────────────────────────────────────────
-    "apps.management.middleware.ManagementAccessMiddleware",  # ERP Firewall
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.management.middleware.ManagementAccessMiddleware",
     "axes.middleware.AxesMiddleware",
 ]
 
@@ -109,6 +104,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+# Database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -116,6 +112,7 @@ DATABASES = {
     }
 }
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -131,30 +128,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Internationalization
 LANGUAGE_CODE = "uz"
+LANGUAGES = [
+    ('uz', 'Uzbek'),
+    ('en', 'English'),
+    ('ru', 'Russian'),
+]
 TIME_ZONE = "Asia/Tashkent"
 USE_I18N = True
 USE_TZ = True
 
-# ─────────────────────────────────────────────────────────────────────────────
-# KO'P TILLILIK (I18N) SOZLAMALARI (TZ §4)
-# ─────────────────────────────────────────────────────────────────────────────
-from django.utils.translation import gettext_lazy as _
-
-LANGUAGES = [
-    ("uz", _("O'zbek")),
-    ("ru", _("Русский")),
-    ("en", _("English")),
-]
-
-LOCALE_PATHS = [
-    BASE_DIR / "locale",
-]
-
-MODELTRANSLATION_DEFAULT_LANGUAGE = "uz"
-MODELTRANSLATION_LANGUAGES = ("uz", "ru", "en")
-MODELTRANSLATION_FALLBACK_LANGUAGES = ("uz", "ru", "en")
-
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -162,21 +147,15 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"  # Birlamchi PK turi (BigInt) — barcha modellar uchun standart
-AUTH_USER_MODEL = "users.User"  # Foydalanuvchi modeli (apps.users.models.User) — Django auth tizimi shu modelni ishlatadi
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "users.User"
 
-# ─────────────────────────────────────────────────────────────────────────────
-# AUTH REDIRECT SOZLAMALARI
-# Maqsad: Django'ning standart "Please log in" sahifasi (/accounts/login/) ishlamasin —
-# barcha "login_required" yo'naltirishlari bizning chiroyli ERP login sahifasiga (/login/) tushsin.
-# Shuningdek, super-admin/ ga kirishga harakat qilgan oddiy foydalanuvchi
-# Django admin'ning standart login formasini ko'rmaydi — u ham /login/ ga yo'naltiriladi
-# (custom view'larda staff_member_required(login_url=settings.LOGIN_URL) ishlatiladi).
-# ─────────────────────────────────────────────────────────────────────────────
-LOGIN_URL = "/login/"  # Tizimga kirish sahifasi yo'li (apps.products.views.login_view)
-LOGIN_REDIRECT_URL = "/"  # Muvaffaqiyatli kirishdan keyin yo'naltiriladigan default sahifa (Bosh sahifa)
-LOGOUT_REDIRECT_URL = "/"  # Tizimdan chiqqandan keyin Bosh sahifaga qaytarish
+# Login URLs
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
+# REST Framework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -184,3 +163,32 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+# Content Security Policy
+CSP_FRAME_ANCESTORS = (
+    "'self'",
+    "https://oauth.telegram.org",
+    "https://accounts.google.com",
+    "http://127.0.0.1",
+    "http://localhost",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+)
+
+# Development CSP settings - allow unsafe-inline for CSS and JS
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+CSP_SCRIPT_SRC = (
+    "'self'", 
+    "'unsafe-inline'", 
+    "'unsafe-eval'", 
+    "https://ajax.googleapis.com", 
+    "https://cdn.jsdelivr.net",
+    "https://accounts.google.com", # Google tugmasi uchun skript
+)
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_FONT_SRC = ("'self'", "https:")
+CSP_CONNECT_SRC = ("'self'", "https://api.telegram.org", "https://www.google.com")
+CSP_FRAME_SRC = ("'self'", "https://oauth.telegram.org", "https://accounts.google.com")
+# Google Auth sozlamalari
+GOOGLE_OAUTH_CLIENT_ID = env("GOOGLE_OAUTH_CLIENT_ID", default="")

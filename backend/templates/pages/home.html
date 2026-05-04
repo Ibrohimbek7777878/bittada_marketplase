@@ -1,42 +1,43 @@
 {% extends "base.html" %}
+{% load i18n %}{# pages/home.html — barcha ko'rinadigan matnlar i18n bilan tarjima qilinadi #}
 
-{% block title %}Bittada — Yagona marketplace ekotizimi{% endblock %}
+{% block title %}{% trans "Bittada — Yagona marketplace ekotizimi" %}{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+{# Hero Section — bosh sahifaning yuqori qismi (sarlavha, tagline, tugmalar) #}
 <section class="hero">
   <div class="container hero-inner">
     <div class="hero-content">
-      <h1 class="hero-title">Bittada — yagona marketplace ekotizimi</h1>
-      <p class="hero-subtitle">Mahsulot, ishlab chiqarish va xizmatlarni bitta joyda. B2B va B2C uchun.</p>
+      <h1 class="hero-title">{% trans "Bittada — yagona marketplace ekotizimi" %}</h1>
+      <p class="hero-subtitle">{% trans "Mahsulot, ishlab chiqarish va xizmatlarni bitta joyda. B2B va B2C uchun." %}</p>
       <div class="hero-buttons">
-        <a href="{% url 'pages:register' %}" class="btn btn-primary">Boshlash</a>
-        <a href="/about/" class="btn btn-outline">Batafsil</a>
+        <a href="{% url 'register' %}" class="btn btn-primary">{% trans "Boshlash" %}</a>
+        <a href="/about/" class="btn btn-outline">{% trans "Batafsil" %}</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features -->
+{# Features bo'limi — 4 ta xususiyat kartasi (har biri tarjima qilinadi) #}
 <section class="features">
   <div class="container">
-    <h2 class="section-title">Nima uchun Bittada?</h2>
+    <h2 class="section-title">{% trans "Nima uchun Bittada?" %}</h2>
     <div class="features-grid">
       <div class="feature-card">
-        <h3>🏪 Marketplace</h3>
-        <p>Minglab mahsulotlar va xizmatlar bir joyda</p>
+        <h3>🏪 {% trans "Marketplace" %}</h3>
+        <p>{% trans "Minglab mahsulotlar va xizmatlar bir joyda" %}</p>
       </div>
       <div class="feature-card">
-        <h3>🏭 Ishlab chiqarish</h3>
-        <p>Ishlab chiqaruvchilar bilan to'g'ridan-to'g'ri aloqa</p>
+        <h3>🏭 {% trans "Ishlab chiqarish" %}</h3>
+        <p>{% trans "Ishlab chiqaruvchilar bilan to'g'ridan-to'g'ri aloqa" %}</p>
       </div>
       <div class="feature-card">
-        <h3>🤝 B2B & B2C</h3>
-        <p>Hamkorlik va savdo uchun keng imkoniyatlar</p>
+        <h3>🤝 {% trans "B2B & B2C" %}</h3>
+        <p>{% trans "Hamkorlik va savdo uchun keng imkoniyatlar" %}</p>
       </div>
       <div class="feature-card">
-        <h3>🔒 Xavfsiz</h3>
-        <p>Escrow tizimi bilan himoyalangan to'lovlar</p>
+        <h3>🔒 {% trans "Xavfsiz" %}</h3>
+        <p>{% trans "Escrow tizimi bilan himoyalangan to'lovlar" %}</p>
       </div>
     </div>
   </div>

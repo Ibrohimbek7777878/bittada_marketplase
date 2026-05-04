@@ -153,15 +153,15 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                 <div style="display: flex; gap: 16px; align-items: center;">
                     <div style="width: 60px; height: 60px; background: var(--secondary-brand); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: var(--primary-brand); box-shadow: 0 8px 16px rgba(0,0,0,0.1);">
-                        {{ specialist.name|slice:":1" }}
+                        {{ specialist.title|slice:":1" }}
                     </div>
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 800; color: var(--secondary-brand); margin: 0 0 4px 0; letter-spacing: -0.5px;">{{ specialist.name }}</h3>
-                        <p style="font-size: 13px; color: #64748B; font-weight: 600;">{{ specialist.specialty }}</p>
+                        <h3 style="font-size: 18px; font-weight: 800; color: var(--secondary-brand); margin: 0 0 4px 0; letter-spacing: -0.5px;">{{ specialist.title }}</h3>
+                        <p style="font-size: 13px; color: #64748B; font-weight: 600;">{{ specialist.get_category_display }}</p>
                     </div>
                 </div>
-                <span style="font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; {% if specialist.is_available %}background: rgba(164, 212, 108, 0.1); color: #166534; border: 1px solid var(--primary-brand);{% else %}background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;{% endif %}">
-                    {% if specialist.is_available %}Mavjud{% else %}Band{% endif %}
+                <span style="font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; {% if specialist.is_open_for_booking %}background: rgba(164, 212, 108, 0.1); color: #166534; border: 1px solid var(--primary-brand);{% else %}background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;{% endif %}">
+                    {% if specialist.is_open_for_booking %}Mavjud{% else %}Band{% endif %}
                 </span>
             </div>
 
@@ -175,8 +175,8 @@
                     </div>
                 </div>
                 <div style="background: #F8FAFC; padding: 12px; text-align: center;">
-                    <span style="display: block; font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">Tajriba</span>
-                    <span style="font-weight: 900; color: var(--secondary-brand); font-size: 15px;">{{ specialist.experience }}y</span>
+                    <span style="display: block; font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">Holat</span>
+                    <span style="font-weight: 900; color: var(--secondary-brand); font-size: 15px;">{% if specialist.currently_working %}🔴{% else %}🟢{% endif %}</span>
                 </div>
                 <div style="background: #F8FAFC; padding: 12px; text-align: center;">
                     <span style="display: block; font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">Ishlar</span>
@@ -186,7 +186,7 @@
 
             <!-- Location -->
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px; font-size: 14px; color: #475569; font-weight: 600;">
-                <span style="color: var(--primary-brand);">📍</span> {{ specialist.location|default:'Toshkent, O\'zbekiston' }}
+                <span style="color: var(--primary-brand);">📍</span> {{ specialist.currently_at_location|default:"Toshkent, O'zbekiston" }}
             </div>
 
             <!-- Price & Actions -->
@@ -199,20 +199,20 @@
                     <button style="flex: 1; height: 48px; border-radius: 14px; background: white; color: var(--secondary-brand); border: 2px solid var(--secondary-brand); font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='rgba(0,31,63,0.05)'" onmouseout="this.style.background='white'">Portfolio</button>
                     
                     {% if specialist.id %}
-                        {% if specialist.is_available %}
-                        <button 
+                        {% if specialist.is_open_for_booking %}
+                        <button
                             hx-post="{% url 'services:create_booking' specialist.id %}"
                             hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                             hx-confirm="Ushbu usta bilan xizmatni bron qilishni tasdiqlaysizmi?"
                             hx-swap="none"
                             hx-on::after-request="showBookingToast(event)"
-                            style="flex: 1; height: 48px; border-radius: 14px; background: var(--secondary-brand); color: white; border: none; font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--erp-transition); box-shadow: 0 8px 16px rgba(0,31,63,0.2);" 
-                            onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-2px)'" 
+                            style="flex: 1; height: 48px; border-radius: 14px; background: var(--secondary-brand); color: white; border: none; font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--erp-transition); box-shadow: 0 8px 16px rgba(0,31,63,0.2);"
+                            onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-2px)'"
                             onmouseout="this.style.opacity='1'; this.style.transform='none'">
                             <i class="bi bi-calendar-check"></i> Bron qilish
                         </button>
                         {% else %}
-                        <button 
+                        <button
                             disabled
                             style="flex: 1; height: 48px; border-radius: 14px; background: #FEF9C3; color: #854D0E; border: 1px solid #FDE68A; font-weight: 800; font-size: 12px; cursor: not-allowed;">
                             ⏰ Keyingi bo'sh vaqt: Ertaga

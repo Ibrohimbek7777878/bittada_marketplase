@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}{# i18n yuklanishi shart — {% trans %} taglar ishlashi uchun #}
 <!DOCTYPE html>
 <html lang="{{ lang|default:'uz' }}">
 <head>
@@ -307,11 +308,11 @@
           <span class="text-muted">{{ user.username }}</span>
           <form action="{% url 'auth_logout' %}" method="POST" style="display: inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-outline">Chiqish</button>
+            <button type="submit" class="btn btn-outline">{% trans "Chiqish" %}</button>
           </form>
         {% else %}
-          <a href="{% url 'pages:login' %}" class="btn btn-outline">Kirish</a>
-          <a href="{% url 'pages:register' %}" class="btn btn-primary">Ro'yxatdan o'tish</a>
+          <a href="{% url 'login' %}" class="btn btn-outline">{% trans "Kirish" %}</a>
+          <a href="{% url 'register' %}" class="btn btn-primary">{% trans "Ro'yxatdan o'tish" %}</a>
         {% endif %}
       </div>
     </div>

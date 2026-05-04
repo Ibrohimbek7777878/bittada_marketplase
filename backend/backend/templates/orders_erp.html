@@ -1,0 +1,294 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans "Buyurtmalar" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Back button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        margin-bottom: 24px;
+        background: white;
+        border: 1px solid #E2E8F0;
+    }
+
+    .back-btn:hover {
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563EB;
+        transform: translateX(-4px);
+    }
+
+    /* prefix: erp-orders - Buyurtmalar sahifasi uchun unikal uslublar */
+    .erp-orders-layout { display: grid; grid-template-columns: 280px 1fr; gap: 32px; }
+    
+    .erp-orders-sidebar {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .erp-orders-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 31, 63, 0.05);
+    }
+
+    .erp-orders-card:hover {
+        border-color: #A4D46C;
+        box-shadow: 0 8px 24px rgba(0, 31, 63, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .erp-orders-status {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-delivered {
+        background: rgba(164, 212, 108, 0.15);
+        color: #5a9a1f;
+    }
+
+    .status-processing {
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563EB;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #D97706;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        color: #475569;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border-radius: 10px;
+        margin: 4px 12px;
+    }
+
+    .sidebar-link:hover {
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563EB;
+    }
+
+    .sidebar-link.active {
+        background: #2563EB;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <!-- Back Button -->
+    <a href="{% url 'profile' %}" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        {% trans "Ortga" %}
+    </a>
+
+    <div class="erp-orders-layout">
+        <!-- Sidebar Menu -->
+        <aside class="erp-orders-sidebar">
+            <div style="padding: 32px 24px; text-align: center; border-bottom: 1px solid #F1F5F9;">
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin: 0 auto 16px;">
+                    {{ user.username|first|upper|default:"U" }}
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; color: #0F172A;">{{ user.username|default:"User" }}</h3>
+                <p style="font-size: 13px; color: #64748B; margin-top: 4px;">ID: #{{ user.id|default:"001" }}</p>
+            </div>
+            <nav style="padding: 16px 0;">
+                <a href="{% url 'profile' %}" class="sidebar-link">
+                    <span>👤</span> {% trans "Shaxsiy ma'lumotlar" %}
+                </a>
+                <a href="{% url 'orders' %}" class="sidebar-link active">
+                    <span>📦</span> {% trans "Buyurtmalar tarixi" %}
+                </a>
+                <a href="{% url 'cart' %}" class="sidebar-link">
+                    <span>🛒</span> {% trans "Savatcha" %}
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Orders List -->
+        <main>
+            <div style="margin-bottom: 32px;">
+                <h1 style="font-size: 28px; font-weight: 800; color: #0F172A;">{% trans "Buyurtmalar tarixi" %}</h1>
+                <p style="font-size: 14px; color: #64748B;">{% trans "Barcha xaridlar va ularning joriy holati" %}</p>
+            </div>
+
+            <!-- DEMO BUYURTMALAR - Hardcoded -->
+            <!-- Buyurtma 1 -->
+            <div class="erp-orders-card">
+                <div style="padding: 20px 24px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="font-size: 15px; font-weight: 700; color: #0F172A;">{% trans "Buyurtma" %} #1024</span>
+                        <span style="font-size: 13px; color: #64748B;">15.04.2026</span>
+                    </div>
+                    <span class="erp-orders-status status-delivered">{% trans "Yetkazildi" %}</span>
+                </div>
+                <div style="padding: 24px;">
+                    <!-- Mahsulot 1 -->
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E2E8F0;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #A4D46C 0%, #88c343 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            🛋️
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Modern divan kreslo" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">1 {% trans "dona" %} × 3,500,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            3,500,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    <!-- Mahsulot 2 -->
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E2E8F0;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            🪑
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Oshxona stuli (2 dona)" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">2 {% trans "dona" %} × 850,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            1,700,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                        <span style="font-size: 14px; color: #64748B;">{% trans "Umumiy to'lov:" %}</span>
+                        <span style="font-size: 20px; font-weight: 800; color: #0F172A;">5,200,000 {% trans "so'm" %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buyurtma 2 -->
+            <div class="erp-orders-card">
+                <div style="padding: 20px 24px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="font-size: 15px; font-weight: 700; color: #0F172A;">{% trans "Buyurtma" %} #1020</span>
+                        <span style="font-size: 13px; color: #64748B;">02.04.2026</span>
+                    </div>
+                    <span class="erp-orders-status status-processing">{% trans "Yetkazilmoqda" %}</span>
+                </div>
+                <div style="padding: 24px;">
+                    <!-- Mahsulot -->
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            🛏️
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Yotoqxona to'plami" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">1 {% trans "dona" %} × 8,900,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            8,900,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                        <span style="font-size: 14px; color: #64748B;">{% trans "Umumiy to'lov:" %}</span>
+                        <span style="font-size: 20px; font-weight: 800; color: #0F172A;">8,900,000 {% trans "so'm" %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buyurtma 3 -->
+            <div class="erp-orders-card">
+                <div style="padding: 20px 24px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="font-size: 15px; font-weight: 700; color: #0F172A;">{% trans "Buyurtma" %} #1015</span>
+                        <span style="font-size: 13px; color: #64748B;">28.03.2026</span>
+                    </div>
+                    <span class="erp-orders-status status-pending">{% trans "Tayyorlanmoqda" %}</span>
+                </div>
+                <div style="padding: 24px;">
+                    <!-- Mahsulot 1 -->
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E2E8F0;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            🚪
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Shkaf-kupe" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">1 {% trans "dona" %} × 4,200,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            4,200,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    <!-- Mahsulot 2 -->
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #E2E8F0;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            🪞
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Dekorativ oyna" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">3 {% trans "dona" %} × 320,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            960,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    <!-- Mahsulot 3 -->
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            💡
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 15px; font-weight: 600; color: #0F172A;">{% trans "Avval intensity chiroq" %}</h4>
+                            <p style="font-size: 13px; color: #64748B;">2 {% trans "dona" %} × 180,000 {% trans "so'm" %}</p>
+                        </div>
+                        <div style="font-weight: 700; color: #0F172A;">
+                            360,000 {% trans "so'm" %}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px dashed #E2E8F0;">
+                        <span style="font-size: 14px; color: #64748B;">{% trans "Umumiy to'lov:" %}</span>
+                        <span style="font-size: 20px; font-weight: 800; color: #0F172A;">5,520,000 {% trans "so'm" %}</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+{% endblock %}
+

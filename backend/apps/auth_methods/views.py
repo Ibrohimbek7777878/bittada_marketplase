@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from core.throttles import AuthEndpointThrottle
 
 from apps.users.serializers import UserSerializer
+from apps.users.models import Role  # Rol enum uchun import
 
 from core.exceptions import DomainError
 from .serializers import (
@@ -45,13 +46,15 @@ class RegisterView(APIView):
             from django.contrib.auth import login
             login(request, user)
 
-            # Rol bo'yicha redirect URL ni aniqlash (TZ 8.2)
-            if user.role == 'seller':
+            # Rol bo'yicha redirect URL ni aniqlash
+            if user.role == Role.SELLER:
                 redirect_url = '/services/'  # Sotuvchi shaxsiy kabinetiga
-            elif user.role == 'internal_supplier':
+            elif user.role == Role.INTERNAL_SUPPLIER:
                 redirect_url = '/profile/'  # Ichki ta'minotchi profil sahifasi
+            elif user.role == Role.CUSTOMER:
+                redirect_url = '/profile/'  # Mijoz profil sahifasiga yo'naltirish
             else:
-                redirect_url = '/'  # customer → Asosiy sahifa
+                redirect_url = '/'  # Boshqa rollar (admin, super_admin) — asosiy sahifa
 
             return Response(
                 {
@@ -115,7 +118,8 @@ class OtpConfirmView(APIView): # OTP tasdiqlash ko'rinishi
 class TokenView(TokenObtainPairView):
     """
     JWT token olish (Login).
-    Hozirgi o'zgarish: Login muvaffaqiyatli bo'lsa, Django sessiyasiga ham yozadi.
+    Hozirgi o'zgarish: Login muvaffaqiyatli bo'lsa, Django sessiyasiga ham yozadi va
+    foydalanuvchi roliga qarab redirect URL ni qaytaradi.
     Bu admin panelga ikkinchi marta login qilmasdan kirishga imkon beradi.
     """
     serializer_class = BittadaTokenObtainPairSerializer
@@ -124,7 +128,7 @@ class TokenView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         from django.contrib.auth import login
         response = super().post(request, *args, **kwargs)
-        
+
         if response.status_code == 200:
             # Serializer orqali validatsiya qilingan userga kirish
             serializer = self.get_serializer(data=request.data)
@@ -132,9 +136,22 @@ class TokenView(TokenObtainPairView):
                 serializer.is_valid(raise_exception=True)
                 user = serializer.user
                 if user:
-                    login(request, user) # Django sessiyasini boshlash
+                    login(request, user)  # Django sessiyasini boshlash
+
+                    # Foydalanuvchi roliga qarab redirect URL aniqlash
+                    if user.role == Role.CUSTOMER:
+                        redirect_url = '/profile/'
+                    elif user.is_staff:
+                        # Django admin panel (hidden-core-database) ga yo'naltirish
+                        redirect_url = '/hidden-core-database/'
+                    else:
+                        redirect_url = '/'
+
+                    response.data['redirect'] = redirect_url
             except Exception:
+                # Xatolik yuz bersa, redirect qo'shmasdan qaytaramiz
                 pass
+
         return response
 
 
@@ -205,7 +222,7 @@ class SocialLoginView(APIView): # Ijtimoiy tarmoqlar orqali kirish (Google/Teleg
                 return Response({ # Muvaffaqiyatli javob
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
-                    "user": {
+"user": {
                         "id": str(user.id),
                         "email": user.email,
                         "username": user.username,
@@ -216,5 +233,214 @@ class SocialLoginView(APIView): # Ijtimoiy tarmoqlar orqali kirish (Google/Teleg
                 
             except Exception as e: # Xatolik bo'lsa
                 return Response({"error": f"Social login xatosi: {str(e)}"}, status=400)
-        
+          
+        if provider == 'telegram': # Agar Telegram bo'lsa
+            try:
+                import json
+                user_data = json.loads(credential) if isinstance(credential, str) else credential
+                
+                # Verify Telegram hash
+                from apps.users.services import verify_telegram_hash
+                bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
+                
+                if bot_token and not verify_telegram_hash(auth_data=user_data.copy(), bot_token=bot_token):
+                    return Response({"error": "Telegram hash validatsiyasi xatosi"}, status=400)
+                
+                telegram_id = user_data.get('id')
+                username = user_data.get('username', '')
+                first_name = user_data.get('first_name', '')
+                last_name = user_data.get('last_name', '')
+                photo_url = user_data.get('photo_url', '')
+                
+                if not telegram_id:
+                    return Response({"error": "Telegram ID topilmadi"}, status=400)
+                
+                from apps.users.models import User, Role, AccountType
+                from apps.users.services import create_user_with_profile
+                
+                # Telegram ID bo'yicha foydalanuvchini qidirish
+                from apps.auth_methods.models import SocialIdentity
+                
+                social_identity = SocialIdentity.objects.filter(
+                    provider='telegram', 
+                    subject=str(telegram_id)
+                ).first()
+                
+                if social_identity:
+                    user = social_identity.user
+                    new_user = False
+                else:
+                    # Yangi foydalanuvchi yaratish
+                    new_user = True
+                    email = f"{telegram_id}@telegram.user"  # Placeholder email
+                    
+                    if username and User.objects.filter(username=username).exists():
+                        username = f"tg_{telegram_id}"
+                    
+                    user = create_user_with_profile(
+                        email=email,
+                        password=User.objects.make_random_password(),
+                        username=username or f"tg_{telegram_id}",
+                        role=Role.CUSTOMER,
+                        account_type=AccountType.INDIVIDUAL,
+                    )
+                    
+                    # Set first/last name on the user model
+                    if first_name:
+                        user.first_name = first_name
+                    if last_name:
+                        user.last_name = last_name
+                    user.save(update_fields=['first_name', 'last_name'])
+                    
+                    # SocialIdentity yaratish
+                    SocialIdentity.objects.create(
+                        user=user,
+                        provider='telegram',
+                        subject=str(telegram_id),
+                        payload={'photo_url': photo_url}
+                    )
+                
+                # JWT tokenlarini generatsiya qilish
+                refresh = RefreshToken.for_user(user)
+                refresh['role'] = user.role
+                refresh['username'] = user.username
+                refresh['account_type'] = user.account_type
+
+                # Determine redirect
+                if new_user:
+                    redirect_url = '/profile/role-selection/' # TZ: Rol tanlash sahifasiga yubor
+                else:
+                    redirect_url = '/profile/' # TZ: Dashboardga o'tkaz
+
+                return Response({
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "redirect": redirect_url,
+                    "is_new": new_user,
+                    "user": {
+                        "id": str(user.id),
+                        "email": user.email,
+                        "username": user.username,
+                        "role": user.role,
+                        "name": f"{first_name} {last_name}".strip()
+                    }
+                })
+                
+            except Exception as e:
+                return Response({"error": f"Telegram login xatosi: {str(e)}"}, status=400)
+         
         return Response({"error": "Noma'lum provayder"}, status=400) # Provayder xatosi
+        
+
+class TelegramCallbackView(APIView):
+    """
+    Telegram Login Widget (JS Callback) handler.
+    TZ §8.2 Audit log, §8.3 Rate limiting.
+    """
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthEndpointThrottle]
+
+    def post(self, request):
+        return self._handle_auth(request, data=request.data)
+
+    def get(self, request):
+        return self._handle_auth(request, data=request.GET.dict())
+
+    def _handle_auth(self, request, data):
+        from rest_framework_simplejwt.tokens import RefreshToken
+        from django.conf import settings
+        from django.contrib.auth import login
+        from django.shortcuts import redirect
+        from apps.users.services import verify_telegram_hash, create_user_with_profile
+        from apps.users.models import User, Role, AccountType
+        from apps.auth_methods.models import SocialIdentity
+        
+        auth_data = data
+        bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
+        
+        is_redirect = request.method == 'GET'
+        
+        if not bot_token:
+            if is_redirect:
+                return redirect('/login/?error=TELEGRAM_BOT_TOKEN+not+configured')
+            return Response({"error": "TELEGRAM_BOT_TOKEN sozlanmagan"}, status=500)
+            
+        # 1. Verify hash
+        if not verify_telegram_hash(auth_data=auth_data.copy(), bot_token=bot_token):
+            # TODO: Add audit log entry for failed auth attempt
+            if is_redirect:
+                return redirect('/login/?error=Telegram+hash+validation+failed')
+            return Response({"error": "Telegram hash validatsiyasi xatosi"}, status=400)
+            
+        telegram_id = auth_data.get('id')
+        if not telegram_id:
+            if is_redirect:
+                return redirect('/login/?error=ID+not+found')
+            return Response({"error": "ID topilmadi"}, status=400)
+            
+        # 2. Find or create user
+        social_identity = SocialIdentity.objects.filter(
+            provider='telegram',
+            subject=str(telegram_id)
+        ).first()
+        
+        new_user = False
+        if social_identity:
+            user = social_identity.user
+        else:
+            new_user = True
+            username = auth_data.get('username')
+            first_name = auth_data.get('first_name', '')
+            last_name = auth_data.get('last_name', '')
+            photo_url = auth_data.get('photo_url', '')
+            
+            # Check username uniqueness
+            if not username or User.objects.filter(username=username).exists():
+                username = f"tg_{telegram_id}"
+                
+            user = create_user_with_profile(
+                email=f"{telegram_id}@telegram.user",
+                password=User.objects.make_random_password(),
+                username=username,
+                role=Role.CUSTOMER,
+                account_type=AccountType.INDIVIDUAL
+            )
+            
+            if first_name: user.first_name = first_name
+            if last_name: user.last_name = last_name
+            user.save(update_fields=['first_name', 'last_name'])
+            
+            SocialIdentity.objects.create(
+                user=user,
+                provider='telegram',
+                subject=str(telegram_id),
+                payload={'photo_url': photo_url}
+            )
+            
+        # 3. Handle session and tokens
+        login(request, user)  # Create Django session
+        
+        refresh = RefreshToken.for_user(user)
+        refresh['role'] = user.role
+        
+        # 4. Determine redirect
+        if new_user:
+            redirect_url = '/uz/select-role/'
+        else:
+            redirect_url = '/profile/'
+            
+        if is_redirect:
+            # If it's a browser redirect, we just go to the URL
+            return redirect(redirect_url)
+
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "redirect": redirect_url,
+            "is_new": new_user,
+            "user": {
+                "id": str(user.id),
+                "username": user.username,
+                "role": user.role
+            }
+        })

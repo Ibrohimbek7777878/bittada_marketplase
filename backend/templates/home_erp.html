@@ -72,26 +72,26 @@
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 60%, transparent 100%); z-index: 1;"></div>
 
         <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); padding: 56px; border-radius: 28px; max-width: 680px; box-shadow: 0 32px 64px rgba(0,31,63,0.15); border: 1px solid var(--erp-glass-border); position: relative; z-index: 2; animation: erp-fade-in 0.5s ease-out;">
-            <span style="display: inline-block; padding: 6px 16px; background: var(--secondary-brand); color: var(--primary-brand); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 1px; border: 1px solid var(--primary-brand);">Bittada Mebel Ecosystem</span>
+            <span style="display: inline-block; padding: 6px 16px; background: var(--secondary-brand); color: var(--primary-brand); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 1px; border: 1px solid var(--primary-brand);">{% trans "Bittada Mebel Ecosystem" %}</span>
             
             <h1 style="font-size: 52px; font-weight: 900; color: var(--secondary-brand); line-height: 1.1; margin-bottom: 24px; letter-spacing: -2px;">
-                Mebellar va <br> usta dizaynerlar <br> <span style="color: var(--primary-brand);">bir joyda</span>
+                {% trans "Mebellar va" %} <br> {% trans "usta dizaynerlar" %} <br> <span style="color: var(--primary-brand);">{% trans "bir joyda" %}</span>
             </h1>
             
             <p style="font-size: 19px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
-                O'zbekistondagi eng yirik platforma. 1000+ ishlab chiqaruvchi va tayyor mebellar katalogi. B2B va B2C uchun yagona yechim.
+                {% trans "O'zbekistondagi eng yirik platforma. 1000+ ishlab chiqaruvchi va tayyor mebellar katalogi. B2B va B2C uchun yagona yechim." %}
             </p>
             
             <div style="display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap;">
-                <a href="{% url 'services' %}" class="erp-btn-primary" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 10px 20px rgba(164,212,108,0.3);">Xizmatlarni ko'rish</a>
-                <a href="{% url 'masters' %}" style="display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 32px; font-weight: 800; font-size: 14px; border-radius: 12px; background: white; color: var(--secondary-brand); border: 1px solid #E2E8F0; text-decoration: none; transition: var(--erp-transition);" onmouseover="this.style.background='#F8FAFC'; this.style.borderColor='var(--primary-brand)';" onmouseout="this.style.background='white'; this.style.borderColor='#E2E8F0';">Ustalar izlash</a>
+                <a href="{% url 'services' %}" class="erp-btn-primary" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 10px 20px rgba(164,212,108,0.3);">{% trans "Xizmatlarni ko'rish" %}</a>
+                <a href="{% url 'masters' %}" style="display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 32px; font-weight: 800; font-size: 14px; border-radius: 12px; background: white; color: var(--secondary-brand); border: 1px solid #E2E8F0; text-decoration: none; transition: var(--erp-transition);" onmouseover="this.style.background='#F8FAFC'; this.style.borderColor='var(--primary-brand)';" onmouseout="this.style.background='white'; this.style.borderColor='#E2E8F0';">{% trans "Ustalar izlash" %}</a>
             </div>
 
             <!-- Global Search -->
             <form action="{% url 'services' %}" method="get" style="background: white; border-radius: 16px; padding: 8px 8px 8px 24px; display: flex; align-items: center; border: 1px solid #E2E8F0; height: 64px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: var(--erp-transition); width: 100%; max-width: 500px;">
                 <span style="font-size: 20px; color: #94A3B8; margin-right: 12px;">🔍</span>
-                <input type="text" name="q" placeholder="Nimani qidiryapsiz?..." style="border: none; background: transparent; outline: none; height: 100%; font-size: 16px; width: 100%; color: var(--secondary-brand); font-weight: 600;">
-                <button type="submit" style="background: var(--secondary-brand); color: white; border: none; border-radius: 12px; padding: 0 32px; height: 100%; font-size: 14px; font-weight: 800; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='var(--primary-brand)'; this.style.color='var(--secondary-brand)';" onmouseout="this.style.background='var(--secondary-brand)'; this.style.color='white';">Qidirish</button>
+                <input type="text" name="q" placeholder="{% trans 'Nimani qidiryapsiz?...' %}" style="border: none; background: transparent; outline: none; height: 100%; font-size: 16px; width: 100%; color: var(--secondary-brand); font-weight: 600;">
+                <button type="submit" style="background: var(--secondary-brand); color: white; border: none; border-radius: 12px; padding: 0 32px; height: 100%; font-size: 14px; font-weight: 800; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='var(--primary-brand)'; this.style.color='var(--secondary-brand)';" onmouseout="this.style.background='var(--secondary-brand)'; this.style.color='white';">{% trans "Qidirish" %}</button>
             </form>
         </div>
     </section>
@@ -106,11 +106,11 @@
         {% endfor %}
     </div>
 
-    <!-- Categories Module -->
+    {# Mashhur kategoriyalar bo'limi — sarlavha va "Barchasini ko'rish" tarjima qilinadi #}
     <section style="margin-bottom: 80px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">Mashhur kategoriyalar</h2>
-            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">Barchasini ko'rish</a>
+            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">{% trans "Mashhur kategoriyalar" %}</h2>
+            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">{% trans "Barchasini ko'rish" %}</a>
         </div>
         <div class="erp-home-cat-grid">
             {% for cat in categories|slice:":8" %}
@@ -119,17 +119,19 @@
                     {% if cat.slug == 'divan' %}🛋️{% elif cat.slug == 'krovat' %}🛏️{% elif cat.slug == 'shkaf' %}🚪{% elif cat.slug == 'stol' %}🪑{% else %}📦{% endif %}
                 </div>
                 <h4 style="font-size: 17px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 8px;">{{ cat.name_uz }}</h4>
-                <p style="font-size: 13px; color: #94A3B8; margin: 0;">{{ cat.product_count|default:0 }} mahsulot</p>
+                {# Mahsulot soni — "mahsulot" so'zi tarjima qilinadi #}
+                <p style="font-size: 13px; color: #94A3B8; margin: 0;">{{ cat.product_count|default:0 }} {% trans "mahsulot" %}</p>
             </a>
             {% endfor %}
         </div>
     </section>
 
-    <!-- Tayyor Mebellar (Retail/B2C) Module -->
+    {# Tayyor Mebellar (Retail/B2C) bo'limi — sarlavha va "Barchasi" havolasi tarjima qilinadi #}
+    {% trans "Tayyor Mebellar (Retail)" as default_furniture_title %}{# Standart sarlavha tarjimasi #}
     <section style="margin-bottom: 80px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">{{ cms.furniture_title|default:"Tayyor Mebellar (Retail)" }}</h2>
-            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">Barchasi</a>
+            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">{{ cms.furniture_title|default:default_furniture_title }}</h2>
+            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">{% trans "Barchasi" %}</a>
         </div>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
@@ -141,19 +143,20 @@
                         {{ item.category }}
                     </div>
                 </div>
+                {# Mahsulot kartasi pastki qismi — "Narxi", "so'm", "Zaxira", "dona", "Savatga qo'shish" tarjima qilinadi #}
                 <div style="padding: 20px;">
                     <h4 style="font-size: 16px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 12px; height: 44px; overflow: hidden;">{{ item.title_uz }}</h4>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Narxi</div>
-                            <div style="font-size: 18px; font-weight: 950; color: var(--secondary-brand);">{{ item.price|intcomma }} so'm</div>
+                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Narxi" %}</div>
+                            <div style="font-size: 18px; font-weight: 950; color: var(--secondary-brand);">{{ item.price|intcomma }} {% trans "so'm" %}</div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Zaxira</div>
-                            <div style="font-size: 14px; font-weight: 800; color: {% if item.stock > 0 %}#10B981{% else %}#EF4444{% endif %};">{{ item.stock }} dona</div>
+                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Zaxira" %}</div>
+                            <div style="font-size: 14px; font-weight: 800; color: {% if item.stock > 0 %}#10B981{% else %}#EF4444{% endif %};">{{ item.stock }} {% trans "dona" %}</div>
                         </div>
                     </div>
-                    <button class="erp-btn-primary" style="width: 100%; margin-top: 20px; height: 44px; font-size: 13px;">Savatga qo'shish</button>
+                    <button class="erp-btn-primary" style="width: 100%; margin-top: 20px; height: 44px; font-size: 13px;">{% trans "Savatga qo'shish" %}</button>
                 </div>
             </div>
             {% endfor %}

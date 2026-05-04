@@ -1,0 +1,894 @@
+# English translations for Bittada Marketplace
+# Copyright (C) 2026 Bittada
+# This file is distributed under the same license as the bittada package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Bittada 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-04 22:10+0500\n"
+"PO-Revision-Date: 2026-05-02 13:00+0500\n"
+"Last-Translator: Bittada Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: backend/apps/orders/models.py:15
+msgid "So'rov (Inquiry)"
+msgstr ""
+
+#: backend/apps/orders/models.py:16
+msgid "Taklif (Offer)"
+msgstr ""
+
+#: backend/apps/orders/models.py:17
+msgid "Muzokara (Negotiation)"
+msgstr ""
+
+#: backend/apps/orders/models.py:18
+msgid "To'lov kutilmoqda (Escrow Pending)"
+msgstr ""
+
+#: backend/apps/orders/models.py:19
+msgid "To'langan (Paid)"
+msgstr ""
+
+#: backend/apps/orders/models.py:20
+msgid "Boshlangan (Started)"
+msgstr ""
+
+#: backend/apps/orders/models.py:21
+msgid "Ishlab chiqarilmoqda (Production)"
+msgstr ""
+
+#: backend/apps/orders/models.py:22
+#, fuzzy
+#| msgid "Yetkazib berish manzili"
+msgid "Yetkazib berilmoqda (Shipping)"
+msgstr "Delivery Address"
+
+#: backend/apps/orders/models.py:23
+#, fuzzy
+#| msgid "Yetkazib berish manzili"
+msgid "Yetkazib berildi (Delivered)"
+msgstr "Delivery Address"
+
+#: backend/apps/orders/models.py:24
+msgid "Yakunlandi (Completed)"
+msgstr ""
+
+#: backend/apps/orders/models.py:25
+msgid "Bekor qilindi (Canceled)"
+msgstr ""
+
+#: backend/apps/orders/models.py:26
+msgid "Bahsli (Disputed)"
+msgstr ""
+
+#: backend/apps/orders/models.py:39
+msgid "Mijoz"
+msgstr "Customer"
+
+#: backend/apps/orders/models.py:45
+msgid "Sotuvchi"
+msgstr ""
+
+#: backend/apps/orders/models.py:60
+#, fuzzy
+#| msgid "Umumiy:"
+msgid "Umumiy narx"
+msgstr "Total:"
+
+#: backend/apps/orders/models.py:70 backend/templates/checkout_erp.html:31
+#: backend/templates/profile_erp.html:279
+msgid "Yetkazib berish manzili"
+msgstr "Delivery Address"
+
+#: backend/apps/orders/models.py:71
+msgid "Aloqa telefoni"
+msgstr ""
+
+#: backend/apps/orders/models.py:74
+msgid "Izohlar"
+msgstr ""
+
+#: backend/apps/orders/models.py:79 backend/templates/orders_erp.html:162
+#: backend/templates/orders_erp.html:206 backend/templates/orders_erp.html:237
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma"
+msgstr "Orders"
+
+#: backend/apps/orders/models.py:80 backend/templates/orders_erp.html:6
+#: backend/templates/profile_base.html:183
+#: backend/templates/profile_erp.html:221
+msgid "Buyurtmalar"
+msgstr "Orders"
+
+#: backend/apps/orders/models.py:115
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma elementi"
+msgstr "Orders"
+
+#: backend/apps/orders/models.py:116
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma elementlari"
+msgstr "Orders"
+
+#: backend/apps/products/models.py:34
+msgid "Tayyor mahsulot"
+msgstr ""
+
+#: backend/apps/products/models.py:35
+#, fuzzy
+#| msgid "Buyurtmani rasmiylashtirish"
+msgid "Buyurtma asosida ishlab chiqarish"
+msgstr "Checkout"
+
+#: backend/apps/products/models.py:39
+msgid "Qoralama"
+msgstr ""
+
+#: backend/apps/products/models.py:40
+msgid "Tekshirilmoqda"
+msgstr ""
+
+#: backend/apps/products/models.py:41
+msgid "Faol"
+msgstr ""
+
+#: backend/apps/products/models.py:42
+msgid "Rad etildi"
+msgstr ""
+
+#: backend/apps/products/models.py:43
+msgid "Arxiv"
+msgstr ""
+
+#: backend/apps/products/models.py:48
+msgid "Yangi"
+msgstr ""
+
+#: backend/apps/products/models.py:49
+msgid "Foydalanilgan"
+msgstr ""
+
+#: backend/apps/products/models.py:50
+msgid "Restavratsiya qilingan"
+msgstr ""
+
+#: backend/apps/products/models.py:51
+msgid "Antikvar"
+msgstr ""
+
+#: backend/apps/products/models.py:56
+msgid "Zamonaviy"
+msgstr ""
+
+#: backend/apps/products/models.py:57
+msgid "Klassik"
+msgstr ""
+
+#: backend/apps/products/models.py:58
+msgid "Skandinav"
+msgstr ""
+
+#: backend/apps/products/models.py:59
+msgid "Loft"
+msgstr ""
+
+#: backend/apps/products/models.py:60
+msgid "Minimalizm"
+msgstr ""
+
+#: backend/apps/products/models.py:61
+msgid "High-tech"
+msgstr ""
+
+#: backend/apps/products/models.py:62
+msgid "Provans"
+msgstr ""
+
+#: backend/apps/products/models.py:63
+msgid "Eco"
+msgstr ""
+
+#: backend/apps/products/models.py:64
+msgid "Vintage"
+msgstr ""
+
+#: backend/apps/products/models.py:65
+msgid "Sharq uslubi"
+msgstr ""
+
+#: backend/apps/products/models.py:66 backend/apps/products/models.py:86
+#: backend/apps/products/models.py:111
+msgid "Boshqa"
+msgstr ""
+
+#: backend/apps/products/models.py:71
+msgid "Tabiiy yog'och (massiv)"
+msgstr ""
+
+#: backend/apps/products/models.py:72
+msgid "MDF"
+msgstr ""
+
+#: backend/apps/products/models.py:73
+msgid "LDSP (yirik hissali)"
+msgstr ""
+
+#: backend/apps/products/models.py:74
+msgid "Fanera"
+msgstr ""
+
+#: backend/apps/products/models.py:75
+msgid "Metall"
+msgstr ""
+
+#: backend/apps/products/models.py:76
+msgid "Shisha"
+msgstr ""
+
+#: backend/apps/products/models.py:77
+msgid "Plastik"
+msgstr ""
+
+#: backend/apps/products/models.py:78
+msgid "Rattan"
+msgstr ""
+
+#: backend/apps/products/models.py:79
+msgid "Charm (haqiqiy)"
+msgstr ""
+
+#: backend/apps/products/models.py:80
+msgid "Eko-charm"
+msgstr ""
+
+#: backend/apps/products/models.py:81
+msgid "Mato"
+msgstr ""
+
+#: backend/apps/products/models.py:82
+msgid "Barxat"
+msgstr ""
+
+#: backend/apps/products/models.py:83
+msgid "Mramor"
+msgstr ""
+
+#: backend/apps/products/models.py:84
+msgid "Granit"
+msgstr ""
+
+#: backend/apps/products/models.py:85
+msgid "Tosh"
+msgstr ""
+
+#: backend/apps/products/models.py:91
+msgid "Oq"
+msgstr ""
+
+#: backend/apps/products/models.py:92
+msgid "Qora"
+msgstr ""
+
+#: backend/apps/products/models.py:93
+msgid "Kulrang"
+msgstr ""
+
+#: backend/apps/products/models.py:94
+msgid "Bej"
+msgstr ""
+
+#: backend/apps/products/models.py:95
+msgid "Jigarrang"
+msgstr ""
+
+#: backend/apps/products/models.py:96
+msgid "Yong'oq rang"
+msgstr ""
+
+#: backend/apps/products/models.py:97
+msgid "Eshak terisi rang"
+msgstr ""
+
+#: backend/apps/products/models.py:98
+msgid "Gilos rang"
+msgstr ""
+
+#: backend/apps/products/models.py:99
+msgid "Kizil-yashil"
+msgstr ""
+
+#: backend/apps/products/models.py:100
+msgid "Qizil"
+msgstr ""
+
+#: backend/apps/products/models.py:101
+msgid "Ko'k"
+msgstr ""
+
+#: backend/apps/products/models.py:102
+msgid "Yashil"
+msgstr ""
+
+#: backend/apps/products/models.py:103
+msgid "Sariq"
+msgstr ""
+
+#: backend/apps/products/models.py:104
+msgid "To'q sariq"
+msgstr ""
+
+#: backend/apps/products/models.py:105
+msgid "Pushti"
+msgstr ""
+
+#: backend/apps/products/models.py:106
+msgid "Siyohrang"
+msgstr ""
+
+#: backend/apps/products/models.py:107
+msgid "Oltin"
+msgstr ""
+
+#: backend/apps/products/models.py:108
+msgid "Kumush"
+msgstr ""
+
+#: backend/apps/products/models.py:109
+msgid "Ko'p rangli"
+msgstr ""
+
+#: backend/apps/products/models.py:110
+msgid "Shaffof"
+msgstr ""
+
+#: backend/apps/products/models.py:126
+#, fuzzy
+#| msgid "O'zbek"
+msgid "Nomi (O'zbek)"
+msgstr "O'zbek"
+
+#: backend/apps/products/models.py:127
+msgid "Nomi (Rus)"
+msgstr ""
+
+#: backend/apps/products/models.py:128
+#, fuzzy
+#| msgid "English"
+msgid "Nomi (English)"
+msgstr "English"
+
+#: backend/apps/products/models.py:154
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulot turi"
+msgstr "Products"
+
+#: backend/apps/products/models.py:170
+msgid "Kategoriya"
+msgstr ""
+
+#: backend/apps/products/models.py:171
+msgid "Kategoriyalar"
+msgstr ""
+
+#: backend/apps/products/models.py:241
+msgid "Sarlavha (O'zbek)"
+msgstr ""
+
+#: backend/apps/products/models.py:242
+msgid "Sarlavha (Rus)"
+msgstr ""
+
+#: backend/apps/products/models.py:243
+msgid "Sarlavha (English)"
+msgstr ""
+
+#: backend/apps/products/models.py:246
+msgid "Tavsif (O'zbek)"
+msgstr ""
+
+#: backend/apps/products/models.py:247
+msgid "Tavsif (Rus)"
+msgstr ""
+
+#: backend/apps/products/models.py:248
+#, fuzzy
+#| msgid "English"
+msgid "Tavsif (English)"
+msgstr "English"
+
+#: backend/apps/products/models.py:262
+msgid "Asosiy material"
+msgstr ""
+
+#: backend/apps/products/models.py:266
+msgid "Eni (sm)"
+msgstr ""
+
+#: backend/apps/products/models.py:267
+msgid "Balandligi (sm)"
+msgstr ""
+
+#: backend/apps/products/models.py:268
+msgid "Chuqurligi (sm)"
+msgstr ""
+
+#: backend/apps/products/models.py:269
+msgid "Uzunligi (sm)"
+msgstr ""
+
+#: backend/apps/products/models.py:277
+msgid "Og'irligi (kg)"
+msgstr ""
+
+#: backend/apps/products/models.py:290
+msgid "Asosiy rang"
+msgstr ""
+
+#: backend/apps/products/models.py:298
+msgid "Uslub"
+msgstr ""
+
+#: backend/apps/products/models.py:306
+msgid "Holati"
+msgstr ""
+
+#: backend/apps/products/models.py:310
+msgid "Tashqi mebel"
+msgstr ""
+
+#: backend/apps/products/models.py:313
+msgid "Yig'ilishi kerak"
+msgstr ""
+
+#: backend/apps/products/models.py:321
+msgid "Joriy narx"
+msgstr ""
+
+#: backend/apps/products/models.py:329
+msgid "Eski narx"
+msgstr ""
+
+#: backend/apps/products/models.py:338
+msgid "Zaxira"
+msgstr ""
+
+#: backend/apps/products/models.py:346
+msgid "Minimal buyurtma (MOQ)"
+msgstr ""
+
+#: backend/apps/products/models.py:353
+msgid "Maksimal buyurtma"
+msgstr ""
+
+#: backend/apps/products/models.py:363
+msgid "Minimal narx"
+msgstr ""
+
+#: backend/apps/products/models.py:370
+msgid "Maksimal narx"
+msgstr ""
+
+#: backend/apps/products/models.py:377
+msgid "Ishlab chiqarish vaqti (kun)"
+msgstr ""
+
+#: backend/apps/products/models.py:385
+msgid "3D Model (GLB)"
+msgstr ""
+
+#: backend/apps/products/models.py:418
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulot"
+msgstr "Products"
+
+#: backend/apps/products/models.py:419 backend/templates/cart_erp.html:43
+msgid "Mahsulotlar"
+msgstr "Products"
+
+#: backend/apps/products/models.py:532
+msgid "Variant nomi"
+msgstr ""
+
+#: backend/apps/products/models.py:581
+msgid "Yuklab olinadigan"
+msgstr ""
+
+#: backend/apps/products/models.py:582
+msgid "Ishlab chiqarish fayllari"
+msgstr ""
+
+#: backend/apps/products/models.py:583
+msgid "Chizmalar/Blueprint"
+msgstr ""
+
+#: backend/apps/products/models.py:586
+msgid "Ochiq"
+msgstr ""
+
+#: backend/apps/products/models.py:587
+msgid "So'rov orqali"
+msgstr ""
+
+#: backend/apps/products/models.py:588
+msgid "To'lovli"
+msgstr ""
+
+#: backend/config/settings/base.py:145
+msgid "O'zbek"
+msgstr "O'zbek"
+
+#: backend/config/settings/base.py:146
+msgid "Русский"
+msgstr "Russian"
+
+#: backend/config/settings/base.py:147
+msgid "English"
+msgstr "English"
+
+#: backend/templates/base.html:310 backend/templates/profile_base.html:195
+#: backend/templates/profile_erp.html:233
+msgid "Chiqish"
+msgstr "Logout"
+
+#: backend/templates/base.html:313
+msgid "Kirish"
+msgstr ""
+
+#: backend/templates/base.html:314
+msgid "Ro'yxatdan o'tish"
+msgstr ""
+
+#: backend/templates/cart_erp.html:6 backend/templates/profile_base.html:186
+#: backend/templates/profile_erp.html:227
+msgid "Savat"
+msgstr "Cart"
+
+#: backend/templates/cart_erp.html:12 backend/templates/checkout_erp.html:11
+#: backend/templates/orders_erp.html:124
+#: backend/templates/profile_base.html:161
+#: backend/templates/profile_erp.html:142
+#: backend/templates/wishlist_erp.html:11
+msgid "Ortga"
+msgstr "Back"
+
+#: backend/templates/cart_erp.html:16
+msgid "Sizning savatingiz"
+msgstr "Your Cart"
+
+#: backend/templates/cart_erp.html:17
+msgid "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
+msgstr "Review selected products and place order"
+
+#: backend/templates/cart_erp.html:25
+msgid "Savatingiz bo'sh"
+msgstr "Your cart is empty"
+
+#: backend/templates/cart_erp.html:26
+msgid "Hali hech qanday mahsulot qo'shmadingiz."
+msgstr "You haven't added any products yet."
+
+#: backend/templates/cart_erp.html:27 backend/templates/wishlist_erp.html:23
+#, fuzzy
+#| msgid "Bosh sahifa"
+msgid "Bosh sahifaga qaytish"
+msgstr "Home"
+
+#: backend/templates/cart_erp.html:32 backend/templates/wishlist_erp.html:28
+msgid "Yuklanmoqda..."
+msgstr ""
+
+#: backend/templates/cart_erp.html:40
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma xulosasi"
+msgstr "Orders"
+
+#: backend/templates/cart_erp.html:48
+msgid "Yetkazib berish:"
+msgstr "Delivery:"
+
+#: backend/templates/cart_erp.html:49
+msgid "Bepul"
+msgstr "Free"
+
+#: backend/templates/cart_erp.html:53
+msgid "Jami:"
+msgstr "Total:"
+
+#: backend/templates/cart_erp.html:58
+msgid "Rasmiylashtirish"
+msgstr "Checkout"
+
+#: backend/templates/cart_erp.html:62
+msgid "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
+msgstr "By confirming the order, you agree to the public offer."
+
+#: backend/templates/checkout_erp.html:5 backend/templates/checkout_erp.html:15
+msgid "Buyurtmani rasmiylashtirish"
+msgstr "Checkout"
+
+#: backend/templates/checkout_erp.html:20
+msgid "Yetkazib berish ma'lumotlari"
+msgstr "Delivery Information"
+
+#: backend/templates/checkout_erp.html:23
+msgid "Ism va familiya"
+msgstr "First and Last Name"
+
+#: backend/templates/checkout_erp.html:27
+#: backend/templates/profile_base.html:225
+msgid "Telefon raqami"
+msgstr "Phone Number"
+
+#: backend/templates/checkout_erp.html:34
+msgid "Buyurtmani tasdiqlash"
+msgstr "Confirm Order"
+
+#: backend/templates/checkout_erp.html:40
+msgid "Sizning buyurtmangiz"
+msgstr "Your Order"
+
+#: backend/templates/checkout_erp.html:53
+msgid "Umumiy:"
+msgstr "Total:"
+
+#: backend/templates/home_erp.html:6
+msgid "Bittada Mebel Marketplace"
+msgstr ""
+
+#: backend/templates/home_erp.html:6
+msgid "Professional ERP Tizimi"
+msgstr "Professional ERP System"
+
+#: backend/templates/orders_erp.html:139
+#: backend/templates/profile_base.html:207
+#: backend/templates/profile_erp.html:247
+msgid "Shaxsiy ma'lumotlar"
+msgstr "Personal Information"
+
+#: backend/templates/orders_erp.html:142 backend/templates/orders_erp.html:153
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtmalar tarixi"
+msgstr "Orders"
+
+#: backend/templates/orders_erp.html:145
+#, fuzzy
+#| msgid "Savat"
+msgid "Savatcha"
+msgstr "Cart"
+
+#: backend/templates/orders_erp.html:154
+msgid "Barcha xaridlar va ularning joriy holati"
+msgstr ""
+
+#: backend/templates/orders_erp.html:165
+#: backend/templates/profile_base.html:260
+#, fuzzy
+#| msgid "Yetkazib berish:"
+msgid "Yetkazildi"
+msgstr "Delivery:"
+
+#: backend/templates/orders_erp.html:174
+msgid "Modern divan kreslo"
+msgstr ""
+
+#: backend/templates/orders_erp.html:175 backend/templates/orders_erp.html:188
+#: backend/templates/orders_erp.html:219 backend/templates/orders_erp.html:250
+#: backend/templates/orders_erp.html:263 backend/templates/orders_erp.html:276
+msgid "dona"
+msgstr ""
+
+#: backend/templates/orders_erp.html:175 backend/templates/orders_erp.html:178
+#: backend/templates/orders_erp.html:188 backend/templates/orders_erp.html:191
+#: backend/templates/orders_erp.html:197 backend/templates/orders_erp.html:219
+#: backend/templates/orders_erp.html:222 backend/templates/orders_erp.html:228
+#: backend/templates/orders_erp.html:250 backend/templates/orders_erp.html:253
+#: backend/templates/orders_erp.html:263 backend/templates/orders_erp.html:266
+#: backend/templates/orders_erp.html:276 backend/templates/orders_erp.html:279
+#: backend/templates/orders_erp.html:285
+#: backend/templates/profile_base.html:257
+#: backend/templates/profile_base.html:271
+#: backend/templates/profile_base.html:285
+msgid "so'm"
+msgstr ""
+
+#: backend/templates/orders_erp.html:187
+msgid "Oshxona stuli (2 dona)"
+msgstr ""
+
+#: backend/templates/orders_erp.html:196 backend/templates/orders_erp.html:227
+#: backend/templates/orders_erp.html:284
+#, fuzzy
+#| msgid "Umumiy:"
+msgid "Umumiy to'lov:"
+msgstr "Total:"
+
+#: backend/templates/orders_erp.html:209
+#: backend/templates/profile_base.html:274
+msgid "Yetkazilmoqda"
+msgstr ""
+
+#: backend/templates/orders_erp.html:218
+#: backend/templates/profile_base.html:270
+msgid "Yotoqxona to'plami"
+msgstr ""
+
+#: backend/templates/orders_erp.html:240
+#: backend/templates/profile_base.html:288
+msgid "Tayyorlanmoqda"
+msgstr ""
+
+#: backend/templates/orders_erp.html:249
+msgid "Shkaf-kupe"
+msgstr ""
+
+#: backend/templates/orders_erp.html:262
+msgid "Dekorativ oyna"
+msgstr ""
+
+#: backend/templates/orders_erp.html:275
+msgid "Avval intensity chiroq"
+msgstr ""
+
+#: backend/templates/profile_base.html:5
+#: backend/templates/profile_base.html:180 backend/templates/profile_erp.html:5
+msgid "Profil"
+msgstr "Profile"
+
+#: backend/templates/profile_base.html:189
+#: backend/templates/profile_erp.html:224 backend/templates/wishlist_erp.html:5
+#: backend/templates/wishlist_erp.html:15
+msgid "Sevimlilar"
+msgstr "Favorites"
+
+#: backend/templates/profile_base.html:212
+msgid "Ism"
+msgstr ""
+
+#: backend/templates/profile_base.html:213
+#: backend/templates/profile_erp.html:267
+msgid "Ismingiz"
+msgstr "Your Name"
+
+#: backend/templates/profile_base.html:216
+#, fuzzy
+#| msgid "Ism va familiya"
+msgid "Familiya"
+msgstr "First and Last Name"
+
+#: backend/templates/profile_base.html:217
+#, fuzzy
+#| msgid "Ismingiz"
+msgid "Familiyangiz"
+msgstr "Your Name"
+
+#: backend/templates/profile_base.html:220
+msgid "Email"
+msgstr ""
+
+#: backend/templates/profile_base.html:221
+#: backend/templates/profile_erp.html:260
+msgid "Email manzili"
+msgstr "Email Address"
+
+#: backend/templates/profile_base.html:224
+#, fuzzy
+#| msgid "Telefon raqami"
+msgid "Telefon"
+msgstr "Phone Number"
+
+#: backend/templates/profile_base.html:230
+msgid "Manzil"
+msgstr "Address"
+
+#: backend/templates/profile_base.html:231
+#, fuzzy
+#| msgid "To'liq manzilingizni kiriting"
+msgid "To'liq manzilingiz"
+msgstr "Enter your full address"
+
+#: backend/templates/profile_base.html:235
+msgid "Saqlash"
+msgstr ""
+
+#: backend/templates/profile_base.html:243
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "So'nggi buyurtmalar"
+msgstr "Orders"
+
+#: backend/templates/profile_base.html:246
+msgid "Barchasini ko'rish →"
+msgstr ""
+
+#: backend/templates/profile_base.html:256
+msgid "Divan kreslo + Oshxona stullari"
+msgstr ""
+
+#: backend/templates/profile_base.html:284
+msgid "Shkaf-kupe + Dekorlar"
+msgstr ""
+
+#: backend/templates/profile_base.html:298
+msgid "Faol buyurtma"
+msgstr ""
+
+#: backend/templates/profile_base.html:303
+msgid "Jami xaridlar"
+msgstr ""
+
+#: backend/templates/profile_base.html:308
+#, fuzzy
+#| msgid "Sevimlilar"
+msgid "Sevimli mahsulotlar"
+msgstr "Favorites"
+
+#: backend/templates/profile_erp.html:198
+msgid "Mening profilim"
+msgstr "My Profile"
+
+#: backend/templates/profile_erp.html:199
+msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgstr "Personal Information and Settings"
+
+#: backend/templates/profile_erp.html:218
+msgid "Ma'lumotlar"
+msgstr "Information"
+
+#: backend/templates/profile_erp.html:256
+msgid "Username"
+msgstr "Username"
+
+#: backend/templates/profile_erp.html:261
+msgid "Kiritilmagan"
+msgstr "Not provided"
+
+#: backend/templates/profile_erp.html:268
+msgid "Ismingizni kiriting"
+msgstr "Enter your name"
+
+#: backend/templates/profile_erp.html:271
+msgid "Telefon raqamingiz"
+msgstr "Your Phone Number"
+
+#: backend/templates/profile_erp.html:277
+msgid "To'liq manzilingizni kiriting"
+msgstr "Enter your full address"
+
+#: backend/templates/profile_erp.html:285
+msgid "O'zgarishlarni saqlash"
+msgstr "Save Changes"
+
+#: backend/templates/wishlist_erp.html:16
+msgid "Sizga yoqqan mahsulotlar to'plami"
+msgstr "Collection of products you like"
+
+#: backend/templates/wishlist_erp.html:21
+msgid "Hali sevimlilar ro'yxati bo'sh"
+msgstr "Wishlist is empty"
+
+#: backend/templates/wishlist_erp.html:22
+msgid "O'zingizga yoqqan mahsulotlarni saqlab qo'ying."
+msgstr "Save products you like."
+
+#~ msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
+#~ msgstr "Information updated successfully!"
+
+#~ msgid "Yangilashda xatolik yuz berdi"
+#~ msgstr "Error occurred while updating"
+
+#~ msgid "Tizimda ulanish xatoligi yuz berdi"
+#~ msgstr "Connection error occurred"

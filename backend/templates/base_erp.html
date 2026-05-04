@@ -1,12 +1,15 @@
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="{{ lang|default:'uz' }}" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ description|default:'Bittada Mebel Marketplace — O\'zbekistondagi eng katta mebel va ishlab chiqarish marketplace' }}">
-    <title>{% block title %}Bittada Mebel Marketplace{% endblock %}</title>
+    {# Sahifa meta-tavsifi — i18n orqali tarjima qilinadi (description konteksti bo'lmasa default ishlatiladi) #}
+    {% trans "Bittada Mebel Marketplace — O'zbekistondagi eng katta mebel va ishlab chiqarish marketplace" as default_meta_desc %}
+    <meta name="description" content="{{ description|default:default_meta_desc }}">
+    <title>{% block title %}{% trans "Bittada Mebel Marketplace" %}{% endblock %}</title>
     
     <!-- Favicon - New Brand Green -->
     <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
@@ -227,7 +230,11 @@
 
     {% block extra_css %}{% endblock %}
     <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+        window.GOOGLE_CLIENT_ID = '{{ GOOGLE_CLIENT_ID|default:"" }}';
+        window.TELEGRAM_BOT_USERNAME = '{{ TELEGRAM_BOT_USERNAME|default:"" }}';
+        
         // Initialize Lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
@@ -252,20 +259,20 @@
                 {% block content %}{% endblock %}
             </div>
             
-            <!-- Global Footer (Cleaned) -->
+            {# Global footer (qisqa, har bir matn tarjima qilinadi) #}
             <footer style="margin-top: auto; width: 100%; padding: 24px 0; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; font-size: 13px; color: #94A3B8; font-weight: 600;">
-                <div>&copy; 2026 Bittada Marketplace. Barcha huquqlar himoyalangan.</div>
+                <div>&copy; 2026 Bittada Marketplace. {% trans "Barcha huquqlar himoyalangan." %}</div>
                 <div style="display: flex; gap: 32px; align-items: center;">
-                    <a href="{% url 'company' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Kompaniya haqida</a>
-                    <a href="{% url 'services' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Xizmatlar</a>
-                    <a href="{% url 'manufacturing' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Ishlab chiqarish</a>
+                    <a href="{% url 'company' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Kompaniya haqida" %}</a>
+                    <a href="{% url 'services' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Xizmatlar" %}</a>
+                    <a href="{% url 'manufacturing' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Ishlab chiqarish" %}</a>
                 </div>
             </footer>
         </main>
     </div>
 
-    <!-- Floating Help Button (FAB) - TZ §21 & 27 -->
-    <a href="#" class="faq-fab" title="Yordam va FAQ">
+    {# Suzib yuruvchi yordam tugmasi (FAB) — TZ §21 & 27. title atributi tarjima qilinadi (skrinlugatlar uchun) #}
+    <a href="#" class="faq-fab" title="{% trans 'Yordam va FAQ' %}">
         <i class="bi bi-question-lg"></i>
     </a>
 

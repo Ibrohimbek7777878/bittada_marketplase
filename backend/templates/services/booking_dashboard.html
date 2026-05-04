@@ -66,11 +66,11 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
             <div style="display: flex; gap: 20px; align-items: center;">
                 <div style="width: 64px; height: 64px; background: var(--primary-brand); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: var(--secondary-brand);">
-                    {{ booking.service.name|slice:":1" }}
+                    {{ booking.service.title|slice:":1" }}
                 </div>
                 <div>
-                    <h3 style="font-size: 22px; font-weight: 900; color: var(--secondary-brand); margin: 0;">{{ booking.service.name }}</h3>
-                    <p style="color: #64748B; font-weight: 600; margin: 4px 0 0;">{{ booking.service.specialty }}</p>
+                    <h3 style="font-size: 22px; font-weight: 900; color: var(--secondary-brand); margin: 0;">{{ booking.service.title }}</h3>
+                    <p style="color: #64748B; font-weight: 600; margin: 4px 0 0;">{{ booking.service.get_category_display }}</p>
                 </div>
             </div>
             <div style="text-align: right;">
@@ -81,11 +81,11 @@
 
         <!-- Status Timeline (TZ §11) -->
         <div class="status-timeline">
-            <div class="status-step active">
+            <div class="status-step {% if booking.status == 'inquiry' or booking.status == 'queue' or booking.status == 'scheduled' or booking.status == 'in_progress' or booking.status == 'completed' %}active{% endif %}">
                 <i class="bi bi-list-ul"></i>
                 <span class="status-label">Navbatda</span>
             </div>
-            <div class="status-step {% if booking.status != 'queue' %}active{% endif %}">
+            <div class="status-step {% if booking.status == 'scheduled' or booking.status == 'in_progress' or booking.status == 'completed' %}active{% endif %}">
                 <i class="bi bi-calendar-event"></i>
                 <span class="status-label">Rejalashtirilgan</span>
             </div>
@@ -99,20 +99,21 @@
             </div>
         </div>
 
-        <!-- Live Progress Feed -->
+        <!-- Live Progress Feed (TZ §11) -->
         <div style="margin-top: 80px; background: #F8FAFC; border-radius: 20px; padding: 24px;">
             <h4 style="font-size: 14px; font-weight: 800; color: var(--secondary-brand); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                 <span style="display: inline-block; width: 8px; height: 8px; background: #22C55E; border-radius: 50%; animation: pulse 2s infinite;"></span>
                 Jonli progress oqimi
             </h4>
-            
-            {% if booking.progress_feed %}
-                {% for item in booking.progress_feed %}
+
+            {% if booking.last_progress_update %}
                 <div style="padding-left: 20px; border-left: 2px solid #E2E8F0; margin-bottom: 16px;">
-                    <p style="font-size: 12px; color: #94A3B8; font-weight: 700;">{{ item.time }}</p>
-                    <p style="font-size: 14px; color: var(--secondary-brand); font-weight: 600;">{{ item.text }}</p>
+                    <p style="font-size: 12px; color: #94A3B8; font-weight: 700;">{{ booking.last_progress_update|date:"d.m.Y H:i" }}</p>
+                    <p style="font-size: 14px; color: var(--secondary-brand); font-weight: 600;">{{ booking.last_progress_text }}</p>
+                    {% if booking.last_progress_photo %}
+                        <img src="{{ booking.last_progress_photo.url }}" style="max-width: 200px; border-radius: 8px; margin-top: 8px;">
+                    {% endif %}
                 </div>
-                {% endfor %}
             {% else %}
                 <p style="font-size: 14px; color: #64748B; font-weight: 500; font-style: italic;">Hozircha yangilanishlar yo'q...</p>
             {% endif %}

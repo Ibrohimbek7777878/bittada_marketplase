@@ -1,0 +1,72 @@
+{# management/escrow_list.html — Bittada ERP, Escrow Fund #}
+{# View: apps.management.views.escrow_list_view             #}
+{# API:  /dashboard/api/v1/escrow/                          #}
+{# Status: SKELETON                                         #}
+{% extends base_template|default:"base_erp.html" %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div style="animation: erp-fade-in 300ms ease-out;"> {# Animatsiya #}
+    <div style="margin-bottom:24px;"> {# Header #}
+        <div style="font-size:12px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Bittada ERP / Moliya</div>
+        <h1 style="font-size:28px; font-weight:900; color:var(--secondary-brand); margin:8px 0 0;">🛡️ Escrow Fund</h1>
+        <p style="color:#64748B; margin:8px 0 0; font-size:14px;">Pul ushlangan buyurtmalar va xavfsiz savdo nazorati</p> {# Tavsif #}
+    </div>
+
+    {# KPI kartochkalar (4 ta) #}
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Total frozen #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Muzlatilgan summa</div>
+            <div style="font-size:24px; font-weight:900; color:var(--secondary-brand); margin-top:8px;">{{ kpis.frozen_total|floatformat:0|intcomma }} so'm</div>
+            <div style="font-size:12px; color:#64748B; margin-top:4px;">💰 Jami escrow'da</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Frozen count #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Muzlangan buyurtma</div>
+            <div style="font-size:28px; font-weight:900; color:#3B82F6; margin-top:8px;">{{ kpis.frozen_count|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Pending #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Kutilmoqda</div>
+            <div style="font-size:28px; font-weight:900; color:#F59E0B; margin-top:8px;">{{ kpis.pending_count|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Disputed #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Bahsli</div>
+            <div style="font-size:28px; font-weight:900; color:#EF4444; margin-top:8px;">{{ kpis.disputed_count|intcomma }}</div>
+        </div>
+    </div>
+
+    {# Skeleton ro'yxat #}
+    <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:24px; box-shadow:var(--erp-shadow);">
+        <div style="padding:12px 16px; background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; margin-bottom:16px; font-size:13px; color:#92400E;">
+            ℹ️ <strong>Eslatma:</strong> Escrow release/refund operatsiyalari keyingi vazifada qo'shiladi (apps.escrow.services bilan integratsiya).
+        </div>
+        <h3 style="margin:0 0 12px; font-size:16px; font-weight:800; color:var(--secondary-brand);">📋 Pul ushlangan buyurtmalar (so'nggi 25 ta)</h3>
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                <thead style="background:#F8FAFC;">
+                    <tr>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">#ID</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Mijoz / Sotuvchi</th>
+                        <th style="padding:10px 12px; text-align:right; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Escrow summa</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Holat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom:1px solid #F1F5F9;">
+                        <td style="padding:10px 12px; font-family:monospace;">#{{ order.id }}</td>
+                        <td style="padding:10px 12px;">{{ order.customer.username }} → {{ order.seller.username }}</td>
+                        <td style="padding:10px 12px; text-align:right; font-weight:800; color:#10B981;">{{ order.escrow_amount|floatformat:0|intcomma }} so'm</td>
+                        <td style="padding:10px 12px;"><span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; background:#FEF3C7; color:#92400E;">{{ order.get_status_display }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" style="padding:32px; text-align:center; color:#94A3B8;">📭 Escrow'da pul ushlangan buyurtma yo'q</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top:16px; font-size:12px; color:#94A3B8;">API: <code style="background:#F1F5F9; padding:2px 6px; border-radius:4px;">{{ api_url }}</code></div>
+    </div>
+</div>
+{% endblock %}

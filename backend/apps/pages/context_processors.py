@@ -48,3 +48,13 @@ def cms_content(request):
             'manufacturing': mfg_cats,
         },
     }
+
+
+def oauth_settings(request):
+    """Add OAuth client IDs to template context."""
+    from django.conf import settings
+    return {
+        'GOOGLE_CLIENT_ID': getattr(settings, 'GOOGLE_CLIENT_ID', ''),
+        'TELEGRAM_BOT_ID': getattr(settings, 'TELEGRAM_BOT_ID', ''),
+        'TELEGRAM_BOT_USERNAME': getattr(settings, 'TELEGRAM_BOT_USERNAME', ''),
+    }

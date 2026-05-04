@@ -1,37 +1,55 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Kirish - Bittada{% endblock %}
+{% block title %}{% trans "Kirish" %} - Bittada{% endblock %}
 
 {% block content %}
+{# Kirish (login) sahifasi — barcha matnlar i18n bilan tarjima qilinadi #}
 <section style="padding: 40px 0; min-height: calc(100vh - 200px); display: flex; align-items: center;">
   <div class="container">
     <div class="auth-card">
-      <h1 class="auth-title">Kirish</h1>
-      <p class="auth-subtitle">Hisobingizga kiring va Bittada ekotizimidan foydalaning</p>
+      <h1 class="auth-title">{% trans "Kirish" %}</h1>
+      <p class="auth-subtitle">{% trans "Hisobingizga kiring va Bittada ekotizimidan foydalaning" %}</p>
 
-      <!-- Alert message -->
+      {# Xato xabarlarini ko'rsatish uchun maxsus blok #}
       <div id="alert-error" class="alert alert-error"></div>
 
       <form id="login-form" novalidate>
         <div class="form-group">
-          <label for="email" class="form-label">Email manzil</label>
-          <input type="email" id="email" name="email" class="form-input" 
+          <label for="email" class="form-label">{% trans "Email manzil" %}</label>
+          <input type="email" id="email" name="email" class="form-input"
                  placeholder="you@example.com" required autocomplete="email" />
         </div>
 
         <div class="form-group">
-          <label for="password" class="form-label">Parol</label>
-          <input type="password" id="password" name="password" class="form-input" 
+          <label for="password" class="form-label">{% trans "Parol" %}</label>
+          <input type="password" id="password" name="password" class="form-input"
                  placeholder="••••••••" required autocomplete="current-password" />
         </div>
 
         <button type="submit" id="submit-btn" class="btn btn-primary btn-full">
-          Kirish
+          {% trans "Kirish" %}
         </button>
+
+        <div class="social-auth-divider">
+          <span>{% trans "yoki" %}</span>
+        </div>
+
+        <div class="social-auth-buttons">
+          <button type="button" id="google-login-btn" class="btn btn-social btn-google">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.26-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.91H2.18C1.47 9.53 1 11.21 1 13s.47 3.47 1.18 5.09l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.91l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            {% trans "Google bilan kirish" %}
+          </button>
+          <button type="button" id="telegram-login-btn" class="btn btn-social btn-telegram">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.85c-.15-.11-.34-.17-.54-.17-.16 0-.31.04-.45.12L7.4 11.2c-.26.1-.42.35-.42.62s.16.52.42.62l9.25 3.4c.14.05.29.07.44.07.33 0 .63-.16.83-.43.15-.21.2-.46.14-.7l-1.07-4.27 2.32-2.23c.17-.16.22-.4.12-.61z"/></svg>
+            {% trans "Telegram bilan kirish" %}
+          </button>
+        </div>
+
       </form>
 
       <p class="text-center mt-4">
-        Hisobingiz yo'qmi? <a href="{% url 'pages:register' %}">Ro'yxatdan o'tish</a>
+        {% trans "Hisobingiz yo'qmi?" %} <a href="{% url 'register' %}">{% trans "Ro'yxatdan o'tish" %}</a>
       </p>
     </div>
   </div>
@@ -51,6 +69,26 @@
   .auth-subtitle {
     color: var(--color-gray-600); margin-bottom: 32px;
   }
+  .social-auth-divider {
+    text-align: center; margin: 24px 0; position: relative;
+  }
+  .social-auth-divider span {
+    background: white; padding: 0 12px; color: var(--color-gray-500); font-size: 14px;
+  }
+  .social-auth-divider:before {
+    content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--color-border);
+  }
+  .social-auth-buttons {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .btn-social {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border-radius: 8px; font-weight: 500; transition: opacity 0.2s;
+    border: none; cursor: pointer;
+  }
+  .btn-social:hover { opacity: 0.9; }
+  .btn-google { background: #fff; color: var(--color-gray-700); border: 1px solid var(--color-border); }
+  .btn-telegram { background: #0088cc; color: white; }
 </style>
 
 {% block extra_js %}
@@ -86,12 +124,13 @@
         localStorage.setItem('refreshToken', response.refresh);
       }
 
-      // Success - redirect to home
+      // Success - redirect based on role (backend provides redirect URL)
       submitBtn.textContent = '✓ Kirildi!';
       submitBtn.style.background = 'var(--color-green-600)';
-      
+
+      const redirectUrl = response.redirect || '/';
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = redirectUrl;
       }, 1000);
       
     } catch (error) {
@@ -106,6 +145,78 @@
       submitBtn.textContent = 'Kirish';
     }
   });
+
+  // Google login handler
+  document.getElementById('google-login-btn').addEventListener('click', async () => {
+    const alertError = document.getElementById('alert-error');
+    alertError.classList.remove('show');
+    
+    try {
+      // Initialize Google Identity Services
+      if (typeof google === 'undefined' || !google.accounts) {
+        throw new Error('Google Identity Services yuklanmadi');
+      }
+      
+      google.accounts.id.initialize({
+        client_id: window.GOOGLE_CLIENT_ID || '',
+        callback: async (response) => {
+          if (response.credential) {
+            const result = await apiCall('POST', '/api/v1/auth/social-login/', {
+              provider: 'google',
+              credential: response.credential
+            });
+            if (result.access) {
+              localStorage.setItem('accessToken', result.access);
+              localStorage.setItem('refreshToken', result.refresh);
+              window.location.href = result.redirect || '/';
+            }
+          }
+        }
+      });
+      google.accounts.id.prompt();
+    } catch (error) {
+      alertError.textContent = error.message || 'Google orqali kirishda xatolik';
+      alertError.classList.add('show');
+    }
+  });
+
+  // Telegram login handler
+  document.getElementById('telegram-login-btn').addEventListener('click', () => {
+    const alertError = document.getElementById('alert-error');
+    alertError.classList.remove('show');
+    
+    // Load Telegram widget script dynamically
+    if (typeof TelegramLoginWidget === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?21';
+      script.async = true;
+      script.setAttribute('data-telegram-login', window.TELEGRAM_BOT_USERNAME || '');
+      script.setAttribute('data-size', 'medium');
+      script.setAttribute('data-radius', '8');
+      script.setAttribute('data-request-access', 'write');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      document.body.appendChild(script);
+    }
+  });
+
+  // Telegram auth callback
+  window.onTelegramAuth = async function(user) {
+    try {
+      const result = await apiCall('POST', '/api/v1/auth/social-login/', {
+        provider: 'telegram',
+        credential: JSON.stringify(user)
+      });
+      if (result.access) {
+        localStorage.setItem('accessToken', result.access);
+        localStorage.setItem('refreshToken', result.refresh);
+        window.location.href = result.redirect || '/';
+      }
+    } catch (error) {
+      const alertError = document.getElementById('alert-error');
+      alertError.textContent = error.message || 'Telegram orqali kirishda xatolik';
+      alertError.classList.add('show');
+    }
+  };
 </script>
 {% endblock %}
 {% endblock %}

@@ -1,0 +1,45 @@
+{# management/credit_list.html — Bittada ERP, Credit Economy #}
+{# View: apps.management.views.credit_list_view               #}
+{# API:  /dashboard/api/v1/credit/                            #}
+{# Status: PLACEHOLDER (apps.billing modeli to'liq amalga oshganda haqiqiy ma'lumot bo'ladi) #}
+{% extends base_template|default:"base_erp.html" %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div style="animation: erp-fade-in 300ms ease-out;">
+    <div style="margin-bottom:24px;">
+        <div style="font-size:12px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Bittada ERP / Moliya</div>
+        <h1 style="font-size:28px; font-weight:900; color:var(--secondary-brand); margin:8px 0 0;">💳 Credit Economy</h1>
+        <p style="color:#64748B; margin:8px 0 0; font-size:14px;">Bittada ichki credit aylanmasi va kredit hisoblari nazorati</p>
+    </div>
+
+    {# KPI #}
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Aylanma #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Aylanmadagi credit</div>
+            <div style="font-size:28px; font-weight:900; color:var(--secondary-brand); margin-top:8px;">₿ {{ kpis.active_credits|floatformat:0|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Status #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Tizim holati</div>
+            <div style="font-size:24px; font-weight:900; color:#10B981; margin-top:8px; text-transform:capitalize;">✅ {{ kpis.circulation_status }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);"> {# Holders #}
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Hisob egalari</div>
+            <div style="font-size:28px; font-weight:900; color:#3B82F6; margin-top:8px;">{{ kpis.active_holders|intcomma }}</div>
+        </div>
+    </div>
+
+    {# Placeholder banner #}
+    <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:48px; box-shadow:var(--erp-shadow); text-align:center;"> {# Markaziy zona #}
+        <div style="font-size:64px; margin-bottom:16px;">💳</div>
+        <h3 style="margin:0 0 8px; font-size:20px; color:var(--secondary-brand);">Credit Economy modul ishga tushirilmoqda</h3>
+        <p style="color:#64748B; max-width:520px; margin:0 auto 24px; line-height:1.5;">
+            apps.billing modeli to'liq amalga oshirilgandan keyin bu yerda kredit operatsiyalari tarixi,
+            transfer'lar, balanslar va analitika ko'rinadi. Hozirda placeholder rejimida.
+        </p>
+        <div style="font-size:12px; color:#94A3B8;">API: <code style="background:#F1F5F9; padding:2px 6px; border-radius:4px;">{{ api_url }}</code></div>
+    </div>
+</div>
+{% endblock %}

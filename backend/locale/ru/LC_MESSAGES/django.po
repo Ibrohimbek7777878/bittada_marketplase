@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bittada 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-02 13:00+0500\n"
+"POT-Creation-Date: 2026-05-04 22:10+0500\n"
 "PO-Revision-Date: 2026-05-02 13:00+0500\n"
 "Last-Translator: Bittada Team\n"
 "Language-Team: Russian\n"
@@ -14,224 +14,2618 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: templates/profile_erp.html:5
+#: apps/analytics/models.py:23 apps/analytics/models.py:201
+#: apps/products/models.py:418 apps/warehouse/models.py:109
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulot"
+msgstr "Продукты"
+
+#: apps/analytics/models.py:31 apps/analytics/models.py:80
+msgid "Ko'ruvchi"
+msgstr ""
+
+#: apps/analytics/models.py:37 apps/analytics/models.py:85
+#, fuzzy
+#| msgid "Manzil"
+msgid "IP manzil"
+msgstr "Адрес"
+
+#: apps/analytics/models.py:41
+msgid "User-Agent"
+msgstr ""
+
+#: apps/analytics/models.py:46
+msgid "Manba"
+msgstr ""
+
+#: apps/analytics/models.py:47
+msgid "organic, search, ads, referral, direct"
+msgstr ""
+
+#: apps/analytics/models.py:72 templates/includes/erp_navbar.html:238
+#: templates/includes/erp_navbar.html:930 templates/profile_base.html:5
+#: templates/profile_base.html:180 templates/profile_erp.html:5
 msgid "Profil"
 msgstr "Профиль"
 
-#: templates/profile_erp.html:140
-msgid "Mening profilim"
-msgstr "Мой профиль"
+#: apps/analytics/models.py:90
+msgid "Contact ochilganmi?"
+msgstr ""
 
-#: templates/profile_erp.html:141
-msgid "Shaxsiy ma'lumotlar va sozlamalar"
-msgstr "Личные данные и настройки"
+#: apps/analytics/models.py:112 apps/analytics/models.py:208
+#: apps/orders/models.py:45 apps/warehouse/models.py:31
+#: templates/pages/select_role.html:20 templates/register_erp.html:98
+msgid "Sotuvchi"
+msgstr ""
 
-#: templates/profile_erp.html:155 templates/profile_erp.html:209
-msgid "Mijoz"
-msgstr "Клиент"
+#: apps/analytics/models.py:115 apps/services/models.py:307
+msgid "Sana"
+msgstr ""
 
-#: templates/profile_erp.html:160
-msgid "Ma'lumotlar"
-msgstr "Данные"
+#: apps/analytics/models.py:120
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulot ko'rishlari"
+msgstr "Продукты"
 
-#: templates/profile_erp.html:163
+#: apps/analytics/models.py:124
+msgid "Unikal ko'rishlar"
+msgstr ""
+
+#: apps/analytics/models.py:128
+msgid "Savatchaga qo'shilgan"
+msgstr ""
+
+#: apps/analytics/models.py:132
+#, fuzzy
+#| msgid "Sevimlilar"
+msgid "Sevimlilarga qo'shilgan"
+msgstr "Избранное"
+
+#: apps/analytics/models.py:136
+msgid "Contact bosishlar"
+msgstr ""
+
+#: apps/analytics/models.py:141
+msgid "So'rovlar"
+msgstr ""
+
+#: apps/analytics/models.py:145 apps/orders/models.py:80
+#: templates/orders_erp.html:6 templates/profile_base.html:183
+#: templates/profile_erp.html:221
 msgid "Buyurtmalar"
 msgstr "Заказы"
 
-#: templates/profile_erp.html:166
-msgid "Sevimlilar"
-msgstr "Избранное"
+#: apps/analytics/models.py:151
+msgid "Daromad"
+msgstr ""
 
-#: templates/profile_erp.html:169
-msgid "Savat"
-msgstr "Корзина"
+#: apps/analytics/models.py:188 apps/notifications/models.py:190
+msgid "Foydalanuvchi"
+msgstr ""
 
-#: templates/profile_erp.html:175
-msgid "Chiqish"
-msgstr "Выход"
+#: apps/analytics/models.py:193
+msgid "Event turi"
+msgstr ""
 
-#: templates/profile_erp.html:189
-msgid "Shaxsiy ma'lumotlar"
-msgstr "Личные данные"
+#: apps/analytics/models.py:215
+msgid "Qiymat"
+msgstr ""
 
-#: templates/profile_erp.html:198
-msgid "Username"
-msgstr "Имя пользователя"
+#: apps/blacklist/models.py:41
+msgid "Hisobotchi"
+msgstr ""
 
-#: templates/profile_erp.html:202
-msgid "Email manzili"
+#: apps/blacklist/models.py:47
+msgid "Maqsad foydalanuvchi"
+msgstr ""
+
+#: apps/blacklist/models.py:53
+msgid "Maqsad telefoni"
+msgstr ""
+
+#: apps/blacklist/models.py:57
+msgid "Maqsad email"
+msgstr ""
+
+#: apps/blacklist/models.py:63
+msgid "Tur"
+msgstr ""
+
+#: apps/blacklist/models.py:69 apps/notifications/models.py:149
+#: apps/pages/models.py:76 apps/products/models.py:661
+#: apps/services/models.py:152 apps/warehouse/models.py:127
+msgid "Holat"
+msgstr ""
+
+#: apps/blacklist/models.py:72
+msgid "Sabab"
+msgstr ""
+
+#: apps/blacklist/models.py:77
+msgid "Dalil fayllar"
+msgstr ""
+
+#: apps/blacklist/models.py:78
+msgid "Screenshot, chat export, invoice, etc."
+msgstr ""
+
+#: apps/blacklist/models.py:89
+msgid "Ko'rib chiqqan"
+msgstr ""
+
+#: apps/blacklist/models.py:94
+msgid "Ko'rib chiqilgan vaqti"
+msgstr ""
+
+#: apps/blacklist/models.py:98
+msgid "Admin izohi"
+msgstr ""
+
+#: apps/blacklist/models.py:104
+msgid "Ovozlar (ha)"
+msgstr ""
+
+#: apps/blacklist/models.py:108
+msgid "Ovozlar (yo'q)"
+msgstr ""
+
+#: apps/blacklist/models.py:132
+msgid "Yozuv"
+msgstr ""
+
+#: apps/blacklist/models.py:138
+msgid "Ovoz bergan"
+msgstr ""
+
+#: apps/blacklist/models.py:141
+msgid "Ha ovozi?"
+msgstr ""
+
+#: apps/blacklist/models.py:145 apps/pages/models.py:290
+#: apps/warehouse/models.py:137
+msgid "Izoh"
+msgstr ""
+
+#: apps/notifications/models.py:59
+msgid "Qabul qiluvchi"
+msgstr ""
+
+#: apps/notifications/models.py:64
+msgid "Turi"
+msgstr ""
+
+#: apps/notifications/models.py:68 apps/services/models.py:40
+msgid "Sarlavha"
+msgstr ""
+
+#: apps/notifications/models.py:71
+msgid "Xabar matni"
+msgstr ""
+
+#: apps/notifications/models.py:77
+msgid "Action URL"
+msgstr ""
+
+#: apps/notifications/models.py:82
+msgid "Rasm URL"
+msgstr ""
+
+#: apps/notifications/models.py:88
+msgid "O'qilganmi?"
+msgstr ""
+
+#: apps/notifications/models.py:93
+msgid "O'qilgan vaqti"
+msgstr ""
+
+#: apps/notifications/models.py:102
+msgid "Related turi"
+msgstr ""
+
+#: apps/notifications/models.py:107
+msgid "Related ID"
+msgstr ""
+
+#: apps/notifications/models.py:132
+msgid "Notification"
+msgstr ""
+
+#: apps/notifications/models.py:137
+msgid "Kanal"
+msgstr ""
+
+#: apps/notifications/models.py:155
+msgid "Provider message ID"
+msgstr ""
+
+#: apps/notifications/models.py:159
+msgid "Xatolik xabari"
+msgstr ""
+
+#: apps/notifications/models.py:164
+msgid "Yuborilgan vaqti"
+msgstr ""
+
+#: apps/notifications/models.py:169
+msgid "Yetkazilgan vaqti"
+msgstr ""
+
+#: apps/notifications/models.py:195
+#, fuzzy
+#| msgid "Email manzili"
+msgid "Email faol?"
 msgstr "Email адрес"
 
-#: templates/profile_erp.html:203
-msgid "Kiritilmagan"
-msgstr "Не указан"
+#: apps/notifications/models.py:199
+msgid "Push faol?"
+msgstr ""
 
-#: templates/profile_erp.html:209
-msgid "Ismingiz"
-msgstr "Ваше имя"
+#: apps/notifications/models.py:203
+msgid "Telegram faol?"
+msgstr ""
 
-#: templates/profile_erp.html:210
-msgid "Ismingizni kiriting"
-msgstr "Введите ваше имя"
+#: apps/notifications/models.py:209
+msgid "Telegram chat ID"
+msgstr ""
 
-#: templates/profile_erp.html:213
-msgid "Telefon raqamingiz"
-msgstr "Ваш номер телефона"
+#: apps/notifications/models.py:215
+msgid "Turlar bo'yicha sozlamalar"
+msgstr ""
 
-#: templates/profile_erp.html:219
+#: apps/notifications/models.py:216
+msgid "{\"order_inquiry\": {\"email\": true, \"push\": true}, ...}"
+msgstr ""
+
+#: apps/notifications/models.py:222
+msgid "Jim vaqt boshlanishi"
+msgstr ""
+
+#: apps/notifications/models.py:227
+msgid "Jim vaqt tugashi"
+msgstr ""
+
+#: apps/orders/models.py:15
+msgid "So'rov (Inquiry)"
+msgstr ""
+
+#: apps/orders/models.py:16
+msgid "Taklif (Offer)"
+msgstr ""
+
+#: apps/orders/models.py:17
+msgid "Muzokara (Negotiation)"
+msgstr ""
+
+#: apps/orders/models.py:18
+msgid "To'lov kutilmoqda (Escrow Pending)"
+msgstr ""
+
+#: apps/orders/models.py:19
+msgid "To'langan (Paid)"
+msgstr ""
+
+#: apps/orders/models.py:20
+msgid "Boshlangan (Started)"
+msgstr ""
+
+#: apps/orders/models.py:21
+msgid "Ishlab chiqarilmoqda (Production)"
+msgstr ""
+
+#: apps/orders/models.py:22
+#, fuzzy
+#| msgid "Yetkazib berish manzili"
+msgid "Yetkazib berilmoqda (Shipping)"
+msgstr "Адрес доставки"
+
+#: apps/orders/models.py:23
+#, fuzzy
+#| msgid "Yetkazib berish manzili"
+msgid "Yetkazib berildi (Delivered)"
+msgstr "Адрес доставки"
+
+#: apps/orders/models.py:24
+msgid "Yakunlandi (Completed)"
+msgstr ""
+
+#: apps/orders/models.py:25
+msgid "Bekor qilindi (Canceled)"
+msgstr ""
+
+#: apps/orders/models.py:26
+msgid "Bahsli (Disputed)"
+msgstr ""
+
+#: apps/orders/models.py:39 apps/services/models.py:146
+#: templates/register_erp.html:93
+msgid "Mijoz"
+msgstr "Клиент"
+
+#: apps/orders/models.py:60
+#, fuzzy
+#| msgid "Umumiy:"
+msgid "Umumiy narx"
+msgstr "Итого:"
+
+#: apps/orders/models.py:70 templates/checkout_erp.html:31
+#: templates/profile_erp.html:279
 msgid "Yetkazib berish manzili"
 msgstr "Адрес доставки"
 
-#: templates/profile_erp.html:220
-msgid "To'liq manzilingizni kiriting"
+#: apps/orders/models.py:71
+msgid "Aloqa telefoni"
+msgstr ""
+
+#: apps/orders/models.py:74
+msgid "Izohlar"
+msgstr ""
+
+#: apps/orders/models.py:79 apps/services/models.py:253
+#: apps/warehouse/models.py:162 templates/includes/product_card.html:69
+#: templates/orders_erp.html:162 templates/orders_erp.html:206
+#: templates/orders_erp.html:237
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma"
+msgstr "Заказы"
+
+#: apps/orders/models.py:115
+#, fuzzy
+#| msgid "Buyurtma xulosasi"
+msgid "Buyurtma elementi"
+msgstr "Сводка заказа"
+
+#: apps/orders/models.py:116
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtma elementlari"
+msgstr "Заказы"
+
+#: apps/pages/models.py:39
+#, fuzzy
+#| msgid "Bosh sahifa"
+msgid "Ota sahifa"
+msgstr "Главная страница"
+
+#: apps/pages/models.py:46
+msgid "Slug / URL yo'lakchasi"
+msgstr ""
+
+#: apps/pages/models.py:51
+msgid "To'liq yo'l"
+msgstr ""
+
+#: apps/pages/models.py:52
+msgid "Masalan: /services/installation"
+msgstr ""
+
+#: apps/pages/models.py:58
+msgid "Sarlavha (UZ)"
+msgstr ""
+
+#: apps/pages/models.py:63
+msgid "Sarlavha (RU)"
+msgstr ""
+
+#: apps/pages/models.py:68
+msgid "Sarlavha (EN)"
+msgstr ""
+
+#: apps/pages/models.py:82 apps/pages/models.py:203
+msgid "Ko'rinish"
+msgstr ""
+
+#: apps/pages/models.py:87 apps/pages/models.py:208
+msgid "Ruxsat etilgan rollar"
+msgstr ""
+
+#: apps/pages/models.py:88
+msgid "[\"seller\", \"admin\"] - visibility=role_restricted uchun"
+msgstr ""
+
+#: apps/pages/models.py:93
+msgid "Nashr vaqti"
+msgstr ""
+
+#: apps/pages/models.py:106
+msgid "Shablon"
+msgstr ""
+
+#: apps/pages/models.py:111
+msgid "Header varianti"
+msgstr ""
+
+#: apps/pages/models.py:116
+msgid "Footer varianti"
+msgstr ""
+
+#: apps/pages/models.py:122
+msgid "Maxsus CSS"
+msgstr ""
+
+#: apps/pages/models.py:126
+msgid "Maxsus JS"
+msgstr ""
+
+#: apps/pages/models.py:135 apps/pages/models.py:286
+msgid "Yaratuvchi"
+msgstr ""
+
+#: apps/pages/models.py:142
+#, fuzzy
+#| msgid "Kiritilmagan"
+msgid "Oxirgi tahrirlagan"
+msgstr "Не указан"
+
+#: apps/pages/models.py:185 apps/pages/models.py:274
+msgid "Sahifa"
+msgstr ""
+
+#: apps/pages/models.py:191
+msgid "Sektsiya turi"
+msgstr ""
+
+#: apps/pages/models.py:195
+msgid "Tartib"
+msgstr ""
+
+#: apps/pages/models.py:214
+msgid "Kontent (UZ)"
+msgstr ""
+
+#: apps/pages/models.py:219
+msgid "Kontent (RU)"
+msgstr ""
+
+#: apps/pages/models.py:224
+msgid "Kontent (EN)"
+msgstr ""
+
+#: apps/pages/models.py:231
+msgid "Fon rangi"
+msgstr ""
+
+#: apps/pages/models.py:236
+msgid "Matn rangi"
+msgstr ""
+
+#: apps/pages/models.py:241
+msgid "Yuqori padding"
+msgstr ""
+
+#: apps/pages/models.py:246
+msgid "Pastgi padding"
+msgstr ""
+
+#: apps/pages/models.py:250
+msgid "To'liq kenglik?"
+msgstr ""
+
+#: apps/pages/models.py:277
+msgid "Revisiya raqami"
+msgstr ""
+
+#: apps/pages/models.py:280
+#, fuzzy
+#| msgid "Shaxsiy ma'lumotlar"
+msgid "Sahifa ma'lumotlari (snapshot)"
+msgstr "Личные данные"
+
+#: apps/pages/models.py:294
+msgid "Avto-saqlash?"
+msgstr ""
+
+#: apps/products/models.py:34
+msgid "Tayyor mahsulot"
+msgstr ""
+
+#: apps/products/models.py:35
+#, fuzzy
+#| msgid "Buyurtmani rasmiylashtirish"
+msgid "Buyurtma asosida ishlab chiqarish"
+msgstr "Оформление заказа"
+
+#: apps/products/models.py:39
+msgid "Qoralama"
+msgstr ""
+
+#: apps/products/models.py:40
+msgid "Tekshirilmoqda"
+msgstr ""
+
+#: apps/products/models.py:41 apps/seo/models.py:166 apps/seo/models.py:197
+#: apps/warehouse/models.py:75
+msgid "Faol"
+msgstr ""
+
+#: apps/products/models.py:42
+msgid "Rad etildi"
+msgstr ""
+
+#: apps/products/models.py:43
+msgid "Arxiv"
+msgstr ""
+
+#: apps/products/models.py:48
+msgid "Yangi"
+msgstr ""
+
+#: apps/products/models.py:49
+msgid "Foydalanilgan"
+msgstr ""
+
+#: apps/products/models.py:50
+msgid "Restavratsiya qilingan"
+msgstr ""
+
+#: apps/products/models.py:51
+msgid "Antikvar"
+msgstr ""
+
+#: apps/products/models.py:56
+msgid "Zamonaviy"
+msgstr ""
+
+#: apps/products/models.py:57
+msgid "Klassik"
+msgstr ""
+
+#: apps/products/models.py:58
+msgid "Skandinav"
+msgstr ""
+
+#: apps/products/models.py:59
+msgid "Loft"
+msgstr ""
+
+#: apps/products/models.py:60
+msgid "Minimalizm"
+msgstr ""
+
+#: apps/products/models.py:61
+msgid "High-tech"
+msgstr ""
+
+#: apps/products/models.py:62
+msgid "Provans"
+msgstr ""
+
+#: apps/products/models.py:63
+msgid "Eco"
+msgstr ""
+
+#: apps/products/models.py:64
+msgid "Vintage"
+msgstr ""
+
+#: apps/products/models.py:65
+msgid "Sharq uslubi"
+msgstr ""
+
+#: apps/products/models.py:66 apps/products/models.py:86
+#: apps/products/models.py:111
+msgid "Boshqa"
+msgstr ""
+
+#: apps/products/models.py:71
+msgid "Tabiiy yog'och (massiv)"
+msgstr ""
+
+#: apps/products/models.py:72
+msgid "MDF"
+msgstr ""
+
+#: apps/products/models.py:73
+msgid "LDSP (yirik hissali)"
+msgstr ""
+
+#: apps/products/models.py:74
+msgid "Fanera"
+msgstr ""
+
+#: apps/products/models.py:75
+msgid "Metall"
+msgstr ""
+
+#: apps/products/models.py:76
+msgid "Shisha"
+msgstr ""
+
+#: apps/products/models.py:77
+msgid "Plastik"
+msgstr ""
+
+#: apps/products/models.py:78
+msgid "Rattan"
+msgstr ""
+
+#: apps/products/models.py:79
+msgid "Charm (haqiqiy)"
+msgstr ""
+
+#: apps/products/models.py:80
+msgid "Eko-charm"
+msgstr ""
+
+#: apps/products/models.py:81
+msgid "Mato"
+msgstr ""
+
+#: apps/products/models.py:82
+msgid "Barxat"
+msgstr ""
+
+#: apps/products/models.py:83
+msgid "Mramor"
+msgstr ""
+
+#: apps/products/models.py:84
+msgid "Granit"
+msgstr ""
+
+#: apps/products/models.py:85
+msgid "Tosh"
+msgstr ""
+
+#: apps/products/models.py:91
+msgid "Oq"
+msgstr ""
+
+#: apps/products/models.py:92
+msgid "Qora"
+msgstr ""
+
+#: apps/products/models.py:93
+msgid "Kulrang"
+msgstr ""
+
+#: apps/products/models.py:94
+msgid "Bej"
+msgstr ""
+
+#: apps/products/models.py:95
+msgid "Jigarrang"
+msgstr ""
+
+#: apps/products/models.py:96
+msgid "Yong'oq rang"
+msgstr ""
+
+#: apps/products/models.py:97
+msgid "Eshak terisi rang"
+msgstr ""
+
+#: apps/products/models.py:98
+msgid "Gilos rang"
+msgstr ""
+
+#: apps/products/models.py:99
+msgid "Kizil-yashil"
+msgstr ""
+
+#: apps/products/models.py:100
+msgid "Qizil"
+msgstr ""
+
+#: apps/products/models.py:101
+msgid "Ko'k"
+msgstr ""
+
+#: apps/products/models.py:102
+msgid "Yashil"
+msgstr ""
+
+#: apps/products/models.py:103
+msgid "Sariq"
+msgstr ""
+
+#: apps/products/models.py:104
+msgid "To'q sariq"
+msgstr ""
+
+#: apps/products/models.py:105
+msgid "Pushti"
+msgstr ""
+
+#: apps/products/models.py:106
+msgid "Siyohrang"
+msgstr ""
+
+#: apps/products/models.py:107
+msgid "Oltin"
+msgstr ""
+
+#: apps/products/models.py:108
+msgid "Kumush"
+msgstr ""
+
+#: apps/products/models.py:109
+msgid "Ko'p rangli"
+msgstr ""
+
+#: apps/products/models.py:110
+msgid "Shaffof"
+msgstr ""
+
+#: apps/products/models.py:126
+#, fuzzy
+#| msgid "O'zbek"
+msgid "Nomi (O'zbek)"
+msgstr "O'zbek"
+
+#: apps/products/models.py:127
+msgid "Nomi (Rus)"
+msgstr ""
+
+#: apps/products/models.py:128
+#, fuzzy
+#| msgid "English"
+msgid "Nomi (English)"
+msgstr "English"
+
+#: apps/products/models.py:154
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulot turi"
+msgstr "Продукты"
+
+#: apps/products/models.py:170 apps/services/models.py:46
+msgid "Kategoriya"
+msgstr ""
+
+#: apps/products/models.py:171
+msgid "Kategoriyalar"
+msgstr ""
+
+#: apps/products/models.py:241
+msgid "Sarlavha (O'zbek)"
+msgstr ""
+
+#: apps/products/models.py:242
+msgid "Sarlavha (Rus)"
+msgstr ""
+
+#: apps/products/models.py:243
+msgid "Sarlavha (English)"
+msgstr ""
+
+#: apps/products/models.py:246
+msgid "Tavsif (O'zbek)"
+msgstr ""
+
+#: apps/products/models.py:247
+msgid "Tavsif (Rus)"
+msgstr ""
+
+#: apps/products/models.py:248
+#, fuzzy
+#| msgid "English"
+msgid "Tavsif (English)"
+msgstr "English"
+
+#: apps/products/models.py:262
+msgid "Asosiy material"
+msgstr ""
+
+#: apps/products/models.py:266
+msgid "Eni (sm)"
+msgstr ""
+
+#: apps/products/models.py:267
+msgid "Balandligi (sm)"
+msgstr ""
+
+#: apps/products/models.py:268
+msgid "Chuqurligi (sm)"
+msgstr ""
+
+#: apps/products/models.py:269
+msgid "Uzunligi (sm)"
+msgstr ""
+
+#: apps/products/models.py:277
+msgid "Og'irligi (kg)"
+msgstr ""
+
+#: apps/products/models.py:290
+msgid "Asosiy rang"
+msgstr ""
+
+#: apps/products/models.py:298 templates/shop.html:79
+msgid "Uslub"
+msgstr ""
+
+#: apps/products/models.py:306
+msgid "Holati"
+msgstr ""
+
+#: apps/products/models.py:310
+msgid "Tashqi mebel"
+msgstr ""
+
+#: apps/products/models.py:313
+msgid "Yig'ilishi kerak"
+msgstr ""
+
+#: apps/products/models.py:321
+msgid "Joriy narx"
+msgstr ""
+
+#: apps/products/models.py:329
+msgid "Eski narx"
+msgstr ""
+
+#: apps/products/models.py:338 apps/warehouse/models.py:168
+#: templates/home_erp.html:155
+msgid "Zaxira"
+msgstr ""
+
+#: apps/products/models.py:346
+msgid "Minimal buyurtma (MOQ)"
+msgstr ""
+
+#: apps/products/models.py:353
+msgid "Maksimal buyurtma"
+msgstr ""
+
+#: apps/products/models.py:363
+msgid "Minimal narx"
+msgstr ""
+
+#: apps/products/models.py:370
+msgid "Maksimal narx"
+msgstr ""
+
+#: apps/products/models.py:377
+msgid "Ishlab chiqarish vaqti (kun)"
+msgstr ""
+
+#: apps/products/models.py:385
+msgid "3D Model (GLB)"
+msgstr ""
+
+#: apps/products/models.py:419 templates/cart_erp.html:43
+#: templates/includes/erp_sidebar.html:53
+msgid "Mahsulotlar"
+msgstr "Продукты"
+
+#: apps/products/models.py:532
+msgid "Variant nomi"
+msgstr ""
+
+#: apps/products/models.py:581
+msgid "Yuklab olinadigan"
+msgstr ""
+
+#: apps/products/models.py:582
+msgid "Ishlab chiqarish fayllari"
+msgstr ""
+
+#: apps/products/models.py:583
+msgid "Chizmalar/Blueprint"
+msgstr ""
+
+#: apps/products/models.py:586
+msgid "Ochiq"
+msgstr ""
+
+#: apps/products/models.py:587
+msgid "So'rov orqali"
+msgstr ""
+
+#: apps/products/models.py:588
+msgid "To'lovli"
+msgstr ""
+
+#: apps/products/models.py:642
+msgid "Fayl"
+msgstr ""
+
+#: apps/products/models.py:648
+msgid "So'rovchi"
+msgstr ""
+
+#: apps/products/models.py:654
+msgid "So'rov matni"
+msgstr ""
+
+#: apps/products/models.py:655
+msgid "Nima uchun bu fayl kerakligi"
+msgstr ""
+
+#: apps/products/models.py:674
+msgid "Egasi qarori"
+msgstr ""
+
+#: apps/products/models.py:678
+msgid "Egasi izohi"
+msgstr ""
+
+#: apps/products/models.py:685
+msgid "So'ralgan narx"
+msgstr ""
+
+#: apps/products/models.py:694
+msgid "To'langan summa"
+msgstr ""
+
+#: apps/products/models.py:699
+msgid "To'lov vaqti"
+msgstr ""
+
+#: apps/products/models.py:706
+msgid "Ruxsat berilgan vaqti"
+msgstr ""
+
+#: apps/products/models.py:711
+msgid "Muddati tugash vaqti"
+msgstr ""
+
+#: apps/products/models.py:715
+msgid "Yuklab olishlar soni"
+msgstr ""
+
+#: apps/products/models.py:722
+msgid "So'rovchi IP"
+msgstr ""
+
+#: apps/products/models.py:727
+msgid "So'rovchi joylashuvi"
+msgstr ""
+
+#: apps/seo/models.py:24
+msgid "Content turi"
+msgstr ""
+
+#: apps/seo/models.py:28
+msgid "Object ID"
+msgstr ""
+
+#: apps/seo/models.py:36
+msgid "Meta title"
+msgstr ""
+
+#: apps/seo/models.py:40
+msgid "Meta description"
+msgstr ""
+
+#: apps/seo/models.py:45
+msgid "Meta keywords"
+msgstr ""
+
+#: apps/seo/models.py:52
+msgid "OG title"
+msgstr ""
+
+#: apps/seo/models.py:56
+msgid "OG description"
+msgstr ""
+
+#: apps/seo/models.py:62
+msgid "OG image"
+msgstr ""
+
+#: apps/seo/models.py:67
+msgid "OG type"
+msgstr ""
+
+#: apps/seo/models.py:74
+msgid "Twitter card type"
+msgstr ""
+
+#: apps/seo/models.py:79
+msgid "Twitter title"
+msgstr ""
+
+#: apps/seo/models.py:83
+msgid "Twitter description"
+msgstr ""
+
+#: apps/seo/models.py:89
+msgid "Twitter image"
+msgstr ""
+
+#: apps/seo/models.py:95
+msgid "Canonical URL"
+msgstr ""
+
+#: apps/seo/models.py:99
+msgid "Noindex?"
+msgstr ""
+
+#: apps/seo/models.py:103
+msgid "Nofollow?"
+msgstr ""
+
+#: apps/seo/models.py:110
+msgid "Schema.org type"
+msgstr ""
+
+#: apps/seo/models.py:111
+msgid "Product, Service, Organization, BreadcrumbList, etc."
+msgstr ""
+
+#: apps/seo/models.py:116
+msgid "JSON-LD data"
+msgstr ""
+
+#: apps/seo/models.py:138
+msgid "URL"
+msgstr ""
+
+#: apps/seo/models.py:152
+msgid "Changefreq"
+msgstr ""
+
+#: apps/seo/models.py:158
+msgid "Priority"
+msgstr ""
+
+#: apps/seo/models.py:162
+msgid "Lastmod"
+msgstr ""
+
+#: apps/seo/models.py:185
+msgid "Eski yo'l"
+msgstr ""
+
+#: apps/seo/models.py:189
+msgid "Yangi yo'l"
+msgstr ""
+
+#: apps/seo/models.py:193
+msgid "Doimiy redirect? (301)"
+msgstr ""
+
+#: apps/seo/models.py:201
+msgid "Murojaatlar soni"
+msgstr ""
+
+#: apps/services/models.py:33 apps/services/models.py:259
+#: apps/services/models.py:304
+msgid "Mutaxassis"
+msgstr ""
+
+#: apps/services/models.py:49
+msgid "Tavsif"
+msgstr ""
+
+#: apps/services/models.py:64
+msgid "Narx turi"
+msgstr ""
+
+#: apps/services/models.py:69
+msgid "Boshlang'ich narx"
+msgstr ""
+
+#: apps/services/models.py:75
+msgid "Yangi buyurtma qabul qilyapti?"
+msgstr ""
+
+#: apps/services/models.py:79
+msgid "Hozirda ishlamoqda?"
+msgstr ""
+
+#: apps/services/models.py:84
+msgid "Hozirgi joylashuv"
+msgstr ""
+
+#: apps/services/models.py:92 templates/includes/home_masters.html:22
+#: templates/includes/home_masters.html:47
+#: templates/includes/home_masters.html:72
+msgid "Reyting"
+msgstr ""
+
+#: apps/services/models.py:96
+msgid "Sharhlar soni"
+msgstr ""
+
+#: apps/services/models.py:100
+msgid "Yakunlangan loyihalar"
+msgstr ""
+
+#: apps/services/models.py:107
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Ish soatlari"
+msgstr "Продукты"
+
+#: apps/services/models.py:108
+msgid "{\"mon\": {\"open\": \"09:00\", \"close\": \"18:00\"}, ...}"
+msgstr ""
+
+#: apps/services/models.py:140
+msgid "Xizmat"
+msgstr ""
+
+#: apps/services/models.py:159
+msgid "Rejalashtirilgan sana"
+msgstr ""
+
+#: apps/services/models.py:164
+msgid "Boshlanish vaqti"
+msgstr ""
+
+#: apps/services/models.py:169
+msgid "Tugash vaqti"
+msgstr ""
+
+#: apps/services/models.py:174
+msgid "Ish tavsifi"
+msgstr ""
+
+#: apps/services/models.py:179 apps/warehouse/models.py:44
+#: templates/profile_base.html:230
+msgid "Manzil"
+msgstr "Адрес"
+
+#: apps/services/models.py:188
+msgid "Kelishilgan narx"
+msgstr ""
+
+#: apps/services/models.py:198
+msgid "Escrow"
+msgstr ""
+
+#: apps/services/models.py:206
+msgid "Oxirgi progress yangilanishi"
+msgstr ""
+
+#: apps/services/models.py:210
+msgid "Oxirgi progress matni"
+msgstr ""
+
+#: apps/services/models.py:216
+msgid "Oxirgi progress rasmi"
+msgstr ""
+
+#: apps/services/models.py:223
+msgid "Yakunlangan vaqti"
+msgstr ""
+
+#: apps/services/models.py:228
+msgid "Mijoz bahosi"
+msgstr ""
+
+#: apps/services/models.py:232
+msgid "Mijoz sharhi"
+msgstr ""
+
+#: apps/services/models.py:263
+msgid "Yangilanish matni"
+msgstr ""
+
+#: apps/services/models.py:269
+msgid "Rasm"
+msgstr ""
+
+#: apps/services/models.py:274
+msgid "Joylashuv"
+msgstr ""
+
+#: apps/services/models.py:283
+msgid "Yangi status (agar o'zgargan bo'lsa)"
+msgstr ""
+
+#: apps/services/models.py:310
+msgid "Boshlanish"
+msgstr ""
+
+#: apps/services/models.py:313
+msgid "Tugash"
+msgstr ""
+
+#: apps/services/models.py:317
+msgid "Bandmi?"
+msgstr ""
+
+#: apps/services/models.py:321
+msgid "Bloklangan?"
+msgstr ""
+
+#: apps/warehouse/models.py:35
+msgid "Ombor nomi"
+msgstr ""
+
+#: apps/warehouse/models.py:41
+msgid "Ombor turi"
+msgstr ""
+
+#: apps/warehouse/models.py:45
+#, fuzzy
+#| msgid "To'liq manzilingizni kiriting"
+msgid "To'liq manzil"
 msgstr "Введите полный адрес"
 
-#: templates/profile_erp.html:225
-msgid "O'zgarishlarni saqlash"
-msgstr "Сохранить изменения"
+#: apps/warehouse/models.py:53
+msgid "Kenglik"
+msgstr ""
 
-#: templates/profile_erp.html:259
-msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
-msgstr "Данные успешно обновлены!"
+#: apps/warehouse/models.py:60
+msgid "Uzunlik"
+msgstr ""
 
-#: templates/profile_erp.html:262
-msgid "Yangilashda xatolik yuz berdi"
-msgstr "Произошла ошибка при обновлении"
+#: apps/warehouse/models.py:66
+msgid "Tashqi ERP ID"
+msgstr ""
 
-#: templates/profile_erp.html:265
-msgid "Tizimda ulanish xatoligi yuz berdi"
-msgstr "Произошла ошибка соединения с системой"
+#: apps/warehouse/models.py:71
+msgid "Oxirgi sinxronlash vaqti"
+msgstr ""
 
-#: templates/home_erp.html:6
-msgid "Bosh sahifa"
-msgstr "Главная страница"
+#: apps/warehouse/models.py:103
+msgid "Ombor"
+msgstr ""
+
+#: apps/warehouse/models.py:117
+msgid "Variant"
+msgstr ""
+
+#: apps/warehouse/models.py:121 apps/warehouse/models.py:171
+msgid "Miqdori"
+msgstr ""
+
+#: apps/warehouse/models.py:132
+msgid "Zaxiraga olingan"
+msgstr ""
+
+#: apps/warehouse/models.py:175
+msgid "Qaytarilganmi?"
+msgstr ""
+
+#: apps/warehouse/models.py:180
+msgid "Qaytarilgan vaqti"
+msgstr ""
+
+#: templates/base.html:311 templates/includes/erp_sidebar.html:90
+#: templates/profile_base.html:195 templates/profile_erp.html:233
+msgid "Chiqish"
+msgstr "Выход"
+
+#: templates/base.html:314 templates/customer_register.html:156
+#: templates/includes/erp_navbar.html:241
+#: templates/includes/erp_navbar.html:934 templates/login_erp.html:5
+#: templates/pages/login.html:4 templates/pages/login.html:11
+#: templates/pages/login.html:31 templates/pages/register.html:54
+#: templates/register_erp.html:229
+msgid "Kirish"
+msgstr ""
+
+#: templates/base.html:315 templates/customer_register.html:4
+#: templates/customer_register.html:104 templates/customer_register.html:151
+#: templates/pages/login.html:52 templates/pages/register.html:4
+#: templates/pages/register.html:10 templates/register_erp.html:5
+msgid "Ro'yxatdan o'tish"
+msgstr ""
+
+#: templates/base_erp.html:10
+msgid ""
+"Bittada Mebel Marketplace — O'zbekistondagi eng katta mebel va ishlab "
+"chiqarish marketplace"
+msgstr ""
+
+#: templates/base_erp.html:12 templates/home_erp.html:6
+msgid "Bittada Mebel Marketplace"
+msgstr ""
+
+#: templates/base_erp.html:264 templates/includes/erp_footer.html:137
+msgid "Barcha huquqlar himoyalangan."
+msgstr ""
+
+#: templates/base_erp.html:266
+msgid "Kompaniya haqida"
+msgstr ""
+
+#: templates/base_erp.html:267 templates/includes/erp_navbar.html:149
+#: templates/includes/erp_navbar.html:895
+#: templates/includes/erp_sidebar.html:54
+msgid "Xizmatlar"
+msgstr ""
+
+#: templates/base_erp.html:268 templates/includes/erp_navbar.html:67
+#: templates/includes/erp_navbar.html:150
+#: templates/includes/erp_navbar.html:896 templates/pages/home.html:31
+msgid "Ishlab chiqarish"
+msgstr ""
+
+#: templates/base_erp.html:275
+msgid "Yordam va FAQ"
+msgstr ""
+
+#: templates/cart_erp.html:6 templates/profile_base.html:186
+#: templates/profile_erp.html:227
+msgid "Savat"
+msgstr "Корзина"
+
+#: templates/cart_erp.html:12 templates/checkout_erp.html:11
+#: templates/orders_erp.html:124 templates/profile_base.html:161
+#: templates/profile_erp.html:142 templates/wishlist_erp.html:11
+msgid "Ortga"
+msgstr "Назад"
+
+#: templates/cart_erp.html:16
+msgid "Sizning savatingiz"
+msgstr "Ваша корзина"
+
+#: templates/cart_erp.html:17
+msgid "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
+msgstr "Ознакомьтесь с выбранными товарами и оформите заказ"
+
+#: templates/cart_erp.html:25
+msgid "Savatingiz bo'sh"
+msgstr "Ваша корзина пуста"
+
+#: templates/cart_erp.html:26
+msgid "Hali hech qanday mahsulot qo'shmadingiz."
+msgstr "Вы еще не добавили ни одного продукта."
+
+#: templates/cart_erp.html:27 templates/wishlist_erp.html:23
+msgid "Bosh sahifaga qaytish"
+msgstr "Вернуться на главную"
+
+#: templates/cart_erp.html:32 templates/wishlist_erp.html:28
+msgid "Yuklanmoqda..."
+msgstr "Загрузка..."
+
+#: templates/cart_erp.html:40
+msgid "Buyurtma xulosasi"
+msgstr "Сводка заказа"
+
+#: templates/cart_erp.html:48
+msgid "Yetkazib berish:"
+msgstr "Доставка:"
+
+#: templates/cart_erp.html:49
+msgid "Bepul"
+msgstr "Бесплатно"
+
+#: templates/cart_erp.html:53
+msgid "Jami:"
+msgstr "Итого:"
+
+#: templates/cart_erp.html:58
+msgid "Rasmiylashtirish"
+msgstr "Оформить заказ"
+
+#: templates/cart_erp.html:62
+msgid "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
+msgstr "Подтверждая заказ, вы соглашаетесь с публичным предложением."
+
+#: templates/checkout_erp.html:5 templates/checkout_erp.html:15
+msgid "Buyurtmani rasmiylashtirish"
+msgstr "Оформление заказа"
+
+#: templates/checkout_erp.html:20
+msgid "Yetkazib berish ma'lumotlari"
+msgstr "Данные доставки"
+
+#: templates/checkout_erp.html:23 templates/register_erp.html:153
+msgid "Ism va familiya"
+msgstr "Имя и фамилия"
+
+#: templates/checkout_erp.html:27 templates/customer_register.html:124
+#: templates/profile_base.html:225
+msgid "Telefon raqami"
+msgstr "Номер телефона"
+
+#: templates/checkout_erp.html:34
+msgid "Buyurtmani tasdiqlash"
+msgstr "Подтвердить заказ"
+
+#: templates/checkout_erp.html:40
+msgid "Sizning buyurtmangiz"
+msgstr "Ваш заказ"
+
+#: templates/checkout_erp.html:53
+msgid "Umumiy:"
+msgstr "Итого:"
+
+#: templates/customer_profile.html:4 templates/customer_profile.html:98
+#: templates/profile_erp.html:198
+msgid "Mening profilim"
+msgstr "Мой профиль"
+
+#: templates/customer_profile.html:99
+#, fuzzy
+#| msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgid "Shaxsiy ma'lumotlar va buyurtmalar"
+msgstr "Личные данные и настройки"
+
+#: templates/customer_profile.html:107 templates/orders_erp.html:139
+#: templates/profile_base.html:207 templates/profile_erp.html:247
+msgid "Shaxsiy ma'lumotlar"
+msgstr "Личные данные"
+
+#: templates/customer_profile.html:110 templates/customer_register.html:115
+#: templates/profile_base.html:212
+msgid "Ism"
+msgstr ""
+
+#: templates/customer_profile.html:114 templates/profile_base.html:224
+#: templates/register_erp.html:165
+#, fuzzy
+#| msgid "Telefon raqami"
+msgid "Telefon"
+msgstr "Номер телефона"
+
+#: templates/customer_profile.html:123 templates/includes/erp_navbar.html:120
+#: templates/includes/erp_navbar.html:897
+#, fuzzy
+#| msgid "Sizning buyurtmangiz"
+msgid "Mening buyurtmalarim"
+msgstr "Ваш заказ"
+
+#: templates/customer_profile.html:126
+msgid "Hozircha buyurtmalar mavjud emas"
+msgstr ""
+
+#: templates/customer_profile.html:128
+msgid "Barcha buyurtmalarni ko'rish"
+msgstr ""
+
+#: templates/customer_profile.html:136
+msgid "Profilni tahrirlash"
+msgstr ""
+
+#: templates/customer_register.html:105
+msgid "Mijoz akkauntini yarating"
+msgstr ""
+
+#: templates/customer_register.html:134 templates/login_erp.html:129
+#: templates/pages/login.html:25 templates/pages/register.html:41
+#: templates/register_erp.html:173
+msgid "Parol"
+msgstr ""
+
+#: templates/customer_register.html:143 templates/register_erp.html:179
+#, fuzzy
+#| msgid "Buyurtmani tasdiqlash"
+msgid "Parolni tasdiqlang"
+msgstr "Подтвердить заказ"
+
+#: templates/customer_register.html:156 templates/register_erp.html:229
+msgid "Akkauntingiz bormi?"
+msgstr ""
+
+#: templates/home.html:5
+msgid "Bittada - Mebel Marketplace"
+msgstr ""
+
+#: templates/home.html:11 templates/shop.html:14
+msgid "Mebel marketplace"
+msgstr ""
+
+#: templates/home.html:12
+msgid ""
+"Uylar uchun sifatli mebel, eshik va oynalar. Ishlab chiqaruvchidan "
+"to'g'ridan-to'g'ri xarid qiling."
+msgstr ""
+
+#: templates/home.html:32 templates/shop.html:127
+#, python-format
+msgid "%(counter)s ta mahsulot"
+msgid_plural "%(counter)s ta mahsulot"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: templates/home.html:38
+msgid "Mebel"
+msgstr ""
+
+#: templates/home.html:39 templates/home.html:44 templates/home.html:49
+msgid "0 ta mahsulot"
+msgstr ""
+
+#: templates/home.html:43
+msgid "Eshiklar"
+msgstr ""
+
+#: templates/home.html:48
+msgid "Oynalar"
+msgstr ""
+
+#: templates/home.html:60
+msgid "Tavsiya etilgan"
+msgstr ""
+
+#: templates/home.html:74
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Yangi mahsulotlar"
+msgstr "Продукты"
+
+#: templates/home.html:81
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Barcha mahsulotlar"
+msgstr "Продукты"
+
+#: templates/home.html:90 templates/pages/home.html:24
+msgid "Nima uchun Bittada?"
+msgstr ""
+
+#: templates/home.html:94
+msgid "Ishlab chiqaruvchidan to'g'ridan-to'g'ri"
+msgstr ""
+
+#: templates/home.html:95
+msgid "Ortacha sotuvchisiz, narxlar qimmat emas"
+msgstr ""
+
+#: templates/home.html:99
+msgid "Tekshirilgan sotuvchilar"
+msgstr ""
+
+#: templates/home.html:100
+msgid "Barcha ishlab chiqaruvchilar tekshiruvdan o'tgan"
+msgstr ""
+
+#: templates/home.html:104
+#, fuzzy
+#| msgid "Yetkazib berish:"
+msgid "Yetkazib berish"
+msgstr "Доставка:"
+
+#: templates/home.html:105
+msgid "O'zbekiston bo'ylab yetkazib berish xizmati"
+msgstr ""
+
+#: templates/home.html:109
+msgid "Xavfsiz to'lov"
+msgstr ""
+
+#: templates/home.html:110
+msgid "Buyurtma tugaguncha pul saqlanadi"
+msgstr ""
 
 #: templates/home_erp.html:6
 msgid "Professional ERP Tizimi"
 msgstr "Профессиональная ERP система"
 
-#: templates/checkout_erp.html:6
-msgid "Buyurtmani rasmiylashtirish"
-msgstr "Оформление заказа"
+#: templates/home_erp.html:75
+msgid "Bittada Mebel Ecosystem"
+msgstr ""
 
-#: templates/checkout_erp.html:12
-msgid "Yetkazib berish ma'lumotlari"
-msgstr "Данные доставки"
+#: templates/home_erp.html:78
+msgid "Mebellar va"
+msgstr ""
 
-#: templates/checkout_erp.html:18
-msgid "Ism va familiya"
-msgstr "Имя и фамилия"
+#: templates/home_erp.html:78
+msgid "usta dizaynerlar"
+msgstr ""
 
-#: templates/checkout_erp.html:22
-msgid "Telefon raqami"
-msgstr "Номер телефона"
+#: templates/home_erp.html:78
+msgid "bir joyda"
+msgstr ""
 
-#: templates/checkout_erp.html:26
-msgid "Manzil"
-msgstr "Адрес"
+#: templates/home_erp.html:82
+msgid ""
+"O'zbekistondagi eng yirik platforma. 1000+ ishlab chiqaruvchi va tayyor "
+"mebellar katalogi. B2B va B2C uchun yagona yechim."
+msgstr ""
 
-#: templates/checkout_erp.html:32
-msgid "Buyurtmani tasdiqlash"
-msgstr "Подтвердить заказ"
+#: templates/home_erp.html:86
+msgid "Xizmatlarni ko'rish"
+msgstr ""
 
-#: templates/checkout_erp.html:42
-msgid "Sizning buyurtmangiz"
-msgstr "Ваш заказ"
+#: templates/home_erp.html:87
+msgid "Ustalar izlash"
+msgstr ""
 
-#: templates/checkout_erp.html:56
-msgid "Umumiy:"
-msgstr "Итого:"
+#: templates/home_erp.html:93
+msgid "Nimani qidiryapsiz?..."
+msgstr ""
 
-#: templates/includes/erp_navbar.html
-msgid "O'zbek"
-msgstr "O'zbek"
+#: templates/home_erp.html:94
+msgid "Qidirish"
+msgstr ""
 
-#: templates/includes/erp_navbar.html
-msgid "Русский"
-msgstr "Русский"
+#: templates/home_erp.html:112
+msgid "Mashhur kategoriyalar"
+msgstr ""
 
-#: templates/includes/erp_navbar.html
-msgid "English"
-msgstr "English"
+#: templates/home_erp.html:113 templates/includes/home_masters.html:6
+msgid "Barchasini ko'rish"
+msgstr ""
 
-#: templates/profile_erp.html
-msgid "Ortga"
-msgstr "Назад"
-
-#: templates/cart_erp.html
-msgid "Savat"
-msgstr "Корзина"
-
-#: templates/cart_erp.html
-msgid "Sizning savatingiz"
-msgstr "Ваша корзина"
-
-#: templates/cart_erp.html
-msgid "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
-msgstr "Просмотрите выбранные товары и оформите заказ"
-
-#: templates/cart_erp.html
-msgid "Savatingiz bo'sh"
-msgstr "Ваша корзина пуста"
-
-#: templates/cart_erp.html
-msgid "Hali hech qanday mahsulot qo'shmadingiz."
-msgstr "Вы еще не добавили ни одного продукта."
-
-#: templates/cart_erp.html
-msgid "Bosh sahifaga qaytish"
-msgstr "Вернуться на главную"
-
-#: templates/cart_erp.html
-msgid "Yuklanmoqda..."
-msgstr "Загрузка..."
-
-#: templates/cart_erp.html
-msgid "Buyurtma xulosasi"
-msgstr "Сводка заказа"
-
-#: templates/cart_erp.html
-msgid "Mahsulotlar"
+#: templates/home_erp.html:123
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "mahsulot"
 msgstr "Продукты"
 
-#: templates/cart_erp.html
-msgid "Yetkazib berish:"
+#: templates/home_erp.html:130
+msgid "Tayyor Mebellar (Retail)"
+msgstr ""
+
+#: templates/home_erp.html:134
+msgid "Barchasi"
+msgstr ""
+
+#: templates/home_erp.html:151
+msgid "Narxi"
+msgstr ""
+
+#: templates/home_erp.html:152 templates/includes/product_card.html:59
+#: templates/includes/product_card.html:61
+#: templates/includes/product_card.html:65 templates/orders_erp.html:175
+#: templates/orders_erp.html:178 templates/orders_erp.html:188
+#: templates/orders_erp.html:191 templates/orders_erp.html:197
+#: templates/orders_erp.html:219 templates/orders_erp.html:222
+#: templates/orders_erp.html:228 templates/orders_erp.html:250
+#: templates/orders_erp.html:253 templates/orders_erp.html:263
+#: templates/orders_erp.html:266 templates/orders_erp.html:276
+#: templates/orders_erp.html:279 templates/orders_erp.html:285
+#: templates/profile_base.html:257 templates/profile_base.html:271
+#: templates/profile_base.html:285
+msgid "so'm"
+msgstr ""
+
+#: templates/home_erp.html:156 templates/orders_erp.html:175
+#: templates/orders_erp.html:188 templates/orders_erp.html:219
+#: templates/orders_erp.html:250 templates/orders_erp.html:263
+#: templates/orders_erp.html:276
+msgid "dona"
+msgstr ""
+
+#: templates/home_erp.html:159
+#, fuzzy
+#| msgid "Savatingiz bo'sh"
+msgid "Savatga qo'shish"
+msgstr "Ваша корзина пуста"
+
+#: templates/includes/erp_footer.html:16
+msgid "Aloqa markazi"
+msgstr ""
+
+#: templates/includes/erp_footer.html:21
+msgid "Elektron pochta"
+msgstr ""
+
+#: templates/includes/erp_footer.html:26
+msgid "Asosiy ofis manzili"
+msgstr ""
+
+#: templates/includes/erp_footer.html:27
+msgid "Sirdaryo viloyati, Guliston tumani"
+msgstr ""
+
+#: templates/includes/erp_footer.html:34
+msgid "Yangiliklarga obuna bo'ling"
+msgstr ""
+
+#: templates/includes/erp_footer.html:36
+msgid "Obuna boldingiz! Rahmat."
+msgstr ""
+
+#: templates/includes/erp_footer.html:37
+#, fuzzy
+#| msgid "Email manzili"
+msgid "Email manzil..."
+msgstr "Email адрес"
+
+#: templates/includes/erp_footer.html:38
+msgid "Yuborish"
+msgstr ""
+
+#: templates/includes/erp_footer.html:53
+msgid ""
+"O'zbekistondagi eng yirik mebel bozori va mutaxassislar portali. Biz bilan "
+"xavfsiz, tez va ishonchli savdo qiling."
+msgstr ""
+
+#: templates/includes/erp_footer.html:84
+msgid "Xaridorlarga"
+msgstr ""
+
+#: templates/includes/erp_footer.html:86
+msgid "Katalog va Bo'limlar"
+msgstr ""
+
+#: templates/includes/erp_footer.html:87
+msgid "3D Showroomlar"
+msgstr ""
+
+#: templates/includes/erp_footer.html:88
+#, fuzzy
+#| msgid "Yetkazib berish manzili"
+msgid "Yetkazib berish xizmati"
+msgstr "Адрес доставки"
+
+#: templates/includes/erp_footer.html:94
+msgid "Sotuvchilarga"
+msgstr ""
+
+#: templates/includes/erp_footer.html:96
+msgid "Sotuvchi bo'lib ro'yxatdan o'tish"
+msgstr ""
+
+#: templates/includes/erp_footer.html:97
+msgid "Ustalar va mutaxassislar portali"
+msgstr ""
+
+#: templates/includes/erp_footer.html:98
+msgid "Premium Tariflar"
+msgstr ""
+
+#: templates/includes/erp_footer.html:99
+msgid "Platformada reklama berish"
+msgstr ""
+
+#: templates/includes/erp_footer.html:105
+#: templates/includes/erp_navbar.html:109
+msgid "Platforma"
+msgstr ""
+
+#: templates/includes/erp_footer.html:107
+#: templates/includes/erp_navbar.html:116
+msgid "Biz haqimizda"
+msgstr ""
+
+#: templates/includes/erp_footer.html:108
+msgid "Maxfiylik siyosati"
+msgstr ""
+
+#: templates/includes/erp_footer.html:109
+msgid "Foydalanish shartlari"
+msgstr ""
+
+#: templates/includes/erp_footer.html:110
+msgid "Ko'p beriladigan savollar"
+msgstr ""
+
+#: templates/includes/erp_footer.html:128
+msgid "Bosilganda yaqinlashadi"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:18
+msgid "Katalog"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:39
+msgid "Mebellar"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:56
+msgid "Yotoqxona"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:57
+msgid "Mehmonxona"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:58
+msgid "Oshxona"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:59
+msgid "Ofis"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:60
+msgid "Bolalar mebellari"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:61
+msgid "Yumshoq mebellar"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:84
+msgid "Xom-ashyo (DSP/MDF)"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:85
+msgid "Furnitura"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:86
+msgid "Fasadlar"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:87
+msgid "Ulgurji savdo"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:88
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Maxsus buyurtmalar"
+msgstr "Заказы"
+
+#: templates/includes/erp_navbar.html:97
+msgid "Xonalar bo'yicha"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:100
+msgid "Yotoqxona to'plamlari"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:101
+msgid "Mehmonxona interyeri"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:102
+msgid "Oshxona modullari"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:103
+msgid "Bolalar xonasi"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:104
+msgid "Ofis mebellari"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:117
+#: templates/includes/erp_navbar.html:148
+#: templates/includes/erp_navbar.html:894
+msgid "Showroom (3D)"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:118
+msgid "Hamkorlik shartlari"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:122
+msgid "Tez kunda"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:122
+msgid "Blog"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:122
+msgid "tez kunda"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:128
+msgid "Bittada Premium Showroom"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:129
+msgid "Mahsulotlarni 3D ko'rinishida o'z uyingizga joylashtirib ko'ring."
+msgstr ""
+
+#: templates/includes/erp_navbar.html:130 templates/pages/home.html:14
+#, fuzzy
+#| msgid "Bosh sahifa"
+msgid "Boshlash"
+msgstr "Главная страница"
+
+#: templates/includes/erp_navbar.html:147
+#: templates/includes/erp_navbar.html:893
+msgid "Bosh sahifa"
+msgstr "Главная страница"
+
+#: templates/includes/erp_navbar.html:170
+msgid "Mahsulotlar, sotuvchilar, hashtaglar..."
+msgstr ""
+
+#: templates/includes/erp_navbar.html:180
+msgid "Bildirishnomalar"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:183 templates/orders_erp.html:145
+#, fuzzy
+#| msgid "Savat"
+msgid "Savatcha"
+msgstr "Корзина"
+
+#: templates/includes/erp_navbar.html:234
+msgid "Command Center"
+msgstr ""
+
+#: templates/includes/erp_navbar.html:245
+msgid "Menyu"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:10
+msgid "Enterprise Resource Planning"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:22
+msgid "Super Admin"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:27
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Yangi buyurtmalar"
+msgstr "Заказы"
+
+#: templates/includes/erp_sidebar.html:43
+msgid "Core"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:45
+msgid "Dashboard"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:48
+msgid "Savdo"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:52 templates/pages/home.html:27
+msgid "Marketplace"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:57
+msgid "Moliya"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:58
+msgid "Escrow Fund"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:59
+msgid "Credit Economy"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:62
+msgid "Management"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:63
+msgid "Foydalanuvchilar"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:64
+msgid "Qora ro'yxat"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:67
+msgid "System"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:69
+msgid "..."
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:70
+msgid "Django ORM/DB darajasidagi tekshirish (faqat tizim ma'muri uchun)"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:71
+msgid "DB Console"
+msgstr ""
+
+#: templates/includes/erp_sidebar.html:75
+msgid "System Health"
+msgstr ""
+
+#: templates/includes/home_escrow.html:5
+msgid "Bittada Escrow bilan xavfsiz savdo"
+msgstr ""
+
+#: templates/includes/home_escrow.html:6
+msgid ""
+"Sizning mablag'ingiz mahsulot yetib borguncha bizning himoyamizda bo'ladi."
+msgstr ""
+
+#: templates/includes/home_escrow.html:12
+msgid "Ishonchli ustalar"
+msgstr ""
+
+#: templates/includes/home_escrow.html:16
+msgid "Sifat nazorati"
+msgstr ""
+
+#: templates/includes/home_escrow.html:20
+msgid "Pulni qaytarish kafolati"
+msgstr ""
+
+#: templates/includes/home_escrow.html:28
+#, fuzzy
+#| msgid "Shaxsiy ma'lumotlar"
+msgid "Batafsil ma'lumot"
+msgstr "Личные данные"
+
+#: templates/includes/home_masters.html:5
+msgid "Eng yaxshi ustalar"
+msgstr ""
+
+#: templates/includes/home_masters.html:16
+msgid "Premium Usta"
+msgstr ""
+
+#: templates/includes/home_masters.html:27
+#: templates/includes/home_masters.html:52
+#: templates/includes/home_masters.html:77
+msgid "Ishlar"
+msgstr ""
+
+#: templates/includes/home_masters.html:28
+#: templates/includes/home_masters.html:53
+#: templates/includes/home_masters.html:78 templates/shop.html:43
+msgid "ta"
+msgstr ""
+
+#: templates/includes/home_masters.html:32
+#: templates/includes/home_masters.html:57
+#: templates/includes/home_masters.html:82
+msgid "Profilni ko'rish"
+msgstr ""
+
+#: templates/includes/home_masters.html:41
+msgid "Yig'uvchi"
+msgstr ""
+
+#: templates/includes/home_masters.html:66 templates/register_erp.html:130
+msgid "Dizayner"
+msgstr ""
+
+#: templates/includes/product_card.html:20
+msgid "Top"
+msgstr ""
+
+#: templates/includes/product_card.html:26
+msgid "Sotuvda yo'q"
+msgstr ""
+
+#: templates/includes/product_card.html:28
+msgid "Kam qoldi"
+msgstr ""
+
+#: templates/includes/product_card.html:32
+#, fuzzy
+#| msgid "Sevimlilar"
+msgid "Sevimlilar ga qo'shish"
+msgstr "Избранное"
+
+#: templates/includes/product_card.html:111
+#, fuzzy
+#| msgid "Sevimlilar"
+msgid "Sevimlilar ga qo'shildi"
+msgstr "Избранное"
+
+#: templates/includes/product_card.html:115
+msgid "Sevimlilar dan olib tashlandi"
+msgstr ""
+
+#: templates/login_erp.html:109
+msgid "Xush kelibsiz"
+msgstr ""
+
+#: templates/login_erp.html:110
+msgid "Bittada Command Center'ga kiring"
+msgstr ""
+
+#: templates/login_erp.html:123
+msgid "Email yoki Username"
+msgstr ""
+
+#: templates/login_erp.html:124
+msgid "admin yoki email@.com"
+msgstr ""
+
+#: templates/login_erp.html:130
+msgid "Unutdingizmi?"
+msgstr ""
+
+#: templates/login_erp.html:136 templates/pages/login.html:35
+msgid "yoki"
+msgstr ""
+
+#: templates/login_erp.html:170
+msgid "Tizimga kirish"
+msgstr ""
+
+#: templates/login_erp.html:172
+#, fuzzy
+#| msgid "Yuklanmoqda..."
+msgid "Tekshirilmoqda..."
+msgstr "Загрузка..."
+
+#: templates/login_erp.html:178
+msgid "Profilingiz yo'qmi?"
+msgstr ""
+
+#: templates/login_erp.html:178
+msgid "Ro'yxatdan o'ting"
+msgstr ""
+
+#: templates/orders_erp.html:142 templates/orders_erp.html:153
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "Buyurtmalar tarixi"
+msgstr "Заказы"
+
+#: templates/orders_erp.html:154
+msgid "Barcha xaridlar va ularning joriy holati"
+msgstr ""
+
+#: templates/orders_erp.html:165 templates/profile_base.html:260
+#, fuzzy
+#| msgid "Yetkazib berish:"
+msgid "Yetkazildi"
 msgstr "Доставка:"
 
-#: templates/cart_erp.html
-msgid "Bepul"
-msgstr "Бесплатно"
+#: templates/orders_erp.html:174
+msgid "Modern divan kreslo"
+msgstr ""
 
-#: templates/cart_erp.html
-msgid "Jami:"
+#: templates/orders_erp.html:187
+msgid "Oshxona stuli (2 dona)"
+msgstr ""
+
+#: templates/orders_erp.html:196 templates/orders_erp.html:227
+#: templates/orders_erp.html:284
+#, fuzzy
+#| msgid "Umumiy:"
+msgid "Umumiy to'lov:"
 msgstr "Итого:"
 
-#: templates/cart_erp.html
-msgid "Rasmiylashtirish"
-msgstr "Оформить заказ"
+#: templates/orders_erp.html:209 templates/profile_base.html:274
+msgid "Yetkazilmoqda"
+msgstr ""
 
-#: templates/cart_erp.html
-msgid "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
-msgstr "Подтверждая заказ, вы соглашаетесь с публичным предложением."
+#: templates/orders_erp.html:218 templates/profile_base.html:270
+msgid "Yotoqxona to'plami"
+msgstr ""
 
-#: templates/wishlist_erp.html
+#: templates/orders_erp.html:240 templates/profile_base.html:288
+msgid "Tayyorlanmoqda"
+msgstr ""
+
+#: templates/orders_erp.html:249
+msgid "Shkaf-kupe"
+msgstr ""
+
+#: templates/orders_erp.html:262
+msgid "Dekorativ oyna"
+msgstr ""
+
+#: templates/orders_erp.html:275
+msgid "Avval intensity chiroq"
+msgstr ""
+
+#: templates/pages/home.html:4
+msgid "Bittada — Yagona marketplace ekotizimi"
+msgstr ""
+
+#: templates/pages/home.html:11
+msgid "Bittada — yagona marketplace ekotizimi"
+msgstr ""
+
+#: templates/pages/home.html:12
+msgid ""
+"Mahsulot, ishlab chiqarish va xizmatlarni bitta joyda. B2B va B2C uchun."
+msgstr ""
+
+#: templates/pages/home.html:15
+msgid "Batafsil"
+msgstr ""
+
+#: templates/pages/home.html:28
+msgid "Minglab mahsulotlar va xizmatlar bir joyda"
+msgstr ""
+
+#: templates/pages/home.html:32
+msgid "Ishlab chiqaruvchilar bilan to'g'ridan-to'g'ri aloqa"
+msgstr ""
+
+#: templates/pages/home.html:35
+msgid "B2B & B2C"
+msgstr ""
+
+#: templates/pages/home.html:36
+msgid "Hamkorlik va savdo uchun keng imkoniyatlar"
+msgstr ""
+
+#: templates/pages/home.html:39
+msgid "Xavfsiz"
+msgstr ""
+
+#: templates/pages/home.html:40
+msgid "Escrow tizimi bilan himoyalangan to'lovlar"
+msgstr ""
+
+#: templates/pages/login.html:12
+msgid "Hisobingizga kiring va Bittada ekotizimidan foydalaning"
+msgstr ""
+
+#: templates/pages/login.html:19 templates/pages/register.html:25
+#, fuzzy
+#| msgid "Email manzili"
+msgid "Email manzil"
+msgstr "Email адрес"
+
+#: templates/pages/login.html:41
+msgid "Google bilan kirish"
+msgstr ""
+
+#: templates/pages/login.html:45 templates/register_erp.html:220
+msgid "Telegram bilan kirish"
+msgstr ""
+
+#: templates/pages/login.html:52
+msgid "Hisobingiz yo'qmi?"
+msgstr ""
+
+#: templates/pages/register.html:11
+msgid "Hisobingizni yarating va Bittada ekotizimiga qo'shiling"
+msgstr ""
+
+#: templates/pages/register.html:32
+msgid "Foydalanuvchi nomi"
+msgstr ""
+
+#: templates/pages/register.html:36
+msgid "3-30 belgi. Harflar, raqamlar, defis va pastki chiziqlar."
+msgstr ""
+
+#: templates/pages/register.html:44
+msgid "Kamida 6 ta belgidan iborat bo'lishi kerak"
+msgstr ""
+
+#: templates/pages/register.html:49
+msgid "Hisob yaratish"
+msgstr ""
+
+#: templates/pages/register.html:54
+msgid "Hisobingiz bormi?"
+msgstr ""
+
+#: templates/pages/select_role.html:4
+msgid "Rol tanlash"
+msgstr ""
+
+#: templates/pages/select_role.html:12
+msgid "Rolingizni tanlang"
+msgstr ""
+
+#: templates/pages/select_role.html:13
+msgid "Siz qaysi rolda ishlamoqchisiz?"
+msgstr ""
+
+#: templates/pages/select_role.html:21
+msgid "Mahsulot yoki xizmat sotish"
+msgstr ""
+
+#: templates/pages/select_role.html:28
+msgid "Xaridor"
+msgstr ""
+
+#: templates/pages/select_role.html:29
+msgid "Mahsulot va xizmatlarni sotib olish"
+msgstr ""
+
+#: templates/pages/select_role.html:36
+msgid "Ichki ta'minotchi"
+msgstr ""
+
+#: templates/pages/select_role.html:37
+msgid "Material va komponent yetkazib berish"
+msgstr ""
+
+#: templates/profile_base.html:189 templates/profile_erp.html:224
+#: templates/wishlist_erp.html:5 templates/wishlist_erp.html:15
 msgid "Sevimlilar"
 msgstr "Избранное"
 
-#: templates/wishlist_erp.html
+#: templates/profile_base.html:213 templates/profile_erp.html:267
+msgid "Ismingiz"
+msgstr "Ваше имя"
+
+#: templates/profile_base.html:216
+#, fuzzy
+#| msgid "Ism va familiya"
+msgid "Familiya"
+msgstr "Имя и фамилия"
+
+#: templates/profile_base.html:217
+#, fuzzy
+#| msgid "Ismingiz"
+msgid "Familiyangiz"
+msgstr "Ваше имя"
+
+#: templates/profile_base.html:220 templates/register_erp.html:161
+msgid "Email"
+msgstr ""
+
+#: templates/profile_base.html:221 templates/profile_erp.html:260
+msgid "Email manzili"
+msgstr "Email адрес"
+
+#: templates/profile_base.html:231
+#, fuzzy
+#| msgid "To'liq manzilingizni kiriting"
+msgid "To'liq manzilingiz"
+msgstr "Введите полный адрес"
+
+#: templates/profile_base.html:235
+msgid "Saqlash"
+msgstr ""
+
+#: templates/profile_base.html:243
+#, fuzzy
+#| msgid "Buyurtmalar"
+msgid "So'nggi buyurtmalar"
+msgstr "Заказы"
+
+#: templates/profile_base.html:246
+msgid "Barchasini ko'rish →"
+msgstr ""
+
+#: templates/profile_base.html:256
+msgid "Divan kreslo + Oshxona stullari"
+msgstr ""
+
+#: templates/profile_base.html:284
+msgid "Shkaf-kupe + Dekorlar"
+msgstr ""
+
+#: templates/profile_base.html:298
+msgid "Faol buyurtma"
+msgstr ""
+
+#: templates/profile_base.html:303
+msgid "Jami xaridlar"
+msgstr ""
+
+#: templates/profile_base.html:308
+#, fuzzy
+#| msgid "Sevimlilar"
+msgid "Sevimli mahsulotlar"
+msgstr "Избранное"
+
+#: templates/profile_erp.html:199
+msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgstr "Личные данные и настройки"
+
+#: templates/profile_erp.html:218 templates/register_erp.html:138
+msgid "Ma'lumotlar"
+msgstr "Данные"
+
+#: templates/profile_erp.html:256 templates/register_erp.html:157
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: templates/profile_erp.html:261
+msgid "Kiritilmagan"
+msgstr "Не указан"
+
+#: templates/profile_erp.html:268
+msgid "Ismingizni kiriting"
+msgstr "Введите ваше имя"
+
+#: templates/profile_erp.html:271
+msgid "Telefon raqamingiz"
+msgstr "Ваш номер телефона"
+
+#: templates/profile_erp.html:277
+msgid "To'liq manzilingizni kiriting"
+msgstr "Введите полный адрес"
+
+#: templates/profile_erp.html:285
+msgid "O'zgarishlarni saqlash"
+msgstr "Сохранить изменения"
+
+#: templates/register_erp.html:87
+msgid "Siz kimsiz?"
+msgstr ""
+
+#: templates/register_erp.html:88
+msgid "Platformadagi faoliyat turini tanlang"
+msgstr ""
+
+#: templates/register_erp.html:94
+msgid "Mebel sotib olish uchun"
+msgstr ""
+
+#: templates/register_erp.html:99
+msgid "Mahsulot yoki xizmat sotuvi"
+msgstr ""
+
+#: templates/register_erp.html:103
+msgid "Hamkor ta'minotchi"
+msgstr ""
+
+#: templates/register_erp.html:104
+msgid "Taklif kodi talab qilinadi"
+msgstr ""
+
+#: templates/register_erp.html:108
+msgid "Dizayner / Usta"
+msgstr ""
+
+#: templates/register_erp.html:109
+msgid "Interyer va professional xizmat"
+msgstr ""
+
+#: templates/register_erp.html:113
+msgid "Hisob turi"
+msgstr ""
+
+#: templates/register_erp.html:115
+msgid "Jismoniy shaxs"
+msgstr ""
+
+#: templates/register_erp.html:116
+msgid "Yuridik shaxs"
+msgstr ""
+
+#: templates/register_erp.html:119 templates/register_erp.html:133
+msgid "Davom etish"
+msgstr ""
+
+#: templates/register_erp.html:123
+msgid "Mutaxassisligingiz?"
+msgstr ""
+
+#: templates/register_erp.html:124
+msgid "Bir yoki bir nechta kasb tanlang — TZ §6.3"
+msgstr ""
+
+#: templates/register_erp.html:127
+msgid "Ishlab chiqaruvchi"
+msgstr ""
+
+#: templates/register_erp.html:128
+#, fuzzy
+#| msgid "Yetkazib berish:"
+msgid "Yetkazib beruvchi"
+msgstr "Доставка:"
+
+#: templates/register_erp.html:129
+msgid "Usta (o'rnatuvchi)"
+msgstr ""
+
+#: templates/register_erp.html:134 templates/register_erp.html:225
+msgid "Orqaga"
+msgstr ""
+
+#: templates/register_erp.html:139
+msgid "Akkaunt yaratish uchun ma'lumotlarni to'ldiring"
+msgstr ""
+
+#: templates/register_erp.html:147
+#, fuzzy
+#| msgid "Ismingiz"
+msgid "To'liq ismingiz"
+msgstr "Ваше имя"
+
+#: templates/register_erp.html:148
+msgid "foydalanuvchi_nomi"
+msgstr ""
+
+#: templates/register_erp.html:149
+msgid "misol@mail.com"
+msgstr ""
+
+#: templates/register_erp.html:150
+msgid "Kompaniya LLC"
+msgstr ""
+
+#: templates/register_erp.html:169
+msgid "Kompaniya nomi"
+msgstr ""
+
+#: templates/register_erp.html:173
+msgid "(10+ belgi, raqam, maxsus belgi)"
+msgstr ""
+
+#: templates/register_erp.html:176
+msgid "Parol kuchini ko'rsatadi"
+msgstr ""
+
+#: templates/register_erp.html:185
+msgid "Akkauntni yaratish"
+msgstr ""
+
+#: templates/register_erp.html:188
+msgid "yoki kirish usuli"
+msgstr ""
+
+#: templates/shop.html:7
+msgid "Do'kon"
+msgstr ""
+
+#: templates/shop.html:18
+#, python-format
+msgid "%(count)s ta mahsulot%(category.name_uz)s kategoriyasidan"
+msgstr ""
+
+#: templates/shop.html:20
+msgid "Uylar uchun sifatli mebel, eshik va oynalar"
+msgstr ""
+
+#: templates/shop.html:46
+msgid "Kategoriyalar mavjud emas"
+msgstr ""
+
+#: templates/shop.html:60
+msgid "Filtrlar"
+msgstr ""
+
+#: templates/shop.html:65
+msgid "Material"
+msgstr ""
+
+#: templates/shop.html:93
+msgid "Narx (so'm)"
+msgstr ""
+
+#: templates/shop.html:96
+msgid "dan"
+msgstr ""
+
+#: templates/shop.html:98
+msgid "gacha"
+msgstr ""
+
+#: templates/shop.html:105
+msgid "Saralash"
+msgstr ""
+
+#: templates/shop.html:107
+msgid "Eng yangi"
+msgstr ""
+
+#: templates/shop.html:108
+msgid "Narx: pastdan"
+msgstr ""
+
+#: templates/shop.html:109
+msgid "Narx: yuqoridan"
+msgstr ""
+
+#: templates/shop.html:110
+msgid "Ommabop"
+msgstr ""
+
+#: templates/shop.html:116
+msgid "Qo'llash"
+msgstr ""
+
+#: templates/shop.html:117
+msgid "Tozalash"
+msgstr ""
+
+#: templates/shop.html:137
+#, fuzzy
+#| msgid "Mahsulotlar"
+msgid "Mahsulotlar topilmadi"
+msgstr "Продукты"
+
+#: templates/shop.html:138
+msgid "Filtrlarni tozalash"
+msgstr ""
+
+#: templates/shop.html:147 templates/shop.html:149
+msgid "Oldingi"
+msgstr ""
+
+#: templates/shop.html:161 templates/shop.html:163
+msgid "Keyingi"
+msgstr ""
+
+#: templates/wishlist_erp.html:16
 msgid "Sizga yoqqan mahsulotlar to'plami"
 msgstr "Подборка понравившихся вам продуктов"
 
-#: templates/wishlist_erp.html
+#: templates/wishlist_erp.html:21
 msgid "Hali sevimlilar ro'yxati bo'sh"
 msgstr "Список избранного пуст"
 
-#: templates/wishlist_erp.html
+#: templates/wishlist_erp.html:22
 msgid "O'zingizga yoqqan mahsulotlarni saqlab qo'ying."
 msgstr "Сохраняйте понравившиеся вам продукты."
 
-#: templates/wishlist_erp.html
-msgid "Bosh sahifaga qaytish"
-msgstr "Вернуться на главную"
+#~ msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
+#~ msgstr "Данные успешно обновлены!"
+
+#~ msgid "Yangilashda xatolik yuz berdi"
+#~ msgstr "Произошла ошибка при обновлении"
+
+#~ msgid "Tizimda ulanish xatoligi yuz berdi"
+#~ msgstr "Произошла ошибка соединения с системой"
+
+#~ msgid "Русский"
+#~ msgstr "Русский"

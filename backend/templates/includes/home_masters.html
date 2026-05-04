@@ -1,8 +1,9 @@
-<!-- prefix: home-masters - Branded Masters Section (Lime/Navy) -->
+{# prefix: home-masters - Branded Masters Section (Lime/Navy) — i18n yuklanadi #}
+{% load i18n %}
 <section style="margin-bottom: 80px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-        <h2 style="font-size: 28px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1px;">🏆 Eng yaxshi ustalar</h2>
-        <a href="{% url 'masters' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">Barchasini ko'rish</a>
+        <h2 style="font-size: 28px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1px;">🏆 {% trans "Eng yaxshi ustalar" %}</h2>
+        <a href="{% url 'masters' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">{% trans "Barchasini ko'rish" %}</a>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;">
@@ -12,23 +13,23 @@
                 <div class="master-avatar" style="background: var(--primary-brand); color: var(--secondary-brand);">A</div>
                 <div>
                     <h4 style="font-size: 17px; font-weight: 800; color: var(--secondary-brand); margin: 0;">Alisher Qodirov</h4>
-                    <span style="font-size: 11px; color: var(--primary-brand); background: var(--secondary-brand); padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block;">Premium Usta</span>
+                    <span style="font-size: 11px; color: var(--primary-brand); background: var(--secondary-brand); padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block;">{% trans "Premium Usta" %}</span>
                 </div>
             </div>
             
             <div style="display: flex; justify-content: space-between; margin-bottom: 24px; border-top: 1px solid #F1F5F9; border-bottom: 1px solid #F1F5F9; padding: 16px 0;">
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Reyting</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Reyting" %}</div>
                     <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">⭐ 4.9</div>
                 </div>
                 <div style="width: 1px; background: #F1F5F9;"></div>
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Ishlar</div>
-                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">124 ta</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Ishlar" %}</div>
+                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">124 {% trans "ta" %}</div>
                 </div>
             </div>
 
-            <button class="master-btn">Profilni ko'rish</button>
+            <button class="master-btn">{% trans "Profilni ko'rish" %}</button>
         </div>
 
         <!-- Master Card 2 -->
@@ -37,23 +38,23 @@
                 <div class="master-avatar" style="background: var(--secondary-brand); color: var(--primary-brand);">R</div>
                 <div>
                     <h4 style="font-size: 17px; font-weight: 800; color: var(--secondary-brand); margin: 0;">Rustam Mebelschi</h4>
-                    <span style="font-size: 11px; color: #64748B; background: #F8FAFC; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block; border: 1px solid #E2E8F0;">Yig'uvchi</span>
+                    <span style="font-size: 11px; color: #64748B; background: #F8FAFC; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block; border: 1px solid #E2E8F0;">{% trans "Yig'uvchi" %}</span>
                 </div>
             </div>
             
             <div style="display: flex; justify-content: space-between; margin-bottom: 24px; border-top: 1px solid #F1F5F9; border-bottom: 1px solid #F1F5F9; padding: 16px 0;">
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Reyting</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Reyting" %}</div>
                     <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">⭐ 4.8</div>
                 </div>
                 <div style="width: 1px; background: #F1F5F9;"></div>
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Ishlar</div>
-                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">89 ta</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Ishlar" %}</div>
+                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">89 {% trans "ta" %}</div>
                 </div>
             </div>
 
-            <button class="master-btn">Profilni ko'rish</button>
+            <button class="master-btn">{% trans "Profilni ko'rish" %}</button>
         </div>
 
         <!-- Master Card 3 -->
@@ -62,23 +63,23 @@
                 <div class="master-avatar" style="background: rgba(164, 212, 108, 0.2); color: var(--secondary-brand); border: 1px solid var(--primary-brand);">D</div>
                 <div>
                     <h4 style="font-size: 17px; font-weight: 800; color: var(--secondary-brand); margin: 0;">Dizayn StudioUz</h4>
-                    <span style="font-size: 11px; color: #64748B; background: #F8FAFC; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block; border: 1px solid #E2E8F0;">Dizayner</span>
+                    <span style="font-size: 11px; color: #64748B; background: #F8FAFC; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; margin-top: 6px; display: inline-block; border: 1px solid #E2E8F0;">{% trans "Dizayner" %}</span>
                 </div>
             </div>
             
             <div style="display: flex; justify-content: space-between; margin-bottom: 24px; border-top: 1px solid #F1F5F9; border-bottom: 1px solid #F1F5F9; padding: 16px 0;">
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Reyting</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Reyting" %}</div>
                     <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">⭐ 5.0</div>
                 </div>
                 <div style="width: 1px; background: #F1F5F9;"></div>
                 <div style="text-align: center; flex: 1;">
-                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">Ishlar</div>
-                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">210 ta</div>
+                    <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">{% trans "Ishlar" %}</div>
+                    <div style="font-size: 16px; font-weight: 900; color: var(--secondary-brand);">210 {% trans "ta" %}</div>
                 </div>
             </div>
 
-            <button class="master-btn">Profilni ko'rish</button>
+            <button class="master-btn">{% trans "Profilni ko'rish" %}</button>
         </div>
     </div>
 </section>

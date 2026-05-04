@@ -1,0 +1,107 @@
+# BITTADA MARKETPLACE - DJANGO ADMIN PANEL QO'LLANMASI
+
+Ushbu hujjat admin panel orqali ma'lumotlarni to'g'ri kiritish va ularni frontendda ko'rinishini ta'minlash bo'yicha to'liq qo'llanmadir.
+
+---
+
+## 1. NEGA YANGI MA'LUMOTLAR FRONTENDDA KO'RINMAYAPTI?
+
+Agar siz kategoriya yoki mahsulot qo'shsangiz-u, lekin saytda chiqmasa, quyidagi 3 ta asosiy sababni tekshiring:
+
+1.1. MAHSULOT STATUSI (HOLATI):
+   - Har bir mahsulotda "Status" degan maydon bor. 
+   - Agar u "Qoralama" (Draft) bo'lsa, saytda ko'rinmaydi.
+   - UNI "FAOL" (PUBLISHED) HOLATIGA O'TKAZISH SHART.
+
+1.2. KATEGORIYA FAOLLIGI:
+   - Kategoriyalar bo'limida "Is Active" degan tanlov bor.
+   - U har doim ✅ belgilangan bo'lishi kerak.
+
+1.3. MAHSULOT TURI (PRODUCT TYPE):
+   - Agar kategoriya "Tayyor mahsulot" (Standard) uchun yaratilgan bo'lsa, unga "Buyurtma asosida" (Manufacturing) turidagi mahsulot qo'shsangiz, filtrlar tufayli ko'rinmasligi mumkin.
+
+---
+
+## 2. ADMIN PANEL BO'LIMLARI VA MA'LUMOT KIRITISH (DEMO)
+
+### A. USERS & PROFILES (Foydalanuvchilar)
+Sotuvchilarni boshqarish bo'limi. Mahsulot qo'shishdan oldin sotuvchi (Seller) bo'lishi shart.
+- Qayerda: USERS & PROFILES -> Users
+- DEMO KIRITISH:
+    - Email: seller_test@bittada.uz
+    - Username: seller_agent
+    - Role: Seller
+    - Password: Kamida 10 ta belgi (masalan: Bittada2026Admin!)
+
+### B. PRODUCTS - Kategoriyalar
+Mahsulotlarni guruhlash uchun ishlatiladi.
+- Qayerda: PRODUCTS -> Kategoriyalar
+- DEMO KIRITISH:
+    - Nomi (O'zbek): Italyancha Mebellar
+    - Nomi (Rus): Итальянская мебель
+    - Slug: italyancha-mebellar
+    - Is Active: ✅
+    - Mahsulot turi: Tayyor mahsulot
+
+### C. PRODUCTS - Mahsulotlar
+Saytdagi asosiy tovarlar.
+- Qayerda: PRODUCTS -> Mahsulotlar
+- DEMO KIRITISH:
+    - Sku: IT-SOFA-001
+    - Seller: (Yaratilgan sotuvchini tanlang)
+    - Category: Italyancha Mebellar
+    - Status: Faol (Published)
+    - Sarlavha (O'zbek): Premium Italyan Divani
+    - Narx: 25000000
+    - Zaxira: 5
+    - Tavsif: Haqiqiy charmdan ishlangan lyuks divan.
+
+### D. PRODUCTS - Product Images
+Mahsulotga rasmlar biriktirish.
+- Qayerda: PRODUCTS -> Product images
+- QOIDA: Kamida bitta rasm "Is Primary" (Asosiy) bo'lishi shart, aks holda saytda rasm ko'rinmaydi.
+
+### E. CMS PAGES - Sahifa kontentlari
+Saytdagi statik matnlarni (masalan, "Biz haqimizda" sahifasi yoki Banner matnlari) o'zgartirish.
+- Qayerda: CMS PAGES -> Sahifa kontentlari
+- DEMO KIRITISH:
+    - Key: home_hero_title
+    - Value: Sifatli mebellar makoniga xush kelibsiz!
+    - Language: uz
+
+---
+
+## 3. BACKEND API INTEGRATSIYA XARITASI (TEXNIK)
+
+Loyihaning frontend qismi qaysi API'lardan qanday foydalanishi bo'yicha ma'lumot:
+
+### 3.1. Xizmatlar va Dizaynerlar API
+- Endpoint: /api/v1/services/
+- Ishlatilgan fayl: src/pages/services.js
+- Mantiq: URL'dan "designers" parametri olinganda, xizmatlar ro'yxatidan faqat "designer" kategoriyasidagilar filtrlab olinadi.
+
+### 3.2. Mahsulotlar API
+- Endpoint: /api/v1/products/
+- Ishlatilgan fayl: src/pages/shop.js
+- Mantiq: Filtrlar (narx, rang, material) asosida mahsulotlar ro'yxatini yuklaydi.
+
+### 3.3. Kategoriyalar API
+- Endpoint: /api/v1/categories/
+- Ishlatilgan fayl: src/components/header.js
+- Mantiq: Mega menyudagi barcha ustunlarni (Mebellar, Materiallar, Xizmatlar) dinamik to'ldiradi.
+
+### 3.4. Tarjimalar (I18n) API
+- Endpoint: /api/v1/pages/content/all/{lang}/
+- Ishlatilgan fayl: src/utils/i18n.js
+- Mantiq: Admin paneldagi "Sahifa kontentlari" bo'limidan barcha tarjimalarni yuklab, saytni tanlangan tilga o'giradi.
+
+---
+
+## 4. TEXNIK MASLAHATLAR (QO'SHIMCHA)
+
+- RASMLAR: Rasmlar hajmi 2MB dan oshmasligi tavsiya etiladi (sayt tez ishlashi uchun).
+- SLUG: URL manzili uchun ishlatiladi. Faqat lotin harflari va chiziqchadan foydalaning (bo'shliq va maxsus belgilar mumkin emas).
+- TILLAR: Sayt 3 tilda ishlaydi. Agar bitta tilda ma'lumot kiritmasangiz, o'sha tilda saytni ko'rgan foydalanuvchiga ma'lumot ko'rinmaydi.
+
+Hujjat yakunlandi.
+© 2026 Bittada Marketplace Team

@@ -9,11 +9,11 @@ Functions in this module mutate state. They should:
 """
 from __future__ import annotations
 from django.db import transaction
-from .models import Service, Booking, BookingStatus
+from .models import Service, ServiceBooking, ServiceBookingStatus
 from .selectors import check_service_availability, get_service_next_slot
 
 
-def create_booking(*, service_id: int, customer, notes: str = "") -> Booking:
+def create_booking(*, service_id: int, customer, notes: str = "") -> ServiceBooking:
     """
     Yangi bron yaratish — double-booking oldini oladi.
     select_for_update() orqali race condition bloklanadi.
@@ -28,31 +28,32 @@ def create_booking(*, service_id: int, customer, notes: str = "") -> Booking:
                 f"Usta hozirda band. Keyingi bo'sh vaqt: {next_slot}"
             )
 
-        booking = Booking.objects.create(
+        booking = ServiceBooking.objects.create(
             service=service,
             customer=customer,
-            status=BookingStatus.QUEUE,
-            notes=notes,
+            status=ServiceBookingStatus.INQUIRY,
+            description=notes,
         )
     return booking
 
 
-def advance_booking_status(*, booking_id: int, actor) -> Booking:
+def advance_booking_status(*, booking_id: int, actor) -> ServiceBooking:
     """
     Buyurtma statusini keyingi bosqichga o'tkazish.
     Faqat xizmat egasi yoki admin bajarishi mumkin.
     """
     order = [
-        BookingStatus.QUEUE,
-        BookingStatus.SCHEDULED,
-        BookingStatus.IN_PROGRESS,
-        BookingStatus.COMPLETED,
+        ServiceBookingStatus.INQUIRY,
+        ServiceBookingStatus.QUEUE,
+        ServiceBookingStatus.SCHEDULED,
+        ServiceBookingStatus.IN_PROGRESS,
+        ServiceBookingStatus.COMPLETED,
     ]
     with transaction.atomic():
-        booking = Booking.objects.select_for_update().get(id=booking_id)
+        booking = ServiceBooking.objects.select_for_update().get(id=booking_id)
 
         # Permission check: owner or admin
-        if booking.service.user != actor and not actor.is_staff:
+        if booking.service.provider != actor and not actor.is_staff:
             raise ValueError("Ruxsat yo'q")
 
         current_index = order.index(booking.status)
@@ -63,25 +64,33 @@ def advance_booking_status(*, booking_id: int, actor) -> Booking:
     return booking
 
 
-def add_progress_update(*, booking_id: int, actor, text: str, photo_url: str = "") -> Booking:
+def add_progress_update(*, booking_id: int, actor, text: str, photo_url: str = "") -> ServiceBooking:
     """
-    Jonli progress oqimiga yangilanish qo'shish.
+    Jonli progress oqimiga yangilanish qo'shish (TZ §11).
     """
     from django.utils import timezone
 
     with transaction.atomic():
-        booking = Booking.objects.select_for_update().get(id=booking_id)
+        booking = ServiceBooking.objects.select_for_update().get(id=booking_id)
 
-        if booking.service.user != actor and not actor.is_staff:
+        if booking.service.provider != actor and not actor.is_staff:
             raise ValueError("Ruxsat yo'q")
 
-        feed = booking.progress_feed or []
-        feed.append({
-            "time": timezone.now().strftime("%d.%m.%Y %H:%M"),
-            "text": text,
-            "photo_url": photo_url,
-        })
-        booking.progress_feed = feed
-        booking.save(update_fields=["progress_feed", "updated_at"])
+        # Update last progress fields
+        booking.last_progress_update = timezone.now()
+        booking.last_progress_text = text
+        if photo_url:
+            # Save photo URL - in production this would be an ImageField upload
+            booking.last_progress_photo = photo_url
+        booking.save(update_fields=["last_progress_update", "last_progress_text", "last_progress_photo", "updated_at"])
+
+        # Also create a ServiceProgressUpdate record for full history
+        from .models import ServiceProgressUpdate
+        ServiceProgressUpdate.objects.create(
+            booking=booking,
+            provider=actor,
+            text=text,
+            location=booking.address[:100] if booking.address else "",
+        )
 
     return booking

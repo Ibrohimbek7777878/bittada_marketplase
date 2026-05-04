@@ -616,3 +616,123 @@ class ProductFile(BaseModel):
         db_table = "products_product_file"
         ordering = ["-created_at"]
 
+
+class FileAccessStatus(models.TextChoices):
+    """TZ §10.3 - Private file access request statuses"""
+    PENDING = "pending", "Kutilmoqda"
+    APPROVED = "approved", "Tasdiqlangan"
+    DENIED = "denied", "Rad etildi"
+    PAID_PENDING = "paid_pending", "To'lov kutilmoqda"
+    PAID_APPROVED = "paid_approved", "To'lov qilindi, tasdiqlandi"
+    EXPIRED = "expired", "Muddati tugagan"
+
+
+class ProductFileAccessRequest(BaseModel):
+    """
+    TZ §10.3 - Private file access flow.
+    When user requests access to a private file:
+    1. Owner gets notification
+    2. Owner can approve/deny/set price
+    3. All actions logged in audit trail
+    """
+    file = models.ForeignKey(
+        ProductFile,
+        on_delete=models.CASCADE,
+        related_name="access_requests",
+        verbose_name=_("Fayl")
+    )
+    requester = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="file_access_requests",
+        verbose_name=_("So'rovchi")
+    )
+
+    # Request details
+    message = models.TextField(
+        blank=True,
+        verbose_name=_("So'rov matni"),
+        help_text=_("Nima uchun bu fayl kerakligi")
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=FileAccessStatus.choices,
+        default=FileAccessStatus.PENDING,
+        verbose_name=_("Holat")
+    )
+
+    # Owner response
+    owner_decision = models.CharField(
+        max_length=20,
+        choices=[
+            ("approve", "Tasdiqlash"),
+            ("deny", "Rad etish"),
+            ("request_payment", "To'lov so'rash"),
+        ],
+        null=True,
+        blank=True,
+        verbose_name=_("Egasi qarori")
+    )
+    owner_note = models.TextField(
+        blank=True,
+        verbose_name=_("Egasi izohi")
+    )
+    requested_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("So'ralgan narx")
+    )
+
+    # Payment
+    paid_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("To'langan summa")
+    )
+    paid_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("To'lov vaqti")
+    )
+
+    # Access grant
+    granted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Ruxsat berilgan vaqti")
+    )
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Muddati tugash vaqti")
+    )
+    download_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Yuklab olishlar soni")
+    )
+
+    # Requester context for owner (TZ §10.3)
+    requester_ip = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name=_("So'rovchi IP")
+    )
+    requester_location = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_("So'rovchi joylashuvi")
+    )
+
+    class Meta:
+        verbose_name = "Fayl ruxsat so'rovi"
+        verbose_name_plural = "Fayl ruxsat so'rovlari"
+        unique_together = ["file", "requester"]
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.requester} → {self.file.name} ({self.status})"
+

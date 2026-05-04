@@ -24,6 +24,34 @@ from .models import (
     User,
 )
 
+import hashlib
+import hmac
+
+
+def verify_telegram_hash(*, auth_data: dict[str, Any], bot_token: str) -> bool:
+    """
+    Verify Telegram Login Widget data hash.
+    TZ requirement: Verify telegram hash in users/services.py
+    """
+    check_hash = auth_data.pop('hash', None)
+    if not check_hash:
+        return False
+
+    # Create data_check_string
+    data_list = []
+    for key, value in sorted(auth_data.items()):
+        if value is not None:
+            data_list.append(f"{key}={value}")
+    data_check_string = "\n".join(data_list)
+
+    # Calculate secret_key
+    secret_key = hashlib.sha256(bot_token.encode()).digest()
+
+    # Calculate HMAC-SHA256
+    hmac_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+
+    return hmac_hash == check_hash
+
 
 @transaction.atomic # Tranzaksiya xavfsizligini ta'minlash
 def create_user_with_profile( # Foydalanuvchi va profilni birgalikda yaratish

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Bittada — Yagona marketplace ekotizimi{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <h1 class="hero-title">Bittada — yagona marketplace ekotizimi</h1>
+      <p class="hero-subtitle">Mahsulot, ishlab chiqarish va xizmatlarni bitta joyda. B2B va B2C uchun.</p>
+      <div class="hero-buttons">
+        <a href="{% url 'register' %}" class="btn btn-primary">Boshlash</a>
+        <a href="/about/" class="btn btn-outline">Batafsil</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+  <div class="container">
+    <h2 class="section-title">Nima uchun Bittada?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>🏪 Marketplace</h3>
+        <p>Minglab mahsulotlar va xizmatlar bir joyda</p>
+      </div>
+      <div class="feature-card">
+        <h3>🏭 Ishlab chiqarish</h3>
+        <p>Ishlab chiqaruvchilar bilan to'g'ridan-to'g'ri aloqa</p>
+      </div>
+      <div class="feature-card">
+        <h3>🤝 B2B & B2C</h3>
+        <p>Hamkorlik va savdo uchun keng imkoniyatlar</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔒 Xavfsiz</h3>
+        <p>Escrow tizimi bilan himoyalangan to'lovlar</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+  .hero-inner {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .hero-title {
+    font-size: 3.5rem; font-weight: 800; line-height: 1.15;
+    color: var(--color-gray-900); margin-bottom: 16px;
+  }
+  .hero-subtitle {
+    font-size: 1.25rem; color: var(--color-gray-600);
+    margin-bottom: 32px; max-width: 600px;
+  }
+  .hero-buttons { display: flex; gap: 16px; justify-content: center; }
+  
+  .features { padding: 60px 0; }
+  .section-title {
+    text-align: center; font-size: 2rem; font-weight: 700;
+    margin-bottom: 40px; color: var(--color-gray-900);
+  }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+  .feature-card {
+    background: white; padding: 32px; border-radius: 12px;
+    border: 1px solid var(--color-border); text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .feature-card h3 {
+    font-size: 1.25rem; margin-bottom: 12px; color: var(--color-gray-900);
+  }
+  .feature-card p { color: var(--color-gray-600); }
+</style>
+{% endblock %}

@@ -4,7 +4,7 @@ from django.template.response import TemplateResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from .models import Service, Booking, BookingStatus
+from .models import Service, ServiceBooking, ServiceBookingStatus
 from . import services as svc
 from .selectors import check_service_availability, get_service_next_slot
 
@@ -24,24 +24,24 @@ def services_view(request):
         for cat in DEMO_CATEGORIES:
             for i, (fn, ln) in enumerate(zip(FIRST_NAMES, LAST_NAMES)):
                 Service.objects.get_or_create(
-                    name=f"{fn} {ln}",
-                    specialty=cat,
+                    title=f"{fn} {ln} - {cat}",
+                    provider=request.user if request.user.is_authenticated else None,
+                    category=cat,
                     defaults={
                         "rating": round(4.5 + i * 0.1, 1),
                         "review_count": 10 + i * 4,
-                        "location": "Toshkent",
-                        "experience": 2 + i,
                         "starting_price": 150000 + i * 100000,
-                        "is_available": i % 4 != 3,   # every 4th is "band"
-                        "category": cat,
+                        "is_open_for_booking": i % 4 != 3,   # every 4th is "band"
+                        "description": f"{cat} sohasida professional xizmat",
+                        "price_type": "fixed",
                     }
                 )
 
     if selected_category == 'Barchasi':
-        services = Service.objects.filter(is_available=True).order_by('-rating')
+        services = Service.objects.filter(is_open_for_booking=True).order_by('-rating')
     else:
         services = Service.objects.filter(
-            category=selected_category, is_available=True
+            category=selected_category, is_open_for_booking=True
         ).order_by('-rating')
 
     all_categories = ['Barchasi'] + DEMO_CATEGORIES
@@ -68,7 +68,7 @@ def service_type_detail(request, service_slug):
     category_name = MAPPING.get(service_slug, service_slug.replace('-', ' ').capitalize())
     
     # 2. Query real data — prefetch for performance
-    services_qs = Service.objects.filter(category=category_name, is_available=True).prefetch_related('bookings')
+    services_qs = Service.objects.filter(category=category_name, is_open_for_booking=True).prefetch_related('bookings')
     services_list = list(services_qs)
     
     # 3. Demo Fallback (5 profiles per category)
@@ -78,16 +78,16 @@ def service_type_detail(request, service_slug):
         
         for i in range(5):
             s, _ = Service.objects.get_or_create(
-                name=f"{first_names[i]} {last_names[i]}",
-                specialty=category_name,
+                title=f"{first_names[i]} {last_names[i]} - {category_name}",
+                provider=request.user if request.user.is_authenticated else None,
+                category=category_name,
                 defaults={
                     "rating": round(4.5 + i * 0.1, 1),
                     "review_count": 12 + i * 5,
-                    "location": "Toshkent",
-                    "experience": 3 + i,
                     "starting_price": 200000 + i * 150000,
-                    "is_available": True,
-                    "category": category_name,
+                    "is_open_for_booking": True,
+                    "description": f"{category_name} sohasida professional xizmat",
+                    "price_type": "fixed",
                 }
             )
             services_list.append(s)
@@ -120,7 +120,7 @@ def create_booking(request, service_id):
         return JsonResponse({
             "status": "success",
             "booking_id": booking.id,
-            "message": "Sorov navbatga qo'shildi ✓",
+            "message": "So'rov navbatga qo'shildi ✓",
         })
     except Service.DoesNotExist:
         return JsonResponse({"error": "Xizmat topilmadi"}, status=404)
@@ -159,7 +159,7 @@ def post_progress(request, booking_id):
 def booking_dashboard(request):
     """Mijoz uchun xizmatlar jarayonini kuzatish sahifasi"""
     bookings = (
-        Booking.objects
+        ServiceBooking.objects
         .filter(customer=request.user)
         .select_related('service')
         .order_by('-created_at')

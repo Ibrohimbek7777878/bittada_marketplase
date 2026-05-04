@@ -35,9 +35,11 @@ SERVE_FRONTEND_IN_DEV = env.bool("DJANGO_SERVE_FRONTEND", default=False)
 # CORS in dev — open to local Vite + Django.
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
     "http://localhost:8000",
-    "http://127.0.0.1:8000",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:8000",
 ]
 CORS_ALLOW_ALL_ORIGINS = True  # Dev only - restrict in production
 CORS_ALLOW_CREDENTIALS = True
@@ -98,8 +100,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # Axes ba'zan 500 xatosi beradi (lock/unlock bilan), dev da o'chiriladi
 AXES_ENABLED = False
 
-# --- AUTH BACKEND (Axes o'chirilgach standart backend bilan ishlash) ---
+# --- AUTH BACKEND (Axes + ModelBackend) ---
 AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",  # Axes brute-force protection (TZ §20 Security)
     "django.contrib.auth.backends.ModelBackend",
 ]
 

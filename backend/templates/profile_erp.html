@@ -273,9 +273,11 @@
                             </div>
                         </div>
 
+                        {# Yetkazib berish manzili maydoni — placeholder uchun apostrofli matn xavfsiz tarzda olinadi #}
+                        {% trans "To'liq manzilingizni kiriting" as ph_full_address %}
                         <div class="btd-form-group" style="margin-bottom: 32px;">
                             <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Yetkazib berish manzili" %}</label>
-                            <textarea name="address" class="btd-form-input" rows="3" placeholder="{% trans 'To\'liq manzilingizni kiriting' %}" style="width: 100%; resize: none;">{{ user_profile.address|default:'' }}</textarea>
+                            <textarea name="address" class="btd-form-input" rows="3" placeholder="{{ ph_full_address }}" style="width: 100%; resize: none;">{{ user_profile.address|default:'' }}</textarea>
                         </div>
 
                         <div style="display: flex; justify-content: flex-end;">

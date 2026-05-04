@@ -19,6 +19,10 @@ from django.views import View
 
 from .models import Category, Color, Condition, Material, Product, ProductStatus, Style, ProductType
 from apps.orders.models import Order
+from apps.auth_methods.forms import CustomerSignupForm  # Mijozlar uchun soddalashtirilgan forma
+from apps.users.models import Role, User, Profile  # Foydalanuvchi rollari, User va Profile modellari
+from apps.auth_methods.forms import CustomerSignupForm  # Mijozlar uchun soddalashtirilgan forma
+from apps.users.models import Role  # Foydalanuvchi rollari
 
 
 # ============================================================================
@@ -764,7 +768,7 @@ def login_view(request):
         user = None
         # Try authenticating assuming it's an email (default for this project)
         user = authenticate(request, email=username_or_email, password=password)
-        
+
         # If that fails, it might be a username. Fetch user by username.
         if user is None:
             try:
@@ -773,12 +777,28 @@ def login_view(request):
                 user = authenticate(request, email=user_obj.email, password=password)
             except User.DoesNotExist:
                 pass
-                
+
+        # If still fails, try phone number
+        if user is None:
+            try:
+                user_obj = User.objects.get(phone=username_or_email)
+                if user_obj.check_password(password):
+                    user = user_obj
+            except User.DoesNotExist:
+                pass
+
         if user is not None:
             login(request, user)
-            return redirect("home")
+            # Foydalanuvchi roliga qarab redirect yo'naltirish
+            if user.role == Role.CUSTOMER:
+                return redirect('profile')
+            elif user.is_staff:
+                # Admin panelga yo'naltirish (hidden-core-database)
+                return redirect('admin:index')
+            else:
+                return redirect('home')
         else:
-            error_msg = "Noto'g'ri email/username yoki parol."
+            error_msg = "Noto'g'ri email/username/telefon yoki parol."
 
     from apps.products.models import Category
     nav_categories = Category.objects.filter(parent=None, is_active=True).order_by("sort_order")
@@ -792,17 +812,32 @@ def login_view(request):
 
 
 def profile_view(request):
-    """Foydalanuvchi profili sahifasi"""
+    """Foydalanuvchi profili sahifasi.
+    Mijozlar uchun soddalashtirilgan shablon, boshqalar uchun to'liq ERP profil.
+    """
     if not request.user.is_authenticated:
         from django.shortcuts import redirect
         return redirect("login")
-        
+
     nav_categories = Category.objects.filter(parent=None, is_active=True).order_by("sort_order")
-    return TemplateResponse(request, "profile_erp.html", { # Profil andozasini render qilish
-        "base_template": _get_base_template(request), # Dinamik karkas
-        "nav_categories": nav_categories, # Navigatsiya
-        "user_profile": getattr(request.user, "profile", None), # Foydalanuvchi profili
-    }) # Render yakuni
+
+    # Mijozlar uchun soddalashtirilgan profil sahifasi
+    if request.user.role == Role.CUSTOMER:
+        template_name = "customer_profile.html"
+        context = {
+            "base_template": _get_base_template(request),
+            "nav_categories": nav_categories,
+        }
+    else:
+        # Sotuvchilar, ichki ta'minotchilar, adminlar uchun to'liq profil
+        template_name = "profile_erp.html"
+        context = {
+            "base_template": _get_base_template(request),
+            "nav_categories": nav_categories,
+            "user_profile": getattr(request.user, "profile", None),
+        }
+
+    return TemplateResponse(request, template_name, context)
 
 
 def orders_view(request): # Foydalanuvchi buyurtmalari sahifasi
@@ -858,6 +893,61 @@ def seller_profile_view(request, username):
         "products": products, # Mahsulotlar
         "nav_categories": nav_categories, # Navigatsiya
     }) # Render yakuni
+
+
+def customer_register_view(request):
+    """Mijozlar uchun soddalashtirilgan ro'yxatdan o'tish sahifasi.
+
+    Faqat first_name (ism) va phone_number (telefon) maydonlarini talab qiladi.
+    Username avtomatik ravishda telefon raqami asosida yaratiladi.
+    Rol har doim CUSTOMER bo'lib, is_staff va is_superuser FALSE saqlanadi.
+    """
+    # Agar foydalanuvchi allaqachon tizimga kirgan bo'lsa, profilga yo'naltiramiz
+    if request.user.is_authenticated:
+        return redirect('profile')
+
+    if request.method == 'POST':
+        form = CustomerSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # User yaratish (role CUSTOMER, is_staff=False, is_superuser=False)
+
+            # Foydalanuvchini avtomatik ravishda tizimga kirish (session)
+            from django.contrib.auth import login
+            login(request, user)
+
+            # Muvaffaqiyatli ro'yxatdan o'tgandan so'ng profil sahifasiga yo'naltirish
+            return redirect('profile')
+        # Agar form noto'g'ri bo'lsa, xatolar bilan qayta render qilamiz
+    else:
+        form = CustomerSignupForm()
+
+    nav_categories = Category.objects.filter(parent=None, is_active=True).order_by("sort_order")
+    return TemplateResponse(request, "customer_register.html", {
+        "base_template": _get_base_template(request),
+        "nav_categories": nav_categories,
+        "form": form,
+    })
+
+
+def profile_edit_view(request):
+    """Foydalanuvchi profilini tahrirlash sahifasi (customer va boshqalar uchun).
+    Bu view faqat tahrirlash uchun shablonni render qiladi; ma'lumotlarni saqlash
+    frontend JavaScript orqali /api/v1/users/me/profile/ endpointiga PATCH so'rov bilan amalga oshiriladi.
+    """
+    if not request.user.is_authenticated:
+        from django.shortcuts import redirect
+        return redirect("login")
+
+    nav_categories = Category.objects.filter(parent=None, is_active=True).order_by("sort_order")
+
+    # Profil mavjud bo'lmasa, yarati olamiz (get_or_create)
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    return TemplateResponse(request, "profile_erp.html", {
+        "base_template": _get_base_template(request),
+        "nav_categories": nav_categories,
+        "user_profile": profile,
+    })
 
 
 # ============================================================================

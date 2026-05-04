@@ -127,3 +127,89 @@ class Transaction(BaseModel):
     def __str__(self) -> str:
         # Tranzaksiyani qisqacha tavsiflash
         return f"{self.kind} - {self.amount} ({self.status})"
+
+
+class CreditAction(models.TextChoices):
+    """TZ §16 - Credits gate paid actions"""
+    REVEAL_PHONE = "reveal_phone", "Telefonni ko'rish"
+    REVEAL_EMAIL = "reveal_email", "Emailni ko'rish"
+    OPEN_CHAT = "open_chat", "Chatni ochish"
+    PRIORITY_LEAD = "priority_lead", "Navbatdan tashqari lead"
+    BOOST_LISTING = "boost_listing", "E'lonni yuqoriga ko'tarish"
+
+
+class CreditPrice(BaseModel):
+    """
+    TZ §16 - Har bir action uchun credit narxi (admin configurable).
+    Super Admin paneldan o'zgartiriladi.
+    """
+    action = models.CharField(
+        max_length=20,
+        choices=CreditAction.choices,
+        unique=True,
+        verbose_name="Action"
+    )
+    credits = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Credit soni"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Faol"
+    )
+
+    class Meta:
+        verbose_name = "Credit narxi"
+        verbose_name_plural = "Credit narxlari"
+
+    def __str__(self) -> str:
+        return f"{self.get_action_display()} - {self.credits} credit"
+
+
+class CreditTransaction(BaseModel):
+    """
+    TZ §16 - Credit ishlatish tarixi.
+    Kim, qachon, qaysi action uchun credit ishlatgan.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="credit_transactions",
+        verbose_name="Foydalanuvchi"
+    )
+    action = models.CharField(
+        max_length=20,
+        choices=CreditAction.choices,
+        verbose_name="Action"
+    )
+    credits_used = models.PositiveIntegerField(
+        verbose_name="Ishlatilgan credit"
+    )
+    # Qaysi sotuvchi profili uchun ishlatilgan
+    target_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="received_credit_spends",
+        verbose_name="Maqsad foydalanuvchi"
+    )
+    # Lead conversion tracking
+    converted_to_order = models.BooleanField(
+        default=False,
+        verbose_name="Buyurtmaga aylanganmi?"
+    )
+    # Seller ko'radi: kim contact'ini ochgan
+    viewed_by_seller_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Sotuvchi ko'rgan vaqti"
+    )
+
+    class Meta:
+        verbose_name = "Credit tranzaksiyasi"
+        verbose_name_plural = "Credit tranzaksiyalari"
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user} → {self.action} ({self.credits_used} credit)"

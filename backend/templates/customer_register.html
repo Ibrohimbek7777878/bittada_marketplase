@@ -1,0 +1,234 @@
+{% extends "base_erp.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Ro'yxatdan o'tish" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reg-card {
+        max-width: 500px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+        border: 1px solid rgba(226, 232, 240, 0.3);
+    }
+    .reg-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+    .reg-subtitle {
+        color: #64748B;
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    .form-group {
+        margin-bottom: 24px;
+    }
+    .form-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #475569;
+        font-size: 14px;
+    }
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+        background: #F8FAFC;
+    }
+    .form-input:focus {
+        border-color: #2563EB;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+    .form-input.error {
+        border-color: #EF4444;
+    }
+    .form-error {
+        color: #EF4444;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: #2563EB;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-submit:hover {
+        background: #1d4ed8;
+    }
+    .error-banner {
+        background: #FEE2E2;
+        color: #991B1B;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+    .success-banner {
+        background: #DCFCE7;
+        color: #166534;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+    .text-center { text-align: center; }
+    .mt-4 { margin-top: 16px; }
+    .alert { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reg-card">
+    <h1 class="reg-title">{% trans "Ro'yxatdan o'tish" %}</h1>
+    <p class="reg-subtitle">{% trans "Mijoz akkauntini yarating" %}</p>
+
+    <!-- Xato xabarlari -->
+    <div id="error-banner" class="error-banner" style="display: none;"></div>
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <!-- Ism -->
+        <div class="form-group">
+            <label for="{{ form.first_name.id_for_label }}" class="form-label">{% trans "Ism" %}</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="form-error">{{ form.first_name.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Telefon -->
+        <div class="form-group">
+            <label for="{{ form.phone_number.id_for_label }}" class="form-label">{% trans "Telefon raqami" %}</label>
+            {{ form.phone_number }}
+            <small style="color: #64748B; font-size: 12px;">Format: +998XXXXXXXXX</small>
+            {% if form.phone_number.errors %}
+                <div class="form-error">{{ form.phone_number.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Parol -->
+        <div class="form-group">
+            <label for="{{ form.password.id_for_label }}" class="form-label">{% trans "Parol" %}</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="form-error">{{ form.password.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Parolni tasdiqlash -->
+        <div class="form-group">
+            <label for="{{ form.password_confirm.id_for_label }}" class="form-label">{% trans "Parolni tasdiqlang" %}</label>
+            {{ form.password_confirm }}
+            {% if form.password_confirm.errors %}
+                <div class="form-error">{{ form.password_confirm.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+    <button type="submit" class="btn-submit" id="submit-btn">
+        <span class="btn-text">{% trans "Ro'yxatdan o'tish" %}</span>
+    </button>
+</form>
+
+<p class="text-center mt-4">
+    {% trans "Akkauntingiz bormi?" %} <a href="{% url 'login' %}">{% trans "Kirish" %}</a>
+</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const errorBanner = document.getElementById('error-banner');
+
+    function showError(message) {
+        errorBanner.textContent = '❌ ' + message;
+        errorBanner.style.display = 'block';
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        errorBanner.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.redirect) {
+                // Server may return a 200 with redirect URL in JSON (if we handle that)
+                // Actually our view returns redirect response on success (HTTP 302).
+                // So fetch won't follow redirect automatically for XHR? It will follow but fetch doesn't change location automatically.
+                // Our view on success returns redirect status (302) which fetch will follow but not change top window.
+                // To handle, we can check response.redirected or location header. Better: On success, server returns 200 with JSON? We return redirect() which sends 302.
+                // Simpler: let the form submit normally without JS if we want full page redirect.
+                // But we included JS to show errors via banner. We'll handle non-200 responses.
+            }
+            return response;
+        })
+        .then(resp => {
+            if (resp.status === 200 || resp.status === 302) {
+                // If 302 redirect, follow manually
+                if (resp.redirected) {
+                    window.location.href = resp.url;
+                } else if (resp.headers.get('Location')) {
+                    window.location.href = resp.headers.get('Location');
+                } else {
+                    // For JSON response with redirect field
+                    return resp.json().then(data => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    });
+                }
+            } else if (resp.status === 400) {
+                return resp.json().then(data => {
+                    if (data.errors) {
+                        // Show first error
+                        const errors = data.errors;
+                        const firstField = Object.keys(errors)[0];
+                        const msg = Array.isArray(errors[firstField]) ? errors[firstField][0] : errors[firstField];
+                        showError(msg);
+                    } else {
+                        showError('Xatolik yuz berdi.');
+                    }
+                });
+            } else {
+                showError('Server xatosi. Keyinroq urinib ko\'ring.');
+            }
+        })
+        .catch(err => {
+            showError('Tarmoq xatosi. Internet aloqasini tekshiring.');
+        });
+    });
+});
+</script>
+{% endblock %}

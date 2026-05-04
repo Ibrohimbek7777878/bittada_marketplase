@@ -1,25 +1,25 @@
-from .models import Service, Booking, BookingStatus
+from .models import Service, ServiceBooking, ServiceBookingStatus
 from django.db.models import Count, Q, Subquery, OuterRef
 
 
 def check_service_availability(service_id: int) -> bool:
-    """Tekshirish: Usta hozirda bo'shmı? (TZ §11)"""
+    """Tekshirish: Usta hozirda bo'shmi? (TZ §11)"""
     service = Service.objects.filter(id=service_id).first()
-    if not service or not service.is_available:
+    if not service or not service.is_open_for_booking:
         return False
     # 3 tadan ko'p faol buyurtma → band
-    pending_count = Booking.objects.filter(
+    pending_count = ServiceBooking.objects.filter(
         service_id=service_id,
-        status__in=[BookingStatus.QUEUE, BookingStatus.SCHEDULED, BookingStatus.IN_PROGRESS]
+        status__in=[ServiceBookingStatus.INQUIRY, ServiceBookingStatus.QUEUE, ServiceBookingStatus.SCHEDULED, ServiceBookingStatus.IN_PROGRESS]
     ).count()
     return pending_count < 3
 
 
 def get_service_next_slot(service_id: int) -> str:
     """Keyingi bo'sh vaqtni taxmin qilish"""
-    pending_count = Booking.objects.filter(
+    pending_count = ServiceBooking.objects.filter(
         service_id=service_id,
-        status__in=[BookingStatus.QUEUE, BookingStatus.SCHEDULED]
+        status__in=[ServiceBookingStatus.INQUIRY, ServiceBookingStatus.QUEUE, ServiceBookingStatus.SCHEDULED]
     ).count()
     if pending_count == 0:
         return "Bugun"
@@ -72,13 +72,13 @@ def get_services_with_status(queryset=None):
     N+1 muammosini oldini oladi — bitta DB so'rovi.
     """
     if queryset is None:
-        queryset = Service.objects.filter(is_available=True)
+        queryset = Service.objects.filter(is_open_for_booking=True)
 
     active_bookings = (
-        Booking.objects
+        ServiceBooking.objects
         .filter(
             service=OuterRef('pk'),
-            status__in=[BookingStatus.QUEUE, BookingStatus.SCHEDULED, BookingStatus.IN_PROGRESS]
+            status__in=[ServiceBookingStatus.INQUIRY, ServiceBookingStatus.QUEUE, ServiceBookingStatus.SCHEDULED, ServiceBookingStatus.IN_PROGRESS]
         )
         .values('service')
         .annotate(cnt=Count('id'))

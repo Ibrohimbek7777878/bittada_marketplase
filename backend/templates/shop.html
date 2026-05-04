@@ -1,22 +1,23 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}
-  {% if category %}{{ category.name_uz }} - {% endif %}Do'kon - Bittada
+  {% if category %}{{ category.name_uz }} - {% endif %}{% trans "Do'kon" %} - Bittada
 {% endblock %}
 
 {% block content %}
 <section class="shop-hero">
   <div class="container">
     <h1 class="shop-title">
-      {% if category %}{{ category.name_uz }}{% else %}Mebel marketplace{% endif %}
+      {% if category %}{{ category.name_uz }}{% else %}{% trans "Mebel marketplace" %}{% endif %}
     </h1>
     <p class="shop-subtitle">
       {% if category %}
-        {{ category.name_uz }} kategoriyasidan {{ page_obj.paginator.count }} ta mahsulot
+        {% blocktrans with count=page_obj.paginator.count %}{{ count }} ta mahsulot{{ category.name_uz }} kategoriyasidan{% endblocktrans %}
       {% else %}
-        Uylar uchun sifatli mebel, eshik va oynalar
+        {% trans "Uylar uchun sifatli mebel, eshik va oynalar" %}
       {% endif %}
     </p>
     
@@ -39,10 +40,10 @@
             {% else %}📦{% endif %}
           </div>
           <h3 class="category-name">{{ cat.name_uz }}</h3>
-          <span class="category-count">{{ cat.product_count }} ta</span>
+          <span class="category-count">{{ cat.product_count }} {% trans "ta" %}</span>
         </a>
       {% empty %}
-        <p class="text-muted">Kategoriyalar mavjud emas</p>
+        <p class="text-muted">{% trans "Kategoriyalar mavjud emas" %}</p>
       {% endfor %}
     </div>
     {% endif %}
@@ -53,29 +54,29 @@
 <section class="section">
   <div class="container">
     <div class="shop-layout">
-      <!-- Sidebar Filters -->
+      {# Yon panel filtrlari — har bir sarlavha va tugma matni tarjima qilinadi #}
       <aside class="shop-sidebar">
         <div class="filters-panel">
-          <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px;">Filtrlar</h3>
-          
+          <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px;">{% trans "Filtrlar" %}</h3>
+
           <form method="get" action="{% if category %}/category/{{ category.slug }}/{% else %}/shop/{% endif %}">
-            <!-- Material -->
+            {# Material filtri (DSP/MDF/yog'och) — har bir option DB dan keladi #}
             <div class="filter-section">
-              <h4 class="filter-title">Material</h4>
+              <h4 class="filter-title">{% trans "Material" %}</h4>
               <div class="filter-options">
                 {% for mat_code, mat_name in materials %}
                   <label class="filter-checkbox">
-                    <input type="checkbox" name="material" value="{{ mat_code }}" 
+                    <input type="checkbox" name="material" value="{{ mat_code }}"
                       {% if mat_code in selected_materials %}checked{% endif %}>
                     <span>{{ mat_name }}</span>
                   </label>
                 {% endfor %}
               </div>
             </div>
-            
-            <!-- Style -->
+
+            {# Uslub (style) filtri — radio variantlar #}
             <div class="filter-section">
-              <h4 class="filter-title">Uslub</h4>
+              <h4 class="filter-title">{% trans "Uslub" %}</h4>
               <div class="filter-options">
                 {% for style_code, style_name in styles %}
                   <label class="filter-checkbox">
@@ -86,67 +87,68 @@
                 {% endfor %}
               </div>
             </div>
-            
-            <!-- Price Range -->
+
+            {# Narx oralig'i filtri — sarlavha, "dan", "gacha" placeholder lari tarjima qilinadi #}
             <div class="filter-section">
-              <h4 class="filter-title">Narx (so'm)</h4>
+              <h4 class="filter-title">{% trans "Narx (so'm)" %}</h4>
               <div class="price-range">
                 <div class="price-inputs">
-                  <input type="number" name="price_min" placeholder="dan" value="{{ price_min }}" min="0">
+                  <input type="number" name="price_min" placeholder="{% trans 'dan' %}" value="{{ price_min }}" min="0">
                   <span>—</span>
-                  <input type="number" name="price_max" placeholder="gacha" value="{{ price_max }}" min="0">
+                  <input type="number" name="price_max" placeholder="{% trans 'gacha' %}" value="{{ price_max }}" min="0">
                 </div>
               </div>
             </div>
-            
-            <!-- Sort -->
+
+            {# Saralash (sort) — har bir variant tarjima qilinadi #}
             <div class="filter-section">
-              <h4 class="filter-title">Saralash</h4>
+              <h4 class="filter-title">{% trans "Saralash" %}</h4>
               <select name="sort" class="sort-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--color-gray-300);">
-                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Eng yangi</option>
-                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Narx: pastdan</option>
-                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Narx: yuqoridan</option>
-                <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Ommabop</option>
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{% trans "Eng yangi" %}</option>
+                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>{% trans "Narx: pastdan" %}</option>
+                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>{% trans "Narx: yuqoridan" %}</option>
+                <option value="popular" {% if sort == 'popular' %}selected{% endif %}>{% trans "Ommabop" %}</option>
               </select>
             </div>
-            
+
+            {# Filtr amallari — "Qo'llash" va "Tozalash" tugmalari #}
             <div class="filter-actions">
-              <button type="submit" class="btn-apply" style="flex: 1; padding: 12px;">Qo'llash</button>
-              <a href="{% if category %}/category/{{ category.slug }}/{% else %}/shop/{% endif %}" class="btn-reset" style="flex: 1; padding: 12px; text-align: center; display: inline-block; text-decoration: none;">Tozalash</a>
+              <button type="submit" class="btn-apply" style="flex: 1; padding: 12px;">{% trans "Qo'llash" %}</button>
+              <a href="{% if category %}/category/{{ category.slug }}/{% else %}/shop/{% endif %}" class="btn-reset" style="flex: 1; padding: 12px; text-align: center; display: inline-block; text-decoration: none;">{% trans "Tozalash" %}</a>
             </div>
           </form>
         </div>
       </aside>
-      
-      <!-- Products Grid -->
+
+      {# Mahsulotlar paneli (asosiy ustun) #}
       <div class="shop-content">
-        <!-- Toolbar -->
+        {# Toolbar — topilgan mahsulotlar soni #}
         <div class="shop-toolbar">
-          <div class="products-count">{{ page_obj.paginator.count }} ta mahsulot</div>
+          <div class="products-count">{% blocktrans count counter=page_obj.paginator.count %}{{ counter }} ta mahsulot{% plural %}{{ counter }} ta mahsulot{% endblocktrans %}</div>
         </div>
-        
-        <!-- Products -->
+
+        {# Mahsulotlar grid'i — bo'sh holatda mos xabar va "Filtrlarni tozalash" tugmasi #}
         <div class="products-grid">
           {% for product in products %}
             {% include 'includes/product_card.html' with product=product %}
           {% empty %}
             <div class="empty-state">
               <p style="font-size: 18px; margin-bottom: 16px;">🔍</p>
-              <p style="color: var(--color-gray-500);">Mahsulotlar topilmadi</p>
-              <a href="{% if category %}/category/{{ category.slug }}/{% else %}/shop/{% endif %}" class="btn btn-primary" style="margin-top: 16px;">Filtrlarni tozalash</a>
+              <p style="color: var(--color-gray-500);">{% trans "Mahsulotlar topilmadi" %}</p>
+              <a href="{% if category %}/category/{{ category.slug }}/{% else %}/shop/{% endif %}" class="btn btn-primary" style="margin-top: 16px;">{% trans "Filtrlarni tozalash" %}</a>
             </div>
           {% endfor %}
         </div>
-        
-        <!-- Pagination -->
+
+        {# Sahifalash (pagination) — "Oldingi" va "Keyingi" tugmalari tarjima qilinadi #}
         {% if page_obj.has_other_pages %}
           <div class="pagination">
             {% if page_obj.has_previous %}
-              <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}{% for m in selected_materials %}&material={{ m }}{% endfor %}{% if selected_style %}&style={{ selected_style }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="pagination-btn">← Oldingi</a>
+              <a href="?page={{ page_obj.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}{% for m in selected_materials %}&material={{ m }}{% endfor %}{% if selected_style %}&style={{ selected_style }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="pagination-btn">← {% trans "Oldingi" %}</a>
             {% else %}
-              <button class="pagination-btn" disabled>← Oldingi</button>
+              <button class="pagination-btn" disabled>← {% trans "Oldingi" %}</button>
             {% endif %}
-            
+
             {% for num in page_obj.paginator.page_range %}
               {% if page_obj.number == num %}
                 <span class="pagination-btn active">{{ num }}</span>
@@ -154,11 +156,11 @@
                 <a href="?page={{ num }}{% if sort %}&sort={{ sort }}{% endif %}{% for m in selected_materials %}&material={{ m }}{% endfor %}{% if selected_style %}&style={{ selected_style }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="pagination-btn">{{ num }}</a>
               {% endif %}
             {% endfor %}
-            
+
             {% if page_obj.has_next %}
-              <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}{% for m in selected_materials %}&material={{ m }}{% endfor %}{% if selected_style %}&style={{ selected_style }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="pagination-btn">Keyingi →</a>
+              <a href="?page={{ page_obj.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}{% for m in selected_materials %}&material={{ m }}{% endfor %}{% if selected_style %}&style={{ selected_style }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}" class="pagination-btn">{% trans "Keyingi" %} →</a>
             {% else %}
-              <button class="pagination-btn" disabled>Keyingi →</button>
+              <button class="pagination-btn" disabled>{% trans "Keyingi" %} →</button>
             {% endif %}
           </div>
         {% endif %}

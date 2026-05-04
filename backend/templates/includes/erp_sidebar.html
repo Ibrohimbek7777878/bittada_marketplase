@@ -1,11 +1,13 @@
-<!-- prefix: erp-sidebar - New Brand Navy Theme -->
+{# prefix: erp-sidebar - New Brand Navy Theme — sidebar matnlarini tarjima qilish uchun i18n yuklanadi #}
+{% load i18n %}
 <aside class="erp-sidebar">
     <!-- Branding -->
     <div class="erp-sidebar__branding" style="padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);">
         <div style="font-size: 20px; font-weight: 900; color: white; letter-spacing: -0.5px;">
             BITTADA<span style="color: var(--primary-brand);">.COMMAND</span>
         </div>
-        <div style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; margin-top: 4px;">Enterprise Resource Planning</div>
+        {# Sidebar branding tagi — Enterprise Resource Planning iborasi tarjima qilinadi #}
+        <div style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; margin-top: 4px;">{% trans "Enterprise Resource Planning" %}</div>
     </div>
 
     <!-- User Profile -->
@@ -16,11 +18,13 @@
             </div>
             <div style="display: flex; flex-direction: column;">
                 <h3 style="font-size: 14px; font-weight: 700; color: white; margin: 0;">{{ user.username }}</h3>
-                <span style="font-size: 10px; color: var(--primary-brand); font-weight: 800; text-transform: uppercase;">Super Admin</span>
+                {# Foydalanuvchi roli yorlig'i — "Super Admin" tarjima qilinadi #}
+                <span style="font-size: 10px; color: var(--primary-brand); font-weight: 800; text-transform: uppercase;">{% trans "Super Admin" %}</span>
             </div>
         </div>
         {% if new_orders_count %}
-        <div title="Yangi buyurtmalar" style="background: #EF4444; color: white; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px;">
+        {# Yangi buyurtmalar soni rozetkasi — title tarjima qilinadi #}
+        <div title="{% trans 'Yangi buyurtmalar' %}" style="background: #EF4444; color: white; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px;">
             {{ new_orders_count }}
         </div>
         {% endif %}
@@ -33,39 +37,42 @@
     {#   - Django'ning quruq admini /hidden-core-database/ ga ko'chdi (DB only) #}
     {#   - Har bir tugma ManagementAccessMiddleware orqali himoyalanadi      #}
     {# ─────────────────────────────────────────────────────────────────── #}
-    <!-- Navigation -->
+    {# Navigatsiya bloki — har bir guruh sarlavhasi va havolasi i18n bilan tarjima qilinadi #}
     <nav style="margin-top: 32px; display: flex; flex-direction: column; gap: 4px;">
-        <!-- Group: Core -->
-        <div style="padding: 0 24px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Core</div>
+        {# Guruh: Core (asosiy) #}
+        <div style="padding: 0 24px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">{% trans "Core" %}</div>
         <a href="{% url 'home' %}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">{# Saytning bosh sahifasi (B2C/B2B portal) #}
-            <span>📊</span> Dashboard
+            <span>📊</span> {% trans "Dashboard" %}
         </a>
         <a href="{% url 'mgmt:orders_list' %}" class="sidebar-link {% if '/dashboard/orders' in request.path %}active{% endif %}">{# Savdo — Bittada ERP custom UI #}
-            <span>📈</span> Savdo
+            <span>📈</span> {% trans "Savdo" %}
         </a>
 
-        <!-- Group: Marketplace -->
-        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Marketplace</div>
-        <a href="{% url 'mgmt:products_list' %}" class="sidebar-link {% if '/dashboard/products' in request.path %}active{% endif %}"><span>🛋️</span> Mahsulotlar</a>{# ERP — products_list_view #}
-        <a href="{% url 'services:services' %}" class="sidebar-link {% if '/services' in request.path and '/dashboard' not in request.path %}active{% endif %}"><span>🔧</span> Xizmatlar</a>{# Mavjud sayt sahifasi (alohida) #}
+        {# Guruh: Marketplace (mahsulot va xizmatlar) #}
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">{% trans "Marketplace" %}</div>
+        <a href="{% url 'mgmt:products_list' %}" class="sidebar-link {% if '/dashboard/products' in request.path %}active{% endif %}"><span>🛋️</span> {% trans "Mahsulotlar" %}</a>{# ERP — products_list_view #}
+        <a href="{% url 'services:services' %}" class="sidebar-link {% if '/services' in request.path and '/dashboard' not in request.path %}active{% endif %}"><span>🔧</span> {% trans "Xizmatlar" %}</a>{# Mavjud sayt sahifasi (alohida) #}
 
-        <!-- Group: Financials -->
-        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Moliya</div>
-        <a href="{% url 'mgmt:escrow_list' %}" class="sidebar-link {% if '/dashboard/escrow' in request.path %}active{% endif %}"><span>🛡️</span> Escrow Fund</a>{# ERP — escrow_list_view #}
-        <a href="{% url 'mgmt:credit_list' %}" class="sidebar-link {% if '/dashboard/credit' in request.path %}active{% endif %}"><span>💳</span> Credit Economy</a>{# ERP — credit_list_view #}
+        {# Guruh: Moliya (escrow + credit) #}
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">{% trans "Moliya" %}</div>
+        <a href="{% url 'mgmt:escrow_list' %}" class="sidebar-link {% if '/dashboard/escrow' in request.path %}active{% endif %}"><span>🛡️</span> {% trans "Escrow Fund" %}</a>{# ERP — escrow_list_view #}
+        <a href="{% url 'mgmt:credit_list' %}" class="sidebar-link {% if '/dashboard/credit' in request.path %}active{% endif %}"><span>💳</span> {% trans "Credit Economy" %}</a>{# ERP — credit_list_view #}
 
-        <!-- Group: User Management -->
-        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Management</div>
-        <a href="{% url 'mgmt:users_list' %}" class="sidebar-link {% if request.path == '/dashboard/users/' %}active{% endif %}"><span>👥</span> Foydalanuvchilar</a>{# ERP — users_list_view (admin only) #}
-        <a href="{% url 'mgmt:blacklist' %}" class="sidebar-link {% if '/dashboard/users/blacklist' in request.path %}active{% endif %}" style="color: #F87171 !important;"><span>🚫</span> Qora ro'yxat</a>{# ERP — blacklist_view (admin only) #}
+        {# Guruh: Foydalanuvchilarni boshqarish #}
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">{% trans "Management" %}</div>
+        <a href="{% url 'mgmt:users_list' %}" class="sidebar-link {% if request.path == '/dashboard/users/' %}active{% endif %}"><span>👥</span> {% trans "Foydalanuvchilar" %}</a>{# ERP — users_list_view (admin only) #}
+        <a href="{% url 'mgmt:blacklist' %}" class="sidebar-link {% if '/dashboard/users/blacklist' in request.path %}active{% endif %}" style="color: #F87171 !important;"><span>🚫</span> {% trans "Qora ro'yxat" %}</a>{# ERP — blacklist_view (admin only) #}
 
-        <!-- System -->
-        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">System</div>
-        <a href="/hidden-core-database/" class="sidebar-link" target="_blank" rel="noopener" title="Django ORM/DB darajasidagi tekshirish (faqat tizim ma'muri uchun)"><span>⚙️</span> DB Console</a>{# Django'ning quruq admin paneli — maxfiy joyda #}
-        
-        <!-- Health Monitor -->
+        {# Guruh: Tizim (DB konsoli) #}
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">{% trans "System" %}</div>
+        {# DB Console title — apostrof bilan trans matnni xavfsiz tarzda olish uchun
+           {% trans "..." as var %} pattern ishlatamiz (bu HTML entity escape muammosini oldini oladi). #}
+        {% trans "Django ORM/DB darajasidagi tekshirish (faqat tizim ma'muri uchun)" as db_console_title %}
+        <a href="/hidden-core-database/" class="sidebar-link" target="_blank" rel="noopener" title="{{ db_console_title }}"><span>⚙️</span> {% trans "DB Console" %}</a>{# Django'ning quruq admin paneli — maxfiy joyda #}
+
+        {# System Health monitor — Redis va Celery holati ko'rsatiladi #}
         <div style="margin-top: auto; padding: 24px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
-            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: 12px;">System Health</div>
+            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: 12px;">{% trans "System Health" %}</div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: white;">
                     <span>Redis</span>
@@ -78,8 +85,9 @@
             </div>
         </div>
 
+        {# Sidebar oxiridagi Logout (chiqish) tugmasi — matn tarjima qilinadi #}
         <a href="{% url 'logout' %}" class="sidebar-link" style="border-top: 1px solid rgba(255,255,255,0.1);">
-            <span>🚪</span> Logout
+            <span>🚪</span> {% trans "Chiqish" %}
         </a>
     </nav>
 </aside>

@@ -4,7 +4,10 @@ from __future__ import annotations
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from apps.users.models import AccountType, Role
+from django.contrib.auth import authenticate  # Autentifikatsiya uchun
+from django.core.exceptions import ObjectDoesNotExist  # Object topilmasa
+
+from apps.users.models import AccountType, Role, User  # User modeli va rollar
 
 
 class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun serializer (rolga mos maydonlar bilan)
@@ -129,7 +132,11 @@ class OtpConfirmSerializer(serializers.Serializer):
 
 
 class BittadaTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Adds role + username to the access token claims."""
+    """Token yaratish (login) — email yoki telefon orqali.
+
+    Qo'shimcha: token ichida role, username, account_type ma'lumotlari qo'shiladi.
+    Telefon raqami orqali ham kirish imkoniyati qo'shildi.
+    """
 
     @classmethod
     def get_token(cls, user):  # type: ignore[override]
@@ -140,13 +147,44 @@ class BittadaTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):  # type: ignore[override]
-        data = super().validate(attrs)
-        data["user"] = {
-            "id": str(self.user.id),
-            "email": self.user.email,
-            "username": self.user.username,
-            "role": self.user.role,
-            "account_type": self.user.account_type,
+        """Email yoki telefon orqali autentifikatsiya."""
+        request = self.context.get('request')
+        identifier = attrs.get('email')  # Bu maydon aslida email yoki phone bo'lishi mumkin
+        password = attrs.get('password')
+        user = None
+
+        # 1) Email orqali standart autentifikatsiya
+        if identifier:
+            user = authenticate(request=request, email=identifier, password=password)
+
+        # 2) Agar email orqali yaroqsiz bo'lsa, telefon raqami orqali sinab ko'rish
+        if user is None:
+            try:
+                # Telefon raqami bilan foydalanuvchini qidirish
+                user_obj = User.objects.get(phone=identifier)
+                # Parolni tekshirish
+                if user_obj.check_password(password):
+                    user = user_obj
+            except ObjectDoesNotExist:
+                pass
+
+        # 3) Agar user topilmasa, xato qaytarish
+        if user is None or not user.is_active:
+            raise serializers.ValidationError(
+                "Bu ma'lumotlar bilan akkaunt topilmadi yoki parol noto'g'ri."
+            )
+
+        # Token yaratish (parent class get_token dan foydalanish)
+        refresh = self.get_token(user)
+        data = {}
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        data['user'] = {
+            'id': str(user.id),
+            'email': user.email,
+            'username': user.username,
+            'role': user.role,
+            'account_type': user.account_type,
         }
         return data
 

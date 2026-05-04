@@ -1,0 +1,50 @@
+<!-- prefix: erp-modal (Mehmonlar uchun autentifikatsiya talabi) -->
+<div id="guest-modal" class="erp-modal">
+    <div class="erp-modal__content">
+        <div style="width: 80px; height: 80px; background: #EFF6FF; color: #2563EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 24px;">
+            🔒
+        </div>
+        <h2 style="font-size: 24px; font-weight: 800; color: #0F172A; margin-bottom: 12px;">Diqqat!</h2>
+        <p style="font-size: 15px; color: #64748B; margin-bottom: 32px; line-height: 1.6;">
+            Ushbu amaldan foydalanish uchun siz ro'yxatdan o'tishingiz yoki tizimga kirishingiz shart.
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="{% url 'register' %}" style="background: #2563EB; color: white; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 15px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                Ro'yxatdan o'tish
+            </a>
+            <a href="{% url 'login' %}" style="background: #F8FAFC; color: #0F172A; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 15px; border: 1px solid #E2E8F0;">
+                Tizimga kirish
+            </a>
+            <button onclick="closeGuestModal()" style="margin-top: 16px; background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 14px; font-weight: 500;">
+                Keyinroq
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openGuestModal() {
+        const modal = document.getElementById('guest-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Scrollni to'xtatish
+        }
+    }
+
+    function closeGuestModal() {
+        const modal = document.getElementById('guest-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Scrollni qaytarish
+        }
+    }
+
+    // Modal tashqarisiga bosilganda yopish
+    window.onclick = function(event) {
+        const modal = document.getElementById('guest-modal');
+        if (event.target == modal) {
+            closeGuestModal();
+        }
+    }
+</script>
