@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan o'tish - Bittada{% endblock %}
+
+{% block content %}
+<section style="padding: 40px 0; min-height: calc(100vh - 200px); display: flex; align-items: center;">
+  <div class="container">
+    <div class="auth-card">
+      <h1 class="auth-title">Ro'yxatdan o'tish</h1>
+      <p class="auth-subtitle">Hisobingizni yarating va Bittada ekotizimiga qo'shiling</p>
+
+      <!-- Debug info -->
+      <div id="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 15px; border-radius: 5px; font-size: 12px; display: none;">
+        <strong>Debug:</strong>
+        <div id="debug-content"></div>
+      </div>
+
+      <!-- Alert messages -->
+      <div id="alert-error" class="alert alert-error"></div>
+      <div id="alert-success" class="alert alert-success"></div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="email" class="form-label">Email manzil *</label>
+          <input type="email" id="email" name="email" class="form-input" 
+                 placeholder="you@example.com" required autocomplete="email" />
+          <div id="email-error" class="form-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="username" class="form-label">Foydalanuvchi nomi *</label>
+          <input type="text" id="username" name="username" class="form-input" 
+                 placeholder="john_doe" required minlength="3" maxlength="30" 
+                 autocomplete="username" />
+          <p class="form-hint">3-30 belgi. Harflar, raqamlar, defis va pastki chiziqlar.</p>
+          <div id="username-error" class="form-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Parol *</label>
+          <input type="password" id="password" name="password" class="form-input" 
+                 placeholder="••••••••" required minlength="6" autocomplete="new-password" />
+          <p class="form-hint">Kamida 6 ta belgidan iborat bo'lishi kerak</p>
+          <div id="password-error" class="form-error"></div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-full">
+          Hisob yaratish
+        </button>
+      </form>
+
+      <p class="text-center mt-4">
+        Hisobingiz bormi? <a href="{% url 'pages:login' %}">Kirish</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .auth-card {
+    max-width: 450px; margin: 0 auto;
+    background: white; padding: 40px; border-radius: 12px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .auth-title {
+    font-size: 2rem; font-weight: 700; margin-bottom: 8px;
+    color: var(--color-gray-900);
+  }
+  .auth-subtitle {
+    color: var(--color-gray-600); margin-bottom: 32px;
+  }
+</style>
+
+{% block extra_js %}
+<script>
+  // Show debug info
+  function showDebug(msg) {
+    const debugDiv = document.getElementById('debug-info');
+    const debugContent = document.getElementById('debug-content');
+    debugContent.innerHTML += `<div>${msg}</div>`;
+    debugDiv.style.display = 'block';
+  }
+
+  const form = document.getElementById('register-form');
+  const submitBtn = document.getElementById('submit-btn');
+
+  // Log CSRF token on page load
+  const csrfToken = getCSRFToken();
+  showDebug(`CSRF Token: ${csrfToken ? '✅ Present (' + csrfToken.substring(0, 10) + '...)' : '❌ Missing'}`);
+  showDebug(`API Base: /api/v1/auth/register/`);
+
+  // Clear all errors
+  function clearErrors() {
+    document.querySelectorAll('.form-error').forEach(el => {
+      el.classList.remove('show');
+      el.textContent = '';
+    });
+    document.querySelectorAll('.form-input').forEach(el => {
+      el.classList.remove('error');
+    });
+    document.querySelectorAll('.alert').forEach(el => {
+      el.classList.remove('show');
+      el.textContent = '';
+    });
+  }
+
+  // Show field-specific error
+  function showFieldError(fieldId, message) {
+    const errorEl = document.getElementById(`${fieldId}-error`);
+    const inputEl = document.getElementById(fieldId);
+    if (errorEl && inputEl) {
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      inputEl.classList.add('error');
+    }
+  }
+
+  // Validate form
+  function validateForm(email, username, password) {
+    const errors = {};
+    
+    if (!email) {
+      errors.email = 'Email manzil kiritilishi shart.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = 'To\'g\'ri email manzil kiriting.';
+    }
+    
+    if (!username) {
+      errors.username = 'Foydalanuvchi nomi kiritilishi shart.';
+    } else if (username.length < 3 || username.length > 30) {
+      errors.username = 'Foydalanuvchi nomi 3-30 belgidan iborat bo\'lishi kerak.';
+    } else if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{2,29}$/.test(username)) {
+      errors.username = 'Foydalanuvchi nomi faqat harflar, raqamlar, defis va pastki chiziqlardan iborat bo\'lishi kerak. Harf yoki raqam bilan boshlanishi shart.';
+    }
+    
+    if (!password) {
+      errors.password = 'Parol kiritilishi shart.';
+    } else if (password.length < 6) {
+      errors.password = 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.';
+    }
+    
+    return errors;
+  }
+
+  // Handle form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+    
+    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    
+    showDebug(`Form submitted: ${email}, ${username}`);
+    
+    // Frontend validation
+    const validationErrors = validateForm(email, username, password);
+    if (Object.keys(validationErrors).length > 0) {
+      showDebug('Validation errors found');
+      Object.entries(validationErrors).forEach(([field, message]) => {
+        showFieldError(field, message);
+      });
+      return;
+    }
+    
+    showDebug('Validation passed, calling API...');
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Yaratilmoqda...';
+    
+    try {
+      // Log the API call
+      showDebug(`POST /api/v1/auth/register/`);
+      
+      // Call API
+      const response = await apiCall('POST', '/api/v1/auth/register/', {
+        email,
+        username,
+        password
+      });
+
+      showDebug(`Response: ${JSON.stringify(response).substring(0, 50)}...`);
+
+      // Success - redirect to login
+      const alertSuccess = document.getElementById('alert-success');
+      alertSuccess.textContent = '✓ Hisob muvaffaqiyatli yaratildi!';
+      alertSuccess.classList.add('show');
+      submitBtn.textContent = '✓ Yaratildi!';
+      submitBtn.style.background = 'var(--color-green-600)';
+      
+      setTimeout(() => {
+        window.location.href = '/login/';
+      }, 1500);
+      
+    } catch (error) {
+      showDebug(`Error: ${error.message}`);
+      showDebug(`Error data: ${JSON.stringify(error.data)}`);
+      
+      if (error.data?.errors) {
+        // Show field-specific errors from backend
+        Object.entries(error.data.errors).forEach(([field, messages]) => {
+          const message = Array.isArray(messages) ? messages[0] : messages;
+          if (field === 'non_field_errors') {
+            showError(message);
+          } else {
+            showFieldError(field, message);
+          }
+        });
+      } else {
+        showError(error.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
+      }
+      
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Hisob yaratish';
+    }
+  });
+
+  function showError(message) {
+    const alertError = document.getElementById('alert-error');
+    alertError.textContent = message;
+    alertError.classList.add('show');
+  }
+</script>
+{% endblock %}
+{% endblock %}

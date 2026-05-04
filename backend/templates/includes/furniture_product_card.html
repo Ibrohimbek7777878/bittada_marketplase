@@ -1,0 +1,128 @@
+{% load humanize %}
+{% load static %} <!-- Statik fayllar (rasmlar) uchun kutubxonani yuklash -->
+{% for product in products %}
+<article class="btd-product-card" data-product-id="{{ product.uuid }}">
+  <!-- Badges -->
+  <div class="btd-product-card__badges">
+    {% if product.is_new %}
+    <span class="btd-product-card__badge btd-product-card__badge--new">Yangi</span>
+    {% endif %}
+    {% if product.is_discount_active and product.discount_percent > 0 %}
+    <span class="btd-product-card__badge btd-product-card__badge--discount">-{{ product.discount_percent }}%</span>
+    {% endif %}
+    {% if product.product_type == 'manufacturing' %}
+    <span class="btd-product-card__badge btd-product-card__badge--manufacturing">Buyurtma</span>
+    {% endif %}
+    {% if product.is_featured %}
+    <span class="btd-product-card__badge btd-product-card__badge--featured">Top</span>
+    {% endif %}
+  </div>
+  
+  <!-- Wishlist Button -->
+  <button class="btd-product-card__wishlist" onclick="event.preventDefault(); toggleWishlist('{{ product.uuid }}'); this.classList.toggle('btd-product-card__wishlist--active');" aria-label="Sevimlilar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  </button>
+  
+  <!-- Image -->
+  <a href="{% url 'product_detail' product.uuid %}" class="btd-product-card__image">
+    {% if product.images.first %}
+    <img src="{{ product.images.first.image.url }}" 
+         alt="{{ product.title_uz }}" 
+         loading="lazy"
+         onerror="this.onerror=null;this.src='{% static 'images/placeholder.svg' %}'"> <!-- Agar rasm 404 bo'lsa placeholderni yuklash -->
+    {% else %}
+    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--btd-bg-soft); color: var(--btd-text-muted);">
+      <span style="font-size: 48px;">🪑</span>
+    </div>
+    {% endif %}
+    
+    {% if product.glb_models.exists %}
+    <div class="btd-product-card__3d-indicator">
+      <span>🔲</span> 3D
+    </div>
+    {% endif %}
+  </a>
+  
+  <!-- Content -->
+  <div class="btd-product-card__content">
+    <div class="btd-product-card__category">{{ product.category.name_uz|default:'Mebel' }}</div>
+    
+    <h3 class="btd-product-card__title">
+      <a href="{% url 'product_detail' product.uuid %}" style="color: inherit; text-decoration: none;">
+        {{ product.title_uz }}
+      </a>
+    </h3>
+    
+    <!-- Specs -->
+    <div class="btd-product-card__specs">
+      {% if product.primary_material %}
+      <span class="btd-product-card__spec">
+        <span>🪵</span>
+        <span>{{ product.get_primary_material_display|default:product.primary_material }}</span>
+      </span>
+      {% endif %}
+      
+      {% if product.primary_color %}
+      <span class="btd-product-card__spec">
+        <span>🎨</span>
+        <span>{{ product.get_primary_color_display|default:product.primary_color }}</span>
+      </span>
+      {% endif %}
+      
+      {% if product.width_cm or product.height_cm %}
+      <span class="btd-product-card__spec">
+        <span>📐</span>
+        <span>
+          {% if product.width_cm %}{{ product.width_cm }}sm{% endif %}
+          {% if product.height_cm %}×{{ product.height_cm }}sm{% endif %}
+        </span>
+      </span>
+      {% endif %}
+    </div>
+    
+    <!-- Price -->
+    <div class="btd-product-card__price">
+      {% if product.product_type == 'manufacturing' and product.min_price %}
+        <span class="btd-product-card__price-current">
+          {{ product.min_price|floatformat:0|intcomma }} so'm dan
+        </span>
+        {% if product.max_price %}
+        <span class="btd-product-card__range">gacha {{ product.max_price|floatformat:0|intcomma }} so'm</span>
+        {% endif %}
+      {% else %}
+        <span class="btd-product-card__price-current">
+          {{ product.effective_price|default:product.price|floatformat:0|intcomma }} so'm
+        </span>
+        {% if product.old_price and product.is_discount_active %}
+        <span class="btd-product-card__price-old">{{ product.old_price|floatformat:0|intcomma }} so'm</span>
+        {% endif %}
+      {% endif %}
+    </div>
+    
+    <!-- Seller -->
+    <div class="btd-product-card__seller">
+      <div class="btd-product-card__seller-avatar">
+        {{ product.seller.profile.display_name|first|default:product.seller.username|first|upper }}
+      </div>
+      <div class="btd-product-card__seller-info">
+        <p class="btd-product-card__seller-name">
+          {{ product.seller.profile.display_name|default:product.seller.username }}
+        </p>
+        <div class="btd-product-card__seller-rating">
+          <span>⭐</span>
+          <span>{{ product.seller.profile.rating|default:'0.0' }}</span>
+          <span>({{ product.seller.profile.review_count|default:0 }})</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+{% empty %}
+<div style="grid-column: 1/-1; text-align: center; padding: var(--space-2xl);">
+  <div style="font-size: 64px; margin-bottom: var(--space-md);">🔍</div>
+  <h3 style="font-size: 20px; color: var(--btd-text); margin-bottom: var(--space-sm);">Mahsulotlar topilmadi</h3>
+  <p style="color: var(--btd-text-muted);">Boshqa filtrlar yoki qidiruv so'zini sinab ko'ring</p>
+</div>
+{% endfor %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Kirish" %} - Bittada{% endblock %}
+
+{% block content %}
+{# Kirish (login) sahifasi — barcha matnlar i18n bilan tarjima qilinadi #}
+<section style="padding: 40px 0; min-height: calc(100vh - 200px); display: flex; align-items: center;">
+  <div class="container">
+    <div class="auth-card">
+      <h1 class="auth-title">{% trans "Kirish" %}</h1>
+      <p class="auth-subtitle">{% trans "Hisobingizga kiring va Bittada ekotizimidan foydalaning" %}</p>
+
+      {# Xato xabarlarini ko'rsatish uchun maxsus blok #}
+      <div id="alert-error" class="alert alert-error"></div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email" class="form-label">{% trans "Email manzil" %}</label>
+          <input type="email" id="email" name="email" class="form-input"
+                 placeholder="you@example.com" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">{% trans "Parol" %}</label>
+          <input type="password" id="password" name="password" class="form-input"
+                 placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-full">
+          {% trans "Kirish" %}
+        </button>
+      </form>
+
+      <p class="text-center mt-4">
+        {% trans "Hisobingiz yo'qmi?" %} <a href="{% url 'pages:register' %}">{% trans "Ro'yxatdan o'tish" %}</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .auth-card {
+    max-width: 450px; margin: 0 auto;
+    background: white; padding: 40px; border-radius: 12px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .auth-title {
+    font-size: 2rem; font-weight: 700; margin-bottom: 8px;
+    color: var(--color-gray-900);
+  }
+  .auth-subtitle {
+    color: var(--color-gray-600); margin-bottom: 32px;
+  }
+</style>
+
+{% block extra_js %}
+<script>
+  const form = document.getElementById('login-form');
+  const submitBtn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    
+    // Clear error
+    const alertError = document.getElementById('alert-error');
+    alertError.classList.remove('show');
+    alertError.textContent = '';
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Kirilmoqda...';
+    
+    try {
+      // Call login API
+      const response = await apiCall('POST', '/api/v1/auth/login/', {
+        email,
+        password
+      });
+
+      // Store tokens (API returns access and refresh directly)
+      if (response.access) {
+        localStorage.setItem('accessToken', response.access);
+        localStorage.setItem('refreshToken', response.refresh);
+      }
+
+      // Success - redirect based on role (backend provides redirect URL)
+      submitBtn.textContent = '✓ Kirildi!';
+      submitBtn.style.background = 'var(--color-green-600)';
+
+      const redirectUrl = response.redirect || '/';
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 1000);
+      
+    } catch (error) {
+      if (error.data?.message) {
+        alertError.textContent = error.data.message;
+      } else {
+        alertError.textContent = error.message || 'Kirishda xatolik yuz berdi';
+      }
+      alertError.classList.add('show');
+      
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kirish';
+    }
+  });
+</script>
+{% endblock %}
+{% endblock %}

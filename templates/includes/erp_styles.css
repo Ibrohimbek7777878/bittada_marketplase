@@ -1,0 +1,132 @@
+/* erp_styles.css - Bittada Marketplace Premium ERP Styles (Glassmorphism & SaaS Vibe) */
+
+/* Layout & Main Content */
+.erp-layout { display: flex; min-height: calc(100vh - 70px); }
+
+.erp-main { 
+    flex: 1; 
+    padding: 40px; 
+    background: #F8FAFC; 
+    min-width: 0; 
+}
+
+/* Glassmorphism Card System */
+.erp-card {
+    background: rgba(255, 255, 255, 0.7); /* Yarim shaffof oq */
+    backdrop-filter: blur(10px); /* Glassmorphism effekti */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+    transition: var(--erp-transition);
+}
+
+.erp-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
+}
+
+/* Analytics Grid - Dashbord uchun */
+.erp-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.erp-stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid #E2E8F0;
+    transition: var(--erp-transition);
+}
+
+.erp-stat-card__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.erp-stat-card__value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.erp-stat-card__trend {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.erp-stat-card__trend--up { color: #10B981; }
+.erp-stat-card__trend--down { color: #EF4444; }
+
+/* Sidebar Premium Styles (Redundant styles from base_erp removed to avoid conflict) */
+.erp-sidebar { 
+    width: 280px; 
+    background: white; 
+    border-right: 1px solid #E2E8F0; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 24px 0; 
+    position: sticky; 
+    top: 70px; 
+    height: calc(100vh - 70px); 
+    overflow-y: auto; 
+}
+
+/* Interactive Elements (Vanilla JS usage support) */
+.erp-tab-group {
+    display: flex;
+    gap: 8px;
+    background: #F1F5F9;
+    padding: 4px;
+    border-radius: 12px;
+    width: fit-content;
+    margin-bottom: 24px;
+}
+
+.erp-tab-btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 14px;
+    color: #64748B;
+    cursor: pointer;
+    transition: var(--erp-transition);
+}
+
+.erp-tab-btn--active {
+    background: white;
+    color: #0F172A;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Premium Buttons */
+.erp-btn-primary {
+    background: var(--erp-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: var(--erp-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.erp-btn-primary:hover {
+    background: var(--erp-accent); /* Bittada Orange on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(255, 87, 34, 0.3);
+}

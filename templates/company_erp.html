@@ -1,0 +1,229 @@
+{% extends base_template|default:"base_erp.html" %}
+
+{% block title %}Kompaniya haqida | Bittada{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* prefix: erp-company - Green-First Branded About Page */
+    .erp-company-hero {
+        background: var(--primary-brand); /* Lime Green Theme */
+        border-radius: 32px;
+        padding: 100px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 64px;
+        color: var(--secondary-brand);
+        box-shadow: 0 20px 40px rgba(164, 212, 108, 0.15);
+        border: 1px solid rgba(0,31,63,0.05);
+    }
+    
+    .erp-company-hero::before {
+        content: '';
+        position: absolute;
+        top: -120px;
+        left: -120px;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(80px);
+    }
+    
+    .erp-company-title {
+        font-size: 56px;
+        font-weight: 950;
+        margin-bottom: 24px;
+        position: relative;
+        z-index: 2;
+        letter-spacing: -2px;
+        line-height: 1.1;
+    }
+    
+    .erp-company-subtitle {
+        font-size: 20px;
+        color: rgba(0, 31, 63, 0.7);
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.6;
+        position: relative;
+        z-index: 2;
+        font-weight: 600;
+    }
+    
+    .erp-stats-container {
+        background: white;
+        border-radius: 32px;
+        padding: 64px;
+        border: 1px solid var(--erp-glass-border);
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 64px;
+        box-shadow: var(--erp-shadow);
+        backdrop-filter: blur(12px);
+    }
+    
+    .erp-stat-item {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .erp-stat-number {
+        font-size: 52px;
+        font-weight: 950;
+        color: var(--secondary-brand);
+        margin-bottom: 8px;
+        letter-spacing: -1px;
+    }
+    
+    .erp-stat-label {
+        font-size: 15px;
+        color: #64748B;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .erp-values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        margin-bottom: 64px;
+    }
+    
+    .erp-value-card {
+        background: white;
+        border: 1px solid var(--erp-glass-border);
+        border-radius: 28px;
+        padding: 48px;
+        text-align: center;
+        transition: var(--erp-transition);
+        box-shadow: var(--erp-shadow);
+        backdrop-filter: blur(12px);
+    }
+    
+    .erp-value-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(164, 212, 108, 0.2);
+        border-color: var(--primary-brand);
+    }
+    
+    .erp-value-icon {
+        width: 72px;
+        height: 72px;
+        background: rgba(164, 212, 108, 0.1);
+        border: 1px solid var(--primary-brand);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 32px;
+    }
+
+    .cta-banner {
+        background: var(--secondary-brand);
+        border-radius: 32px;
+        padding: 80px 64px;
+        text-align: center;
+        margin-bottom: 80px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--erp-glass-border);
+    }
+
+    .cta-banner::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: var(--primary-brand);
+        filter: blur(120px);
+        opacity: 0.1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="erp-company-container" id="erp-main-content" style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <!-- Hero Section (Green-First Flip) -->
+    <div class="erp-company-hero">
+        <h1 class="erp-company-title">O'zbekistonning Raqamli Mebel Bozori</h1>
+        <p class="erp-company-subtitle">Biz mebel ishlab chiqaruvchilar, ustalar va xaridorlarni bitta yagona, ishonchli va zamonaviy platformada birlashtiramiz.</p>
+    </div>
+
+    <!-- Stats Section (Navy-Brand Colors) -->
+    <div class="erp-stats-container">
+        <div class="erp-stat-item">
+            <div class="erp-stat-number">5,000+</div>
+            <div class="erp-stat-label">Foydalanuvchilar</div>
+        </div>
+        <div style="width: 1px; background: #E2E8F0; margin: 0 20px;"></div>
+        <div class="erp-stat-item">
+            <div class="erp-stat-number">1,200+</div>
+            <div class="erp-stat-label">Malakali ustalar</div>
+        </div>
+        <div style="width: 1px; background: #E2E8F0; margin: 0 20px;"></div>
+        <div class="erp-stat-item">
+            <div class="erp-stat-number">10,000+</div>
+            <div class="erp-stat-label">Muvaffaqiyatli loyihalar</div>
+        </div>
+    </div>
+
+    <!-- Bizning qadriyatlarimiz -->
+    <h2 style="font-size: 36px; font-weight: 950; color: var(--secondary-brand); text-align: center; margin-bottom: 56px; letter-spacing: -1.5px;">Bizning qadriyatlarimiz</h2>
+    
+    <div class="erp-values-grid">
+        <!-- Value 1 -->
+        <div class="erp-value-card">
+            <div class="erp-value-icon">🛡️</div>
+            <h3 style="font-size: 22px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Xavfsizlik</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; margin: 0; font-weight: 500;">Barcha tranzaksiyalar "Escrow" tizimi bilan 100% himoyalangan. Xotirjamlik bilan xarid qiling.</p>
+        </div>
+        
+        <!-- Value 2 -->
+        <div class="erp-value-card">
+            <div class="erp-value-icon">⚡</div>
+            <h3 style="font-size: 22px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Tezlik</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; margin: 0; font-weight: 500;">Zamonaviy texnologiyalar tufayli izlagan mahsulot yoki ustani soniyalar ichida topish kafolatlanadi.</p>
+        </div>
+        
+        <!-- Value 3 -->
+        <div class="erp-value-card">
+            <div class="erp-value-icon">🤝</div>
+            <h3 style="font-size: 22px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Ishonch</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; margin: 0; font-weight: 500;">Har bir usta va sotuvchi qat'iy tekshiruvdan o'tadi. Haqiqiy sharhlar orqali eng yaxshilarini tanlang.</p>
+        </div>
+    </div>
+
+    <!-- CTA Banner (Branded Navy/Green) -->
+    <div class="cta-banner">
+        <h2 style="font-size: 40px; font-weight: 950; margin-bottom: 24px; letter-spacing: -1px;">Biznesingizni biz bilan rivojlantiring</h2>
+        <p style="font-size: 18px; color: rgba(255,255,255,0.7); max-width: 650px; margin: 0 auto 40px; line-height: 1.6; font-weight: 500;">Bittada nafaqat xaridorlar, balki mebel biznesi egalari va professional ustalar uchun ham eng kuchli mijozlar oqimi manbayi hisoblanadi.</p>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <a href="{% url 'register' %}" class="erp-btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 56px; padding: 0 40px; font-size: 16px;">Hamkor bo'lish</a>
+            <a href="#" style="background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); color: white; padding: 0 40px; border-radius: 14px; font-weight: 800; text-decoration: none; transition: var(--erp-transition); height: 56px; display: inline-flex; align-items: center; justify-content: center; backdrop-filter: blur(8px);" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='var(--primary-brand)';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)';">Batafsil ma'lumot</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Active Link Highlight
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            if (link.getAttribute('href').includes('company')) {
+                link.style.opacity = '1';
+                link.style.borderBottom = '2px solid var(--secondary-brand)';
+                link.style.color = 'var(--secondary-brand)';
+                link.style.background = 'rgba(164, 212, 108, 0.05)';
+            }
+        });
+    });
+</script>
+{% endblock %}

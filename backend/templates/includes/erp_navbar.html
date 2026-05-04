@@ -1,0 +1,479 @@
+{% load static %}
+{% load i18n %}
+<header class="erp-header-wrapper" style="position: sticky; top: 0; left: 0; width: 100%; z-index: 2000; background: white; border-bottom: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+    <nav class="erp-nav" style="display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 40px; max-width: 1800px; margin: 0 auto;">
+        
+        <!-- Group 1: Logo & Catalog (Left) -->
+        <div style="display: flex; align-items: center; gap: 32px; flex: 1;">
+            <a href="/" class="navbar-brand" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--secondary-brand); font-weight: 950; font-size: 24px; letter-spacing: -1.5px;">
+                <div style="width: 38px; height: 38px; background: var(--primary-brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(164, 212, 108, 0.3);">
+                    <span style="color: var(--secondary-brand); font-size: 22px; font-weight: 950;">B</span>
+                </div>
+                <span class="brand-text">Bittada</span>
+            </a>
+
+            <!-- Catalog Mega-Menu Trigger (Hover-based) -->
+            <div class="katalog-wrapper" style="position: relative; height: 72px; display: flex; align-items: center;">
+                <button class="catalog-btn" style="display: flex; align-items: center; gap: 10px; background: var(--secondary-brand); color: white; border: none; padding: 0 20px; height: 44px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: var(--erp-transition);">
+                    <i class="bi bi-grid-fill"></i> {{ cms.nav_catalog|default:"Katalog" }}
+                </button>
+                <script>
+        // Mega Menu Interaction Fix: Close on link click
+        document.querySelectorAll('.mega-list a').forEach(link => {
+            link.addEventListener('click', () => {
+                const menu = document.getElementById('mega-menu');
+                menu.style.display = 'none';
+                setTimeout(() => { menu.style.display = ''; }, 500); // Reset for hover
+            });
+        });
+    </script>
+                
+                <!-- Mega Menu Overlay (Hover controlled) -->
+                <div id="mega-menu" class="mega-menu-overlay">
+                    <div class="mega-menu-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 40px 40px 32px;">
+
+                            <!-- ── Column 1: Mebellar (Dynamic from DB) ── -->
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-house-heart" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_furniture|default:"Mebellar" }}
+                                </h4>
+                                <ul class="mega-list">
+                                    {% if nav_categories.furniture %}
+                                        {% for cat in nav_categories.furniture %}
+                                        <li>
+                                            <a href="{% url 'category_detail' cat.slug %}">
+                                                <i class="bi bi-chevron-right"></i> {{ cat.name_uz }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {# Static fallback when DB is empty — standard Django tags only #}
+                                        <li><a href="{% url 'category_detail' 'yotoqxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Yotoqxona</a></li>
+                                        <li><a href="{% url 'category_detail' 'mehmonxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Mehmonxona</a></li>
+                                        <li><a href="{% url 'category_detail' 'oshxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Oshxona</a></li>
+                                        <li><a href="{% url 'category_detail' 'ofis-mebellari' %}"><i class="bi bi-chevron-right"></i> Ofis</a></li>
+                                        <li><a href="{% url 'category_detail' 'bolalar-mebellari' %}"><i class="bi bi-chevron-right"></i> Bolalar mebellari</a></li>
+                                        <li><a href="{% url 'category_detail' 'yumshoq-mebellar' %}"><i class="bi bi-chevron-right"></i> Yumshoq mebellar</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <!-- ── Column 2: Ishlab chiqarish (Dynamic from DB) ── -->
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-factory" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_prod|default:"Ishlab chiqarish" }}
+                                </h4>
+                                <ul class="mega-list">
+                                    {% if nav_categories.manufacturing %}
+                                        {% for cat in nav_categories.manufacturing %}
+                                        <li>
+                                            <a href="{% url 'category_detail' cat.slug %}">
+                                                <i class="bi bi-chevron-right"></i> {{ cat.name_uz }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {# Static fallback #}
+                                        <li><a href="{% url 'category_detail' 'xom-ashyo' %}"><i class="bi bi-chevron-right"></i> Xom-ashyo (DSP/MDF)</a></li>
+                                        <li><a href="{% url 'category_detail' 'furnitura' %}"><i class="bi bi-chevron-right"></i> Furnitura</a></li>
+                                        <li><a href="{% url 'category_detail' 'fasadlar' %}"><i class="bi bi-chevron-right"></i> Fasadlar</a></li>
+                                        <li><a href="{% url 'manufacturing' %}"><i class="bi bi-chevron-right"></i> Ulgurji savdo</a></li>
+                                        <li><a href="{% url 'category_detail' 'maxsus-buyurtmalar' %}"><i class="bi bi-chevron-right"></i> Maxsus buyurtmalar</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <!-- ── Column 3: Xonalar bo'yicha (TZ §12.2) ── -->
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-door-open" style="color:var(--primary-brand);"></i>
+                                    Xonalar bo'yicha
+                                </h4>
+                                <ul class="mega-list">
+                                    <li><a href="{% url 'category_detail' 'yotoqxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Yotoqxona to'plamlari</a></li>
+                                    <li><a href="{% url 'category_detail' 'mehmonxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Mehmonxona interyeri</a></li>
+                                    <li><a href="{% url 'category_detail' 'oshxona-mebellari' %}"><i class="bi bi-chevron-right"></i> Oshxona modullari</a></li>
+                                    <li><a href="{% url 'category_detail' 'bolalar-mebellari' %}"><i class="bi bi-chevron-right"></i> Bolalar xonasi</a></li>
+                                    <li><a href="{% url 'category_detail' 'ofis-mebellari' %}"><i class="bi bi-chevron-right"></i> Ofis mebellari</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- ── Column 4: Platforma ── -->
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-info-circle" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_platform|default:"Platforma" }}
+                                </h4>
+                                <ul class="mega-list">
+                                    <li><a href="{% url 'company' %}"><i class="bi bi-chevron-right"></i> Biz haqimizda</a></li>
+                                    <li><a href="{% url 'showroom' %}"><i class="bi bi-chevron-right"></i> Showroom (3D)</a></li>
+                                    <li><a href="{% url 'register' %}?role=seller"><i class="bi bi-chevron-right"></i> Hamkorlik shartlari</a></li>
+                                    {% if user.is_authenticated %}
+                                    <li><a href="{% url 'services:booking_dashboard' %}"><i class="bi bi-chevron-right"></i> Mening buyurtmalarim</a></li>
+                                    {% endif %}
+                                    <li><a href="#" title="Tez kunda"><i class="bi bi-chevron-right"></i> Blog <span style="font-size:10px;opacity:.5;">(tez kunda)</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+<!-- Lang Switcher Button -->
+        <div class="erp-nav-item dropdown" style="display: flex; align-items: center;">
+            <button class="erp-nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="display: flex; align-items: center; gap: 6px; background: none; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 10px; font-size: 13px; color: var(--secondary-brand); cursor: pointer;">
+                <i class="bi bi-translate"></i>
+                <span>{{ request.LANGUAGE_CODE|upper }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                {% for language in languages %}
+                    <li>
+                        <form action="{% url 'set_language' %}" method="post">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path|slice:'3:' }}">
+                            <input name="language" type="hidden" value="{{ language.code }}">
+                            <button type="submit" class="dropdown-item {% if language.code == LANGUAGE_CODE %}active{% endif %}">
+                                {{ language.name_local }} ({{ language.code|upper }})
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+                        <!-- Promo Banner — precise brand green gradient ── -->
+                        <div style="background: linear-gradient(90deg, #88c343 0%, #5a9a1f 100%); padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 24px 24px; position: relative; overflow: hidden;">
+                            <div style="display: flex; align-items: center; gap: 20px; position: relative; z-index: 2;">
+                                <div style="font-size: 42px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));">🛋️</div>
+                                <div>
+                                    <h5 style="margin:0; font-weight:950; font-size:18px; color:var(--secondary-brand); letter-spacing:-0.5px;">{{ cms.promo_title|default:"Bittada Premium Showroom" }}</h5>
+                                    <p style="margin:4px 0 0; font-size:13px; font-weight:600; color:var(--secondary-brand); opacity:.85;">{{ cms.promo_desc|default:"Mahsulotlarni 3D ko'rinishida o'z uyingizga joylashtirib ko'ring." }}</p>
+                                </div>
+                            </div>
+                            <a href="/showroom-3d/" class="showroom-cta-btn">{{ cms.promo_btn|default:"Boshlash" }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group 2: Main Services (Center) -->
+        <div class="nav-links-center" style="display: flex; align-items: center; justify-content: center; gap: 12px; flex: 2;">
+            <a href="{% url 'home' %}" class="nav-link-premium {% if request.path == '/' %}active{% endif %}">
+                <i class="bi bi-house-door"></i> {{ cms.nav_home|default:"Bosh sahifa" }}
+            </a>
+            <a href="{% url 'showroom' %}" class="nav-link-premium {% if 'showroom' in request.path %}active{% endif %}">
+                <i class="bi bi-box"></i> {{ cms.nav_showroom|default:"Showroom (3D)" }}
+            </a>
+            <a href="{% url 'services' %}" class="nav-link-premium {% if 'services' in request.path %}active{% endif %}">
+                <i class="bi bi-tools"></i> {{ cms.nav_services|default:"Xizmatlar" }}
+            </a>
+            <a href="{% url 'manufacturing' %}" class="nav-link-premium {% if 'manufacturing' in request.path %}active{% endif %}">
+                <i class="bi bi-factory"></i> {{ cms.nav_prod|default:"Ishlab chiqarish" }}
+            </a>
+        </div>
+
+        <!-- Group 3: Universal Search & Profile (Right) -->
+        <div style="display: flex; align-items: center; gap: 16px; flex: 1.5; justify-content: flex-end;">
+            
+            <!-- Universal Search Bar (Right side, Cleaned) -->
+            <div class="search-container-right" style="position: relative; width: 280px;">
+                <form action="{% url 'services' %}" method="get">
+                    <input type="text" name="q" placeholder="{{ cms.search_placeholder|default:'Mahsulotlar, sotuvchilar, hashtaglar...' }}" class="search-input-premium">
+                    <i class="bi bi-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 14px;"></i>
+                </form>
+            </div>
+
+            <!-- Actions (Noise removed) -->
+            <div style="display: flex; align-items: center; gap: 12px; padding-left: 16px; border-left: 1px solid #E2E8F0;">
+                <button class="header-icon-btn-v2" title="Bildirishnomalar" style="position:relative;">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <a href="{% if user.is_authenticated %}#cart{% else %}{% url 'login' %}{% endif %}" class="header-icon-btn-v2" title="Savatcha" style="position:relative; text-decoration:none; color:inherit;"
+                   id="cart-btn"
+                   hx-get="/api/v1/cart/count/"
+                   hx-trigger="every 30s"
+                   hx-swap="innerHTML"
+                   hx-target="#cart-count">
+                    <i class="bi bi-cart3"></i>
+                    {% if user.is_authenticated %}
+                    <span id="cart-count" style="position:absolute;top:-4px;right:-4px;background:var(--primary-brand);color:var(--secondary-brand);font-size:10px;font-weight:900;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;">0</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+            {# 2026-05-02 v3: Command Center → Bittada ERP boshqaruv ekotizimi (/dashboard/) #}
+            {# Django'ning quruq admini /hidden-core-database/ da maxfiy turadi (DB tekshirish uchun). #}
+            <a href="{% url 'mgmt:index' %}" class="erp-btn-primary" style="height: 44px; padding: 0 20px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border-radius: 12px; background: #0F172A; color: white; border: none;">
+                <i class="bi bi-shield-lock"></i> Command Center {# Bittada ERP boshqaruv ekotizimi #}
+            </a>
+            {% endif %}
+            <a href="{% url 'profile' %}" class="erp-btn-primary" style="height: 44px; padding: 0 20px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border-radius: 12px; background: var(--secondary-brand); color: var(--primary-brand); border: 2px solid var(--primary-brand);">
+                <i class="bi bi-person-circle"></i> Profil
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="erp-btn-primary" style="height: 44px; padding: 0 24px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; border-radius: 12px;">Kirish</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<style>
+    /* ── Mega Menu: smooth slide-down animation (200ms cubic-bezier) ── */
+    .mega-menu-overlay {
+        position: absolute;
+        top: 72px;
+        left: -40px;
+        width: 100vw;
+        background: white;
+        box-shadow: 0 20px 60px rgba(0,31,63,0.12);
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1900;
+        border-top: 3px solid var(--primary-brand);
+        transform: translateY(-12px);
+        pointer-events: none;
+        /* Single authoritative transition — no display toggling needed */
+        transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                    visibility 200ms;
+    }
+    .katalog-wrapper:hover .mega-menu-overlay,
+    .katalog-wrapper:focus-within .mega-menu-overlay {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .katalog-wrapper:hover .catalog-btn {
+        background: var(--primary-brand) !important;
+        color: var(--secondary-brand) !important;
+    }
+    
+    .mega-menu-content { max-width: 1400px; margin: 0 auto; }
+    .mega-list { list-style: none; padding: 0; margin: 0; }
+    .mega-list li { margin-bottom: 14px; }
+    .mega-list a {
+        text-decoration: none;
+        color: #64748B;
+        font-size: 14.5px;
+        font-weight: 600;
+        transition: color 180ms cubic-bezier(0.4,0,0.2,1),
+                    padding-left 180ms cubic-bezier(0.4,0,0.2,1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .mega-list a i { font-size: 10px; opacity: 0; transition: opacity 180ms cubic-bezier(0.4,0,0.2,1); color: var(--primary-brand); }
+    .mega-list a:hover { color: var(--primary-brand); padding-left: 8px; }
+    .mega-list a:hover i { opacity: 1; }
+
+    /* ── Global skeleton loader ── */
+    @keyframes skeleton-shimmer {
+        0%   { background-position: -600px 0; }
+        100% { background-position: 600px 0; }
+    }
+    .skeleton {
+        background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+        background-size: 600px 100%;
+        animation: skeleton-shimmer 1.4s infinite linear;
+        border-radius: 8px;
+    }
+    .skeleton-card {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        border: 1px solid #F1F5F9;
+    }
+    .skeleton-card .sk-avatar { width: 60px; height: 60px; border-radius: 16px; margin-bottom: 16px; }
+    .skeleton-card .sk-line { height: 12px; border-radius: 6px; margin-bottom: 10px; }
+    .skeleton-card .sk-line.w-80 { width: 80%; }
+    .skeleton-card .sk-line.w-60 { width: 60%; }
+    .skeleton-card .sk-btn  { height: 40px; border-radius: 12px; width: 100%; margin-top: 16px; }
+
+    /* Column headings */
+    .mega-col-heading {
+        color: var(--secondary-brand);
+        font-weight: 950;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-brand);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+    }
+
+    /* Sub-group labels inside service column */
+    .mega-subgroup-label {
+        font-size: 10px !important;
+        font-weight: 900 !important;
+        color: #94A3B8 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        pointer-events: none;
+    }
+
+    /* Showroom CTA button */
+    .showroom-cta-btn {
+        background: white;
+        color: #5a9a1f;
+        text-decoration: none;
+        padding: 12px 32px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        animation: showroom-pulse 2s infinite;
+        z-index: 2;
+        white-space: nowrap;
+    }
+    .showroom-cta-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        color: var(--secondary-brand);
+    }
+    .showroom-cta-btn::after {
+        content: '';
+        position: absolute;
+        top: -50%; left: -60%;
+        width: 20%; height: 200%;
+        background: rgba(255,255,255,0.4);
+        transform: rotate(30deg);
+        animation: showroom-shimmer 3s infinite;
+    }
+    @keyframes showroom-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+        70%  { box-shadow: 0 0 0 15px rgba(255,255,255,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    @keyframes showroom-shimmer {
+        0%   { left: -60%; }
+        20%  { left: 120%; }
+        100% { left: 120%; }
+    }
+
+    .nav-link-premium {
+        text-decoration: none;
+        color: var(--secondary-brand);
+        font-size: 14px;
+        font-weight: 800;
+        padding: 10px 16px;
+        border-radius: 12px;
+        transition: var(--erp-transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.7;
+    }
+    .nav-link-premium:hover, .nav-link-premium.active {
+        opacity: 1;
+        background: rgba(164, 212, 108, 0.1);
+        color: var(--secondary-brand);
+    }
+    .nav-link-premium.active {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        box-shadow: 0 4px 12px rgba(164, 212, 108, 0.2);
+    }
+
+    .search-input-premium {
+        width: 100%;
+        height: 44px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 0 20px 0 44px;
+        font-size: 13px;
+        color: var(--secondary-brand);
+        font-weight: 600;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .search-input-premium:focus {
+        width: 450px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        background: white;
+        border-color: var(--primary-brand);
+        box-shadow: var(--erp-shadow-heavy);
+        z-index: 10;
+    }
+
+    .header-icon-btn-v2 {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: var(--secondary-brand);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 10px;
+        transition: var(--erp-transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header-icon-btn-v2:hover {
+        background: #F1F5F9;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1200px) {
+        .brand-text { display: none; }
+        .nav-links-center { gap: 4px; }
+        .nav-link-premium { padding: 8px 10px; font-size: 12px; }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // ── Category filter chip toggle ──
+    const filterContainer = document.getElementById('filter-container');
+    if (filterContainer) {
+        filterContainer.addEventListener('click', function(evt) {
+            const chip = evt.target.closest('a');
+            if (chip) {
+                this.querySelectorAll('a').forEach(el => {
+                    el.classList.remove('filter-chip-active');
+                    el.classList.add('filter-chip');
+                });
+                chip.classList.add('filter-chip-active');
+                chip.classList.remove('filter-chip');
+            }
+        });
+    }
+
+    // ── Close mega menu on any link click inside it ──
+    document.querySelectorAll('.mega-list a').forEach(link => {
+        link.addEventListener('click', () => {
+            // Remove focus so CSS :focus-within closes the menu
+            if (document.activeElement) document.activeElement.blur();
+        });
+    });
+
+    // ── HTMX booking → update cart counter ──
+    document.body.addEventListener('htmx:afterRequest', (evt) => {
+        const url = evt.detail.pathInfo?.requestPath || '';
+        if (url.includes('/book/')) {
+            // Refresh cart count badge
+            const badge = document.getElementById('cart-count');
+            if (badge) {
+                const cur = parseInt(badge.textContent) || 0;
+                badge.textContent = cur + 1;
+                badge.style.transform = 'scale(1.4)';
+                setTimeout(() => badge.style.transform = 'scale(1)', 300);
+            }
+        }
+    });
+});
+</script>

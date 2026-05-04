@@ -1,0 +1,49 @@
+{% extends base_template|default:'base_erp.html' %} <!-- Dinamik karkasdan meros olish -->
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ seller.username }} — Bittada Mebel Marketplace{% endblock %}
+
+{% block content %}
+<div class="btd-page-header" style="background: var(--btd-bg-soft); padding: 48px var(--space-xl); border-radius: var(--radius-lg); display: flex; align-items: center; gap: 32px; margin-bottom: var(--space-2xl);">
+    <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--btd-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; box-shadow: var(--shadow-lg);">
+        {{ seller.username|first|upper }}
+    </div>
+    <div>
+        <h1 class="btd-page-header__title" style="margin-bottom: 8px;">{{ seller.username }}</h1>
+        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+            <span class="btd-badge btd-badge--success">{{ seller.role|title }}</span>
+            <span class="btd-text-muted">⭐ 4.9 (128 ta sharh)</span>
+            <span class="btd-text-muted">📍 Toshkent, O'zbekiston</span>
+        </div>
+        <p style="max-width: 600px; color: var(--btd-text-secondary);">
+            {{ seller.profile.bio|default:"Ushbu sotuvchi haqida qo'shimcha ma'lumot mavjud emas. Sifatli mebellar va professional xizmat kafolatlangan." }}
+        </p>
+    </div>
+</div>
+
+<div class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);">
+        <h2 class="section-title" style="margin: 0;">Sotuvchining barcha mahsulotlari ({{ products.count }})</h2>
+        <div class="btd-filters-mini" style="display: flex; gap: 12px;">
+            <select class="btd-form-input" style="padding: 6px 12px; width: auto;">
+                <option>Yangi mahsulotlar</option>
+                <option>Narx: pastdan yuqoriga</option>
+                <option>Narx: yuqoridan pastga</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="btd-products">
+        {% for product in products %}
+            {% include 'includes/furniture_product_card.html' with products=product %}
+        {% empty %}
+            <div class="btd-empty-state" style="grid-column: 1 / -1; padding: 64px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                <h3>Mahsulotlar topilmadi</h3>
+                <p>Ushbu sotuvchi hali hech qanday mahsulot joylashtirmagan.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

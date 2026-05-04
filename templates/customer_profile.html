@@ -1,0 +1,140 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Mening profilim" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        margin-bottom: 40px;
+    }
+    .profile-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 8px;
+    }
+    .profile-subtitle {
+        color: #64748B;
+        font-size: 15px;
+    }
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.06);
+        border: 1px solid rgba(226, 232, 240, 0.4);
+    }
+    .info-section {
+        margin-bottom: 32px;
+    }
+    .info-section:last-child {
+        margin-bottom: 0;
+    }
+    .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 700;
+        color: #64748B;
+        font-size: 14px;
+    }
+    .info-value {
+        font-size: 16px;
+        color: #0F172A;
+        font-weight: 600;
+    }
+    .orders-empty {
+        text-align: center;
+        padding: 40px 20px;
+        background: #F8FAFC;
+        border-radius: 16px;
+        border: 2px dashed #E2E8F0;
+    }
+    .orders-empty p {
+        color: #64748B;
+        margin-bottom: 16px;
+    }
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 32px;
+        background: #2563EB;
+        color: white;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 15px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s ease;
+    }
+    .btn-edit:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header animate-fade-in-up">
+    <h1 class="profile-title">{% trans "Mening profilim" %}</h1>
+    <p class="profile-subtitle">{% trans "Shaxsiy ma'lumotlar va buyurtmalar" %}</p>
+</div>
+
+<div class="info-card animate-fade-in-up animate-delay-1">
+    <!-- Shaxsiy ma'lumotlar -->
+    <div class="info-section">
+        <h3 class="section-title">
+            <i class="bi bi-person" style="color: #2563EB;"></i>
+            {% trans "Shaxsiy ma'lumotlar" %}
+        </h3>
+        <div class="info-row">
+            <span class="info-label">{% trans "Ism" %}</span>
+            <span class="info-value">{{ user.first_name|default:"Ko'rsatilmagan" }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">{% trans "Telefon" %}</span>
+            <span class="info-value">{{ user.phone|default:"Ko'rsatilmagan" }}</span>
+        </div>
+    </div>
+
+    <!-- Buyurtmalar -->
+    <div class="info-section">
+        <h3 class="section-title">
+            <i class="bi bi-bag-check" style="color: #2563EB;"></i>
+            {% trans "Mening buyurtmalarim" %}
+        </h3>
+        <div class="orders-empty">
+            <p>{% trans "Hozircha buyurtmalar mavjud emas" %}</p>
+            <a href="{% url 'orders' %}" class="btn-edit" style="display:inline-flex;">
+                <i class="bi bi-eye"></i> {% trans "Barcha buyurtmalarni ko'rish" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Tahrirlash tugmasi -->
+    <div class="text-center" style="margin-top: 32px;">
+        <a href="{% url 'profile_edit' %}" class="btn-edit">
+            <i class="bi bi-pencil-square"></i> {% trans "Profilni tahrirlash" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

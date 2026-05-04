@@ -1,0 +1,882 @@
+# Russian translations for Bittada Marketplace
+# Copyright (C) 2026 Bittada
+# This file is distributed under the same license as the bittada package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Bittada 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-04 09:00+0500\n"
+"PO-Revision-Date: 2026-05-04 09:00+0500\n"
+"Last-Translator: Bittada Team\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NAVBAR (erp_navbar.html) — top navigation, mega menu, language switcher
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Katalog"
+msgstr "Каталог"
+
+msgid "Mebellar"
+msgstr "Мебель"
+
+msgid "Yotoqxona"
+msgstr "Спальня"
+
+msgid "Mehmonxona"
+msgstr "Гостиная"
+
+msgid "Oshxona"
+msgstr "Кухня"
+
+msgid "Ofis"
+msgstr "Офис"
+
+msgid "Bolalar mebellari"
+msgstr "Детская мебель"
+
+msgid "Yumshoq mebellar"
+msgstr "Мягкая мебель"
+
+msgid "Ishlab chiqarish"
+msgstr "Производство"
+
+msgid "Xom-ashyo (DSP/MDF)"
+msgstr "Сырьё (ДСП/МДФ)"
+
+msgid "Furnitura"
+msgstr "Фурнитура"
+
+msgid "Fasadlar"
+msgstr "Фасады"
+
+msgid "Ulgurji savdo"
+msgstr "Оптовая торговля"
+
+msgid "Maxsus buyurtmalar"
+msgstr "Спецзаказы"
+
+msgid "Xonalar bo'yicha"
+msgstr "По комнатам"
+
+msgid "Yotoqxona to'plamlari"
+msgstr "Спальные гарнитуры"
+
+msgid "Mehmonxona interyeri"
+msgstr "Интерьер гостиной"
+
+msgid "Oshxona modullari"
+msgstr "Кухонные модули"
+
+msgid "Bolalar xonasi"
+msgstr "Детская комната"
+
+msgid "Ofis mebellari"
+msgstr "Офисная мебель"
+
+msgid "Platforma"
+msgstr "Платформа"
+
+msgid "Biz haqimizda"
+msgstr "О нас"
+
+msgid "Showroom (3D)"
+msgstr "Шоурум (3D)"
+
+msgid "Hamkorlik shartlari"
+msgstr "Условия партнёрства"
+
+msgid "Mening buyurtmalarim"
+msgstr "Мои заказы"
+
+msgid "Blog"
+msgstr "Блог"
+
+msgid "tez kunda"
+msgstr "скоро"
+
+msgid "Tez kunda"
+msgstr "Скоро"
+
+msgid "Bittada Premium Showroom"
+msgstr "Премиум-шоурум Bittada"
+
+msgid "Mahsulotlarni 3D ko'rinishida o'z uyingizga joylashtirib ko'ring."
+msgstr "Разместите товары в своём доме в 3D-виде."
+
+msgid "Boshlash"
+msgstr "Начать"
+
+msgid "Bosh sahifa"
+msgstr "Главная"
+
+msgid "Xizmatlar"
+msgstr "Услуги"
+
+msgid "Mahsulotlar, sotuvchilar, hashtaglar..."
+msgstr "Товары, продавцы, хэштеги..."
+
+msgid "Bildirishnomalar"
+msgstr "Уведомления"
+
+msgid "Savatcha"
+msgstr "Корзина"
+
+msgid "Command Center"
+msgstr "Командный центр"
+
+msgid "Profil"
+msgstr "Профиль"
+
+msgid "Kirish"
+msgstr "Войти"
+
+msgid "Menyu"
+msgstr "Меню"
+
+msgid "Til / Language"
+msgstr "Язык / Language"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FOOTER (erp_footer.html)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Aloqa markazi"
+msgstr "Контакт-центр"
+
+msgid "Elektron pochta"
+msgstr "Электронная почта"
+
+msgid "Asosiy ofis manzili"
+msgstr "Адрес главного офиса"
+
+msgid "Sirdaryo viloyati, Guliston tumani"
+msgstr "Сырдарьинская область, Гулистанский район"
+
+msgid "Yangiliklarga obuna bo'ling"
+msgstr "Подпишитесь на новости"
+
+msgid "Email manzil..."
+msgstr "Email адрес..."
+
+msgid "Yuborish"
+msgstr "Отправить"
+
+msgid "Obuna boldingiz! Rahmat."
+msgstr "Вы подписались! Спасибо."
+
+msgid "O'zbekistondagi eng yirik mebel bozori va mutaxassislar portali. Biz bilan xavfsiz, tez va ishonchli savdo qiling."
+msgstr "Крупнейший мебельный рынок и портал специалистов в Узбекистане. Совершайте безопасные, быстрые и надёжные сделки с нами."
+
+msgid "Xaridorlarga"
+msgstr "Покупателям"
+
+msgid "Katalog va Bo'limlar"
+msgstr "Каталог и Разделы"
+
+msgid "3D Showroomlar"
+msgstr "3D Шоурумы"
+
+msgid "Yetkazib berish xizmati"
+msgstr "Служба доставки"
+
+msgid "Sotuvchilarga"
+msgstr "Продавцам"
+
+msgid "Sotuvchi bo'lib ro'yxatdan o'tish"
+msgstr "Зарегистрироваться как продавец"
+
+msgid "Ustalar va mutaxassislar portali"
+msgstr "Портал мастеров и специалистов"
+
+msgid "Premium Tariflar"
+msgstr "Премиум-тарифы"
+
+msgid "Platformada reklama berish"
+msgstr "Реклама на платформе"
+
+msgid "Maxfiylik siyosati"
+msgstr "Политика конфиденциальности"
+
+msgid "Maxfiylik"
+msgstr "Конфиденциальность"
+
+msgid "Aloqa"
+msgstr "Контакты"
+
+msgid "Foydalanish shartlari"
+msgstr "Условия использования"
+
+msgid "Ko'p beriladigan savollar"
+msgstr "Часто задаваемые вопросы"
+
+msgid "Bosilganda yaqinlashadi"
+msgstr "При нажатии увеличивается"
+
+msgid "Barcha huquqlar himoyalangan."
+msgstr "Все права защищены."
+
+msgid "Kompaniya haqida"
+msgstr "О компании"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SIDEBAR (erp_sidebar.html)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Enterprise Resource Planning"
+msgstr "Управление ресурсами предприятия"
+
+msgid "Super Admin"
+msgstr "Супер-админ"
+
+msgid "Yangi buyurtmalar"
+msgstr "Новые заказы"
+
+msgid "Core"
+msgstr "Основное"
+
+msgid "Dashboard"
+msgstr "Панель"
+
+msgid "Savdo"
+msgstr "Продажи"
+
+msgid "Marketplace"
+msgstr "Маркетплейс"
+
+msgid "Mahsulotlar"
+msgstr "Товары"
+
+msgid "Moliya"
+msgstr "Финансы"
+
+msgid "Escrow Fund"
+msgstr "Эскроу-фонд"
+
+msgid "Credit Economy"
+msgstr "Кредит-экономика"
+
+msgid "Management"
+msgstr "Менеджмент"
+
+msgid "Foydalanuvchilar"
+msgstr "Пользователи"
+
+msgid "Qora ro'yxat"
+msgstr "Чёрный список"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Django ORM/DB darajasidagi tekshirish (faqat tizim ma'muri uchun)"
+msgstr "Проверка на уровне Django ORM/БД (только для системного администратора)"
+
+msgid "DB Console"
+msgstr "Консоль БД"
+
+msgid "System Health"
+msgstr "Состояние системы"
+
+msgid "Chiqish"
+msgstr "Выйти"
+
+msgid "Yordam va FAQ"
+msgstr "Помощь и FAQ"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HOME / HOME_ERP
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Mashhur kategoriyalar"
+msgstr "Популярные категории"
+
+msgid "Barchasini ko'rish"
+msgstr "Смотреть все"
+
+msgid "Tayyor Mebellar (Retail)"
+msgstr "Готовая мебель (Розница)"
+
+msgid "Barchasi"
+msgstr "Все"
+
+msgid "Mebel marketplace"
+msgstr "Мебельный маркетплейс"
+
+msgid "Mebel"
+msgstr "Мебель"
+
+msgid "Eshiklar"
+msgstr "Двери"
+
+msgid "Oynalar"
+msgstr "Окна"
+
+msgid "0 ta mahsulot"
+msgstr "0 товаров"
+
+msgid "Tavsiya etilgan"
+msgstr "Рекомендуем"
+
+msgid "Yangi mahsulotlar"
+msgstr "Новые товары"
+
+msgid "Barcha mahsulotlar"
+msgstr "Все товары"
+
+msgid "Nima uchun Bittada?"
+msgstr "Почему Bittada?"
+
+msgid "Ishlab chiqaruvchidan to'g'ridan-to'g'ri"
+msgstr "Напрямую от производителя"
+
+msgid "Ortacha sotuvchisiz, narxlar qimmat emas"
+msgstr "Без посредников, цены не завышены"
+
+msgid "Tekshirilgan sotuvchilar"
+msgstr "Проверенные продавцы"
+
+msgid "Barcha ishlab chiqaruvchilar tekshiruvdan o'tgan"
+msgstr "Все производители прошли проверку"
+
+msgid "Yetkazib berish"
+msgstr "Доставка"
+
+msgid "O'zbekiston bo'ylab yetkazib berish xizmati"
+msgstr "Служба доставки по всему Узбекистану"
+
+msgid "Xavfsiz to'lov"
+msgstr "Безопасная оплата"
+
+msgid "Buyurtma tugaguncha pul saqlanadi"
+msgstr "Деньги хранятся до завершения заказа"
+
+msgid "Uylar uchun sifatli mebel, eshik va oynalar. Ishlab chiqaruvchidan to'g'ridan-to'g'ri xarid qiling."
+msgstr "Качественная мебель, двери и окна для дома. Покупайте напрямую у производителя."
+
+msgid "Uylar uchun sifatli mebel, eshik va oynalar"
+msgstr "Качественная мебель, двери и окна для дома"
+
+msgid "Bittada — yagona marketplace ekotizimi. Mahsulot, ishlab chiqarish va xizmatlarni bitta joyda."
+msgstr "Bittada — единая экосистема маркетплейса. Товары, производство и услуги в одном месте."
+
+msgid "Bittada - Mebel Marketplace"
+msgstr "Bittada — Мебельный маркетплейс"
+
+msgid "Bittada Mebel Marketplace"
+msgstr "Bittada — Мебельный маркетплейс"
+
+msgid "Professional ERP Tizimi"
+msgstr "Профессиональная ERP-система"
+
+msgid "Bittada Mebel Marketplace — O'zbekistondagi eng katta mebel va ishlab chiqarish marketplace"
+msgstr "Bittada Мебельный Маркетплейс — крупнейший маркетплейс мебели и производства в Узбекистане"
+
+msgid "Bittada Mebel Ecosystem"
+msgstr "Экосистема мебели Bittada"
+
+msgid "Mebellar va"
+msgstr "Мебель и"
+
+msgid "usta dizaynerlar"
+msgstr "мастера дизайнеры"
+
+msgid "bir joyda"
+msgstr "в одном месте"
+
+msgid "O'zbekistondagi eng yirik platforma. 1000+ ishlab chiqaruvchi va tayyor mebellar katalogi. B2B va B2C uchun yagona yechim."
+msgstr "Крупнейшая платформа в Узбекистане. Каталог из 1000+ производителей и готовой мебели. Единое решение для B2B и B2C."
+
+msgid "Xizmatlarni ko'rish"
+msgstr "Посмотреть услуги"
+
+msgid "Ustalar izlash"
+msgstr "Найти мастеров"
+
+msgid "Nimani qidiryapsiz?..."
+msgstr "Что вы ищете?..."
+
+msgid "Qidirish"
+msgstr "Поиск"
+
+msgid "mahsulot"
+msgstr "товар"
+
+msgid "Narxi"
+msgstr "Цена"
+
+msgid "so'm"
+msgstr "сум"
+
+msgid "Zaxira"
+msgstr "Запас"
+
+msgid "dona"
+msgstr "шт"
+
+msgid "Savatga qo'shish"
+msgstr "В корзину"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SHOP (shop.html)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Do'kon"
+msgstr "Магазин"
+
+msgid "Filtrlar"
+msgstr "Фильтры"
+
+msgid "Material"
+msgstr "Материал"
+
+msgid "Uslub"
+msgstr "Стиль"
+
+msgid "Narx (so'm)"
+msgstr "Цена (сум)"
+
+msgid "dan"
+msgstr "от"
+
+msgid "gacha"
+msgstr "до"
+
+msgid "Saralash"
+msgstr "Сортировка"
+
+msgid "Eng yangi"
+msgstr "Самые новые"
+
+msgid "Narx: pastdan"
+msgstr "Цена: по возрастанию"
+
+msgid "Narx: yuqoridan"
+msgstr "Цена: по убыванию"
+
+msgid "Ommabop"
+msgstr "Популярные"
+
+msgid "Qo'llash"
+msgstr "Применить"
+
+msgid "Tozalash"
+msgstr "Очистить"
+
+msgid "Mahsulotlar topilmadi"
+msgstr "Товары не найдены"
+
+msgid "Filtrlarni tozalash"
+msgstr "Сбросить фильтры"
+
+msgid "Oldingi"
+msgstr "Назад"
+
+msgid "Keyingi"
+msgstr "Далее"
+
+msgid "Kategoriyalar mavjud emas"
+msgstr "Категории отсутствуют"
+
+msgid "ta"
+msgstr "шт"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AUTH — login_erp / register_erp / login.html
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Xush kelibsiz"
+msgstr "Добро пожаловать"
+
+msgid "Bittada Command Center'ga kiring"
+msgstr "Войдите в Bittada Command Center"
+
+msgid "Email yoki Username"
+msgstr "Email или Имя пользователя"
+
+msgid "admin yoki email@.com"
+msgstr "admin или email@.com"
+
+msgid "Parol"
+msgstr "Пароль"
+
+msgid "Unutdingizmi?"
+msgstr "Забыли?"
+
+msgid "Tizimga kirish"
+msgstr "Войти в систему"
+
+msgid "Tekshirilmoqda..."
+msgstr "Проверка..."
+
+msgid "Profilingiz yo'qmi?"
+msgstr "Нет профиля?"
+
+msgid "Ro'yxatdan o'ting"
+msgstr "Зарегистрироваться"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Регистрация"
+
+msgid "Hisobingizga kiring va Bittada ekotizimidan foydalaning"
+msgstr "Войдите в свой аккаунт и пользуйтесь экосистемой Bittada"
+
+msgid "Email manzil"
+msgstr "Email адрес"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Нет аккаунта?"
+
+msgid "Siz kimsiz?"
+msgstr "Кто вы?"
+
+msgid "Platformadagi faoliyat turini tanlang"
+msgstr "Выберите тип деятельности на платформе"
+
+msgid "Mijoz"
+msgstr "Клиент"
+
+msgid "Mebel sotib olish uchun"
+msgstr "Для покупки мебели"
+
+msgid "Sotuvchi"
+msgstr "Продавец"
+
+msgid "Mahsulot yoki xizmat sotuvi"
+msgstr "Продажа товаров или услуг"
+
+msgid "Hamkor ta'minotchi"
+msgstr "Партнёр-поставщик"
+
+msgid "Taklif kodi talab qilinadi"
+msgstr "Требуется код приглашения"
+
+msgid "Dizayner / Usta"
+msgstr "Дизайнер / Мастер"
+
+msgid "Interyer va professional xizmat"
+msgstr "Интерьер и профессиональные услуги"
+
+msgid "Hisob turi"
+msgstr "Тип аккаунта"
+
+msgid "Jismoniy shaxs"
+msgstr "Физическое лицо"
+
+msgid "Yuridik shaxs"
+msgstr "Юридическое лицо"
+
+msgid "Davom etish"
+msgstr "Продолжить"
+
+msgid "Mutaxassisligingiz?"
+msgstr "Ваша специальность?"
+
+msgid "Bir yoki bir nechta kasb tanlang — TZ §6.3"
+msgstr "Выберите одну или несколько профессий — ТЗ §6.3"
+
+msgid "Ishlab chiqaruvchi"
+msgstr "Производитель"
+
+msgid "Yetkazib beruvchi"
+msgstr "Поставщик"
+
+msgid "Usta (o'rnatuvchi)"
+msgstr "Мастер (установщик)"
+
+msgid "Dizayner"
+msgstr "Дизайнер"
+
+msgid "Orqaga"
+msgstr "Назад"
+
+msgid "Ma'lumotlar"
+msgstr "Данные"
+
+msgid "Akkaunt yaratish uchun ma'lumotlarni to'ldiring"
+msgstr "Заполните данные для создания аккаунта"
+
+msgid "Ism va familiya"
+msgstr "Имя и фамилия"
+
+msgid "To'liq ismingiz"
+msgstr "Ваше полное имя"
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "foydalanuvchi_nomi"
+msgstr "имя_пользователя"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "misol@mail.com"
+msgstr "пример@mail.com"
+
+msgid "Telefon"
+msgstr "Телефон"
+
+msgid "Kompaniya nomi"
+msgstr "Название компании"
+
+msgid "Kompaniya LLC"
+msgstr "ООО Компания"
+
+msgid "(10+ belgi, raqam, maxsus belgi)"
+msgstr "(10+ символов, цифра, спецсимвол)"
+
+msgid "Parol kuchini ko'rsatadi"
+msgstr "Показывает силу пароля"
+
+msgid "Parolni tasdiqlang"
+msgstr "Подтвердите пароль"
+
+msgid "Akkauntni yaratish"
+msgstr "Создать аккаунт"
+
+msgid "yoki kirish usuli"
+msgstr "или способ входа"
+
+msgid "Google OAuth — tez kunda"
+msgstr "Google OAuth — скоро"
+
+msgid "Telegram Login — tez kunda"
+msgstr "Telegram Login — скоро"
+
+msgid "Akkauntingiz bormi?"
+msgstr "Уже есть аккаунт?"
+
+msgid "Kirilmoqda..."
+msgstr "Вход..."
+
+msgid "Kirishda xatolik yuz berdi"
+msgstr "Произошла ошибка при входе"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PROFILE / CUSTOMER
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Mening profilim"
+msgstr "Мой профиль"
+
+msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgstr "Личные данные и настройки"
+
+msgid "Shaxsiy ma'lumotlar va buyurtmalar"
+msgstr "Личные данные и заказы"
+
+msgid "Shaxsiy ma'lumotlar"
+msgstr "Личные данные"
+
+msgid "Hozircha buyurtmalar mavjud emas"
+msgstr "Заказов пока нет"
+
+msgid "Barcha buyurtmalarni ko'rish"
+msgstr "Посмотреть все заказы"
+
+msgid "Profilni tahrirlash"
+msgstr "Редактировать профиль"
+
+msgid "Ism"
+msgstr "Имя"
+
+msgid "Ko'rsatilmagan"
+msgstr "Не указано"
+
+msgid "Ismingiz"
+msgstr "Ваше имя"
+
+msgid "Ismingizni kiriting"
+msgstr "Введите ваше имя"
+
+msgid "Telefon raqami"
+msgstr "Номер телефона"
+
+msgid "Telefon raqamingiz"
+msgstr "Ваш номер телефона"
+
+msgid "Kiritilmagan"
+msgstr "Не введено"
+
+msgid "Email manzili"
+msgstr "Email адрес"
+
+msgid "Yetkazib berish manzili"
+msgstr "Адрес доставки"
+
+msgid "To'liq manzilingizni kiriting"
+msgstr "Введите ваш полный адрес"
+
+msgid "O'zgarishlarni saqlash"
+msgstr "Сохранить изменения"
+
+msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
+msgstr "Данные успешно обновлены!"
+
+msgid "Yangilashda xatolik yuz berdi"
+msgstr "Произошла ошибка при обновлении"
+
+msgid "Mijoz akkauntini yarating"
+msgstr "Создайте клиентский аккаунт"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PRODUCT CARD (includes/product_card.html)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Top"
+msgstr "Топ"
+
+msgid "Sotuvda yo'q"
+msgstr "Нет в продаже"
+
+msgid "Kam qoldi"
+msgstr "Заканчивается"
+
+msgid "Sevimlilar ga qo'shish"
+msgstr "Добавить в избранное"
+
+msgid "Sevimlilar ga qo'shildi"
+msgstr "Добавлено в избранное"
+
+msgid "Sevimlilar dan olib tashlandi"
+msgstr "Удалено из избранного"
+
+msgid "Buyurtma"
+msgstr "Заказ"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HOME MASTERS / ESCROW (includes/*)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Eng yaxshi ustalar"
+msgstr "Лучшие мастера"
+
+msgid "Reyting"
+msgstr "Рейтинг"
+
+msgid "Ishlar"
+msgstr "Работы"
+
+msgid "Profilni ko'rish"
+msgstr "Посмотреть профиль"
+
+msgid "Premium Usta"
+msgstr "Премиум-мастер"
+
+msgid "Yig'uvchi"
+msgstr "Сборщик"
+
+msgid "Bittada Escrow bilan xavfsiz savdo"
+msgstr "Безопасные сделки с Bittada Escrow"
+
+msgid "Sizning mablag'ingiz mahsulot yetib borguncha bizning himoyamizda bo'ladi."
+msgstr "Ваши средства под нашей защитой, пока товар не будет доставлен."
+
+msgid "Ishonchli ustalar"
+msgstr "Надёжные мастера"
+
+msgid "Sifat nazorati"
+msgstr "Контроль качества"
+
+msgid "Pulni qaytarish kafolati"
+msgstr "Гарантия возврата средств"
+
+msgid "Batafsil ma'lumot"
+msgstr "Подробная информация"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMMON / MODELS (eng muhim model nomlari va umumiy iboralar)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "Mahsulot"
+msgstr "Товар"
+
+
+msgid "Buyurtmalar"
+msgstr "Заказы"
+
+msgid "Sana"
+msgstr "Дата"
+
+msgid "Daromad"
+msgstr "Доход"
+
+msgid "IP manzil"
+msgstr "IP адрес"
+
+msgid "Ko'ruvchi"
+msgstr "Зритель"
+
+msgid "Manba"
+msgstr "Источник"
+
+msgid "Sevimlilar"
+msgstr "Избранное"
+
+msgid "Savat"
+msgstr "Корзина"
+
+msgid "Kategoriya"
+msgstr "Категория"
+
+msgid "Kategoriyalar"
+msgstr "Категории"
+
+msgid "Tavsif"
+msgstr "Описание"
+
+msgid "Holat"
+msgstr "Статус"
+
+msgid "Faol"
+msgstr "Активен"
+
+msgid "Nofaol"
+msgstr "Неактивен"
+
+msgid "Yaratilgan"
+msgstr "Создано"
+
+msgid "Yangilangan"
+msgstr "Обновлено"
+
+msgid "Tahrirlash"
+msgstr "Редактировать"
+
+msgid "O'chirish"
+msgstr "Удалить"
+
+msgid "Saqlash"
+msgstr "Сохранить"
+
+msgid "Bekor qilish"
+msgstr "Отмена"
+
+msgid "Tasdiqlash"
+msgstr "Подтвердить"
+
+msgid "Yopish"
+msgstr "Закрыть"
+
+msgid "Qo'shish"
+msgstr "Добавить"
+
+msgid "Ha"
+msgstr "Да"
+
+msgid "Yo'q"
+msgstr "Нет"
+
+msgid "Bepul"
+msgstr "Бесплатно"
+
+msgid "Yangi"
+msgstr "Новый"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LANGUAGES (settings/base.py LANGUAGES choices)
+# ─────────────────────────────────────────────────────────────────────────────
+msgid "O'zbek"
+msgstr "Узбекский"
+
+msgid "Русский"
+msgstr "Русский"
+
+msgid "English"
+msgstr "Английский"

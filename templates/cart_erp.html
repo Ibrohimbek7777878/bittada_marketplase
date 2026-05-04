@@ -1,0 +1,156 @@
+{% extends base_template|default:'base_erp.html' %} <!-- Dinamik karkasdan meros olish -->
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans "Savat" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<a href="{% url 'profile' %}" class="back-button animate-fade-in-up">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    {% trans "Ortga" %}
+</a>
+
+<div class="btd-page-header">
+    <h1 class="btd-page-header__title">{% trans "Sizning savatingiz" %}</h1>
+    <p class="btd-page-header__subtitle">{% trans "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering" %}</p>
+</div>
+
+<div class="btd-layout-columns" style="display: grid; grid-template-columns: 1fr 320px; gap: var(--space-xl); margin-top: var(--space-xl);">
+    <!-- Cart Items -->
+<div class="btd-cart-container">
+        <div id="cart-empty" style="display: none;" class="btd-empty-state">
+            <div style="font-size: 64px; margin-bottom: var(--space-md);">🛒</div>
+            <h2>{% trans "Savatingiz bo'sh" %}</h2>
+            <p>{% trans "Hali hech qanday mahsulot qo'shmadingiz." %}</p>
+            <a href="{% url 'home' %}" class="btd-btn btd-btn--primary" style="margin-top: var(--space-lg);">{% trans "Bosh sahifaga qaytish" %}</a>
+        </div>
+
+        <div id="cart-items" class="btd-card-list">
+            <!-- Items will be loaded here via JS -->
+            <div class="btd-loading">{% trans "Yuklanmoqda..." %}</div>
+        </div>
+    </div>
+
+    <!-- Summary Sidebar -->
+    <div class="btd-cart-summary">
+        <div class="btd-card" style="position: sticky; top: 88px;">
+            <div class="btd-card__body">
+                <h3 class="btd-card__title" style="margin-bottom: var(--space-lg);">{% trans "Buyurtma xulosasi" %}</h3>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                    <span class="btd-text-muted">{% trans "Mahsulotlar" %} (<span id="summary-count">0</span>):</span>
+                    <span id="summary-subtotal">0 so'm</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                    <span class="btd-text-muted">{% trans "Yetkazib berish:" %}</span>
+                    <span class="btd-text-success">{% trans "Bepul" %}</span>
+                </div>
+                
+                <div style="border-top: 1px solid var(--btd-border); margin: 16px 0; padding-top: 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 18px;">
+                    <span>{% trans "Jami:" %}</span>
+                    <span id="summary-total" class="btd-text-primary">0 so'm</span>
+                </div>
+                
+                <button class="btd-btn btd-btn--primary btd-btn--full btd-btn--lg" id="checkout-btn" disabled>
+                    {% trans "Rasmiylashtirish" %}
+                </button>
+                
+                <p style="font-size: 12px; color: var(--btd-text-muted); text-align: center; margin-top: 16px;">
+                    * {% trans "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz." %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const cart = getCart();
+        const itemsContainer = document.getElementById('cart-items');
+        const emptyState = document.getElementById('cart-empty');
+        const summaryCount = document.getElementById('summary-count');
+        const summarySubtotal = document.getElementById('summary-subtotal');
+        const summaryTotal = document.getElementById('summary-total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+
+        if (cart.length === 0) {
+            itemsContainer.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        // Fetch product details for items in cart
+        try {
+            let total = 0;
+            let count = 0;
+            itemsContainer.innerHTML = '';
+
+            for (const item of cart) {
+                // In a real app, you'd fetch this from the API
+                // For demo, we'll try to use a mock or fetch if endpoint exists
+                const response = await fetch(`/api/v1/products/product/${item.uuid}/`);
+                if (response.ok) {
+                    const product = await response.json();
+                    const itemTotal = product.price * item.quantity;
+                    total += itemTotal;
+                    count += item.quantity;
+
+                    const itemHtml = `
+                        <div class="btd-card btd-card--horizontal mb-4" data-uuid="${item.uuid}">
+                            <div class="btd-card__image" style="width: 120px; height: 120px;">
+                                <img src="${product.images?.[0]?.image || '/static/img/placeholder.png'}" alt="${product.title_uz}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div class="btd-card__body" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <div>
+                                    <h4 class="btd-card__title" style="margin-bottom: 4px;">${product.title_uz}</h4>
+                                    <p class="btd-text-muted" style="font-size: 13px;">Sotuvchi: ${product.seller_name || 'Bittada Vendor'}</p>
+                                    <div class="btd-text-primary" style="font-weight: 700; margin-top: 8px;">${Number(product.price).toLocaleString()} so'm</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div class="btd-quantity-selector" style="display: flex; align-items: center; border: 1px solid var(--btd-border); border-radius: var(--radius-md); overflow: hidden;">
+                                        <button class="btd-btn btd-btn--ghost btd-btn--sm" onclick="changeQty('${item.uuid}', -1)">-</button>
+                                        <span style="padding: 0 12px; font-weight: 600;">${item.quantity}</span>
+                                        <button class="btd-btn btd-btn--ghost btd-btn--sm" onclick="changeQty('${item.uuid}', 1)">+</button>
+                                    </div>
+                                    <button class="btd-btn btd-btn--ghost btd-btn--sm btd-text-danger" onclick="removeFromCartUI('${item.uuid}')">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+                }
+            }
+
+            summaryCount.textContent = count;
+            summarySubtotal.textContent = total.toLocaleString() + " so'm";
+            summaryTotal.textContent = total.toLocaleString() + " so'm";
+            checkoutBtn.disabled = false;
+
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            itemsContainer.innerHTML = '<div class="btd-alert btd-alert--error">Savatni yuklashda xatolik yuz berdi.</div>';
+        }
+    });
+
+    function changeQty(uuid, delta) {
+        const cart = getCart();
+        const item = cart.find(i => i.uuid === uuid);
+        if (item) {
+            item.quantity = Math.max(1, item.quantity + delta);
+            localStorage.setItem('bittada.cart', JSON.stringify(cart));
+            window.location.reload();
+        }
+    }
+
+    function removeFromCartUI(uuid) {
+        const cart = getCart().filter(i => i.uuid !== uuid);
+        localStorage.setItem('bittada.cart', JSON.stringify(cart));
+        window.location.reload();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+<<<<<<< HEAD
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+.installed.cfg
+MANIFEST
+
+# Virtualenv
+venv/
+.venv/
+env/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+.collected/
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Environments / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+.parcel-cache/
+*.local
+
+# Docker
+docker-compose.override.yml
+
+# Build artefacts
+*.mo
+*.pot
+.mypy_cache/
+.ruff_cache/
+=======
+venv/
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+static/
+media/
+.vscode/
+>>>>>>> b8806c3 (feat: integrate Jazzmin admin, fix 404 orders error, and update sidebar APIs)

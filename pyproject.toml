@@ -1,0 +1,70 @@
+[project]
+name = "bittada-backend"
+version = "0.1.0"
+description = "Bittada Marketplace Ecosystem — Django backend"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [
+  "*/migrations/*",
+  ".venv",
+  "build",
+  "dist",
+]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",  # pycodestyle / pyflakes
+  "I",            # isort
+  "N",            # pep8-naming
+  "UP",           # pyupgrade
+  "B",            # flake8-bugbear
+  "S",            # flake8-bandit (security)
+  "C4",           # comprehensions
+  "DJ",           # flake8-django
+  "RUF",          # ruff own checks
+]
+ignore = [
+  "S101",   # asserts allowed in tests
+  "S105",   # hardcoded password false positives in fixtures
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106", "S311"]
+"**/settings/*" = ["S105"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+extend-exclude = "/(migrations)/"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = ["migrations/", "build/", "dist/"]
+
+[[tool.mypy.overrides]]
+module = ["apps.*.migrations.*"]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
+addopts = "-q --strict-markers --reuse-db"
+markers = [
+  "slow: slow tests",
+  "integration: external service required",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["apps", "core"]
+omit = ["*/migrations/*", "*/tests/*", "manage.py"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true

@@ -1,0 +1,364 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Profil" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* fade-in-up animatsiyasi */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Glassmorphism kartasi */
+    .btd-glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        transition: transform 0.3s ease;
+    }
+
+    .btd-profile-sidebar .btd-glass-card {
+        position: sticky;
+        top: 20px;
+    }
+
+    /* Sidebar menyu elementlari */
+    .btd-menu__item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 24px;
+        color: #475569;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        margin: 4px 12px;
+    }
+
+    .btd-menu__item i {
+        font-size: 18px;
+    }
+
+    .btd-menu__item:hover {
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563EB;
+        transform: translateX(5px) scale(1.02);
+    }
+
+    .btd-menu__item--active {
+        background: #2563EB;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btd-menu__item--active:hover {
+        background: #1d4ed8;
+        transform: scale(1.02);
+    }
+
+    /* Form elementlari */
+    .btd-form-input {
+        background: rgba(248, 250, 252, 0.8);
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        transition: all 0.2s ease;
+    }
+
+    .btd-form-input:focus {
+        border-color: #2563EB;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .btd-form-input:disabled {
+        background: #F1F5F9;
+        cursor: not-allowed;
+        border-color: #E2E8F0;
+        color: #64748B;
+    }
+
+    /* Spinner animatsiyasi */
+    .spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .btn-loading .spinner {
+        display: inline-block;
+    }
+
+    .btn-loading .btn-text {
+        display: none;
+    }
+
+    /* Responsivlik */
+    @media (max-width: 991px) {
+        .btd-layout-columns {
+            grid-template-columns: 1fr !important;
+        }
+        .btd-profile-sidebar .btd-glass-card {
+            position: static;
+            margin-bottom: 20px;
+        }
+    }
+</style>
+<!-- Bootstrap Icons qo'shish -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<a href="{% url 'home' %}" class="back-button animate-fade-in-up">
+    <i data-lucide="arrow-left"></i>
+    <span>{% trans "Ortga" %}</span>
+</a>
+
+<!-- Skeleton Loader (shown while loading) -->
+<div id="skeleton-loader" class="animate-fade-in-up">
+    <!-- Skeleton Header -->
+    <div style="margin-bottom: 40px;">
+        <div class="skeleton-text" style="width: 200px; height: 32px; margin-bottom: 12px;"></div>
+        <div class="skeleton-text skeleton-text-short" style="height: 18px;"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 32px;">
+        <!-- Skeleton Sidebar -->
+        <div class="skeleton-card">
+            <div class="text-center" style="padding: 24px;">
+                <div class="skeleton-avatar" style="margin: 0 auto 16px;"></div>
+                <div class="skeleton-text skeleton-text-medium" style="margin: 0 auto 8px; height: 20px;"></div>
+                <div class="skeleton-text" style="width: 80px; height: 24px; margin: 0 auto; border-radius: 8px;"></div>
+            </div>
+            <div style="padding: 0 24px;">
+                <div class="skeleton-text" style="margin-bottom: 16px; height: 44px; border-radius: 12px;"></div>
+                <div class="skeleton-text" style="margin-bottom: 16px; height: 44px; border-radius: 12px;"></div>
+                <div class="skeleton-text" style="margin-bottom: 16px; height: 44px; border-radius: 12px;"></div>
+                <div class="skeleton-text" style="height: 44px; border-radius: 12px;"></div>
+            </div>
+        </div>
+
+        <!-- Skeleton Main Content -->
+        <div class="skeleton-card">
+            <div style="padding: 24px;">
+                <div class="skeleton-text" style="width: 180px; height: 28px; margin-bottom: 32px;"></div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px;">
+                    <div>
+                        <div class="skeleton-text" style="width: 80px; height: 14px; margin-bottom: 8px;"></div>
+                        <div class="skeleton-input"></div>
+                    </div>
+                    <div>
+                        <div class="skeleton-text" style="width: 80px; height: 14px; margin-bottom: 8px;"></div>
+                        <div class="skeleton-input"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <div class="skeleton-text" style="width: 120px; height: 14px; margin-bottom: 8px;"></div>
+                    <div class="skeleton-input" style="height: 80px;"></div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <div class="skeleton-text" style="width: 160px; height: 48px; border-radius: 14px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actual Content (hidden initially, shown after loading) -->
+<div id="profile-content" style="display: none;">
+    <div class="btd-page-header animate-fade-in-up animate-delay-1" style="margin-bottom: 40px;">
+        <h1 class="btd-page-header__title" style="font-weight: 800; color: #0F172A;">{% trans "Mening profilim" %}</h1>
+        <p class="btd-page-header__subtitle" style="color: #64748B;">{% trans "Shaxsiy ma'lumotlar va sozlamalar" %}</p>
+    </div>
+
+    <div class="btd-layout-columns" style="display: grid; grid-template-columns: 300px 1fr; gap: 32px;">
+        <!-- Sidebar Menu -->
+        <div class="btd-profile-sidebar animate-fade-in-up animate-delay-2">
+            <div class="btd-glass-card">
+                <div class="btd-card__body p-0" style="padding: 24px 0;">
+                    <div class="text-center" style="padding: 0 24px 24px 24px; border-bottom: 1px solid rgba(226, 232, 240, 0.6);">
+                        <div style="width: 90px; height: 90px; border-radius: 24px; background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; margin: 0 auto 16px; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <h3 style="margin-bottom: 4px; font-weight: 700; color: #0F172A;">{{ user.username }}</h3>
+                        <span style="background: rgba(37, 99, 235, 0.1); color: #2563EB; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
+                            {% trans user.role|default:"Mijoz" %}
+                        </span>
+                    </div>
+                    <div class="btd-menu" style="margin-top: 16px;">
+                        <a href="{% url 'profile' %}" class="btd-menu__item btd-menu__item--active">
+                            <i class="bi bi-person-fill"></i> {% trans "Ma'lumotlar" %}
+                        </a>
+                        <a href="{% url 'orders' %}" class="btd-menu__item">
+                            <i class="bi bi-bag-check-fill"></i> {% trans "Buyurtmalar" %}
+                        </a>
+                        <a href="{% url 'wishlist' %}" class="btd-menu__item">
+                            <i class="bi bi-heart-fill"></i> {% trans "Sevimlilar" %}
+                        </a>
+                        <a href="{% url 'cart' %}" class="btd-menu__item">
+                            <i class="bi bi-cart-fill"></i> {% trans "Savat" %}
+                        </a>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(226, 232, 240, 0.6);">
+                            <form action="{% url 'logout' %}" method="POST" style="display: block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btd-menu__item" style="width: calc(100% - 24px); border: none; background: none; text-align: left; cursor: pointer; color: #EF4444;">
+                                    <i class="bi bi-box-arrow-right"></i> {% trans "Chiqish" %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="btd-profile-content animate-fade-in-up animate-delay-3">
+            <div class="btd-glass-card">
+                <div class="btd-card__body" style="padding: 40px;">
+                    <h3 style="font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
+                        <i class="bi bi-shield-lock" style="color: #2563EB;"></i> {% trans "Shaxsiy ma'lumotlar" %}
+                    </h3>
+                    
+                    <form id="profile-form">
+                        {% csrf_token %}
+                        
+                        <!-- Read-only qism -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; padding: 24px; background: rgba(248, 250, 252, 0.5); border-radius: 16px; border: 1px dashed #E2E8F0;">
+                            <div class="btd-form-group">
+                                <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Username" %}</label>
+                                <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">@{{ user.username }}</div>
+                            </div>
+                            <div class="btd-form-group">
+                                <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Email manzili" %}</label>
+                                <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">{{ user.email|default:_("Kiritilmagan") }}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                            <div class="btd-form-group">
+                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Ismingiz" %}</label>
+                                <input type="text" name="first_name" value="{{ user.first_name }}" class="btd-form-input" placeholder="{% trans 'Ismingizni kiriting' %}" style="width: 100%;">
+                            </div>
+                            <div class="btd-form-group">
+                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Telefon raqamingiz" %}</label>
+                                <input type="tel" name="phone" value="{{ user.phone|default:'' }}" class="btd-form-input" placeholder="+998 90 123 45 67" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="btd-form-group" style="margin-bottom: 32px;">
+                            <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Yetkazib berish manzili" %}</label>
+                            <textarea name="address" class="btd-form-input" rows="3" placeholder="{% trans 'To\'liq manzilingizni kiriting' %}" style="width: 100%; resize: none;">{{ user_profile.address|default:'' }}</textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit" id="save-btn" class="btd-btn btd-btn--primary" style="padding: 14px 40px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; min-width: 160px; background: #2563EB; border: none; color: white; cursor: pointer; transition: all 0.3s ease;">
+                                <span class="btn-text">{% trans "O'zgarishlarni saqlash" %}</span>
+                                <div class="spinner"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simulate loading and reveal content
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide skeleton and show content after a brief delay
+        setTimeout(function() {
+            document.getElementById('skeleton-loader').style.display = 'none';
+            document.getElementById('profile-content').style.display = 'block';
+            // Re-trigger animations for content
+            const animatedElements = document.querySelectorAll('#profile-content .animate-fade-in-up');
+            animatedElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.animation = 'none';
+                setTimeout(() => {
+                    el.style.animation = '';
+                }, index * 50);
+            });
+        }, 800); // 800ms skeleton display time
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-btn');
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Yuklanish animatsiyasini yoqish
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+        
+        try {
+            // API endpoint loyiha strukturasiga ko'ra o'zgarishi mumkin
+            const response = await fetch('/api/v1/users/me/profile/', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': data.csrfmiddlewaretoken
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                showToast('Ma\'lumotlar muvaffaqiyatli yangilandi!', 'success');
+            } else {
+                const errorData = await response.json();
+                showToast(errorData.message || 'Yangilashda xatolik yuz berdi', 'error');
+            }
+        } catch (error) {
+            showToast('Tizimda ulanish xatoligi yuz berdi', 'error');
+        } finally {
+            // Yuklanish animatsiyasini o'chirish
+            setTimeout(() => {
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+            }, 500);
+        }
+    });
+
+    // Toast xabarlarini ko'rsatish uchun yordamchi funksiya (agar base_erp da bo'lmasa)
+    function showToast(message, type) {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+</script>
+{% endblock %}

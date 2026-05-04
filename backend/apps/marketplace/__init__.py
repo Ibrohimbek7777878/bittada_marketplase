@@ -1,0 +1,1 @@
+"""Marketplace cross-cutting module."""

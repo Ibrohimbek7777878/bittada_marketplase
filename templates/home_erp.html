@@ -1,0 +1,173 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans "Bittada Mebel Marketplace" %} — {% trans "Professional ERP Tizimi" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* prefix: erp-home */
+    .erp-home-hero {
+        background: white;
+        padding: 40px 0;
+        margin-bottom: 48px;
+        border-bottom: 1px solid var(--erp-glass-border);
+        position: relative;
+    }
+
+    .erp-home-cat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 24px;
+        margin-bottom: 64px;
+    }
+
+    .erp-home-cat-card {
+        background: white;
+        padding: 32px 24px;
+        border-radius: 24px;
+        border: 1px solid #E2E8F0;
+        text-align: center;
+        transition: var(--erp-transition);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: var(--erp-shadow);
+    }
+
+    .erp-home-cat-card:hover { 
+        border-color: var(--primary-brand); 
+        transform: translateY(-8px); 
+        box-shadow: var(--erp-shadow-heavy); 
+    }
+    
+    .erp-home-cat-icon {
+        width: 64px;
+        height: 64px;
+        background: #F8FAFC;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 20px;
+        border: 1px solid var(--erp-glass-border);
+    }
+    .brand-card, .erp-card, .erp-modal__content {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="erp-home-container" style="padding: 0 24px 64px; max-width: 1400px; margin: 0 auto;">
+    
+    <!-- Hero Section (New Brand Theme) -->
+    <section class="erp-home-hero" style="border-radius: 32px; margin: 32px 0 64px 0; min-height: 540px; display: flex; align-items: center; padding: 64px; background: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat; box-shadow: var(--erp-shadow-heavy); position: relative; overflow: hidden; border: 1px solid var(--erp-glass-border);">
+        
+        <!-- Yengil qoraytirish -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 60%, transparent 100%); z-index: 1;"></div>
+
+        <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); padding: 56px; border-radius: 28px; max-width: 680px; box-shadow: 0 32px 64px rgba(0,31,63,0.15); border: 1px solid var(--erp-glass-border); position: relative; z-index: 2; animation: erp-fade-in 0.5s ease-out;">
+            <span style="display: inline-block; padding: 6px 16px; background: var(--secondary-brand); color: var(--primary-brand); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 1px; border: 1px solid var(--primary-brand);">{% trans "Bittada Mebel Ecosystem" %}</span>
+            
+            <h1 style="font-size: 52px; font-weight: 900; color: var(--secondary-brand); line-height: 1.1; margin-bottom: 24px; letter-spacing: -2px;">
+                {% trans "Mebellar va" %} <br> {% trans "usta dizaynerlar" %} <br> <span style="color: var(--primary-brand);">{% trans "bir joyda" %}</span>
+            </h1>
+            
+            <p style="font-size: 19px; color: #475569; line-height: 1.6; margin-bottom: 32px;">
+                {% trans "O'zbekistondagi eng yirik platforma. 1000+ ishlab chiqaruvchi va tayyor mebellar katalogi. B2B va B2C uchun yagona yechim." %}
+            </p>
+            
+            <div style="display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap;">
+                <a href="{% url 'services' %}" class="erp-btn-primary" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 10px 20px rgba(164,212,108,0.3);">{% trans "Xizmatlarni ko'rish" %}</a>
+                <a href="{% url 'masters' %}" style="display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 32px; font-weight: 800; font-size: 14px; border-radius: 12px; background: white; color: var(--secondary-brand); border: 1px solid #E2E8F0; text-decoration: none; transition: var(--erp-transition);" onmouseover="this.style.background='#F8FAFC'; this.style.borderColor='var(--primary-brand)';" onmouseout="this.style.background='white'; this.style.borderColor='#E2E8F0';">{% trans "Ustalar izlash" %}</a>
+            </div>
+
+            <!-- Global Search -->
+            <form action="{% url 'services' %}" method="get" style="background: white; border-radius: 16px; padding: 8px 8px 8px 24px; display: flex; align-items: center; border: 1px solid #E2E8F0; height: 64px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: var(--erp-transition); width: 100%; max-width: 500px;">
+                <span style="font-size: 20px; color: #94A3B8; margin-right: 12px;">🔍</span>
+                <input type="text" name="q" placeholder="{% trans 'Nimani qidiryapsiz?...' %}" style="border: none; background: transparent; outline: none; height: 100%; font-size: 16px; width: 100%; color: var(--secondary-brand); font-weight: 600;">
+                <button type="submit" style="background: var(--secondary-brand); color: white; border: none; border-radius: 12px; padding: 0 32px; height: 100%; font-size: 14px; font-weight: 800; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='var(--primary-brand)'; this.style.color='var(--secondary-brand)';" onmouseout="this.style.background='var(--secondary-brand)'; this.style.color='white';">{% trans "Qidirish" %}</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Stats (Re-skinned) -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 64px;">
+        {% for label, val in stats.items|default:stats_demo.items %}
+        <div style="background: white; padding: 32px; border-radius: 24px; border: 1px solid var(--erp-glass-border); text-align: center; box-shadow: var(--erp-shadow);">
+            <h4 style="font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; margin-bottom: 12px;">{{ label }}</h4>
+            <div style="font-size: 32px; font-weight: 900; color: var(--secondary-brand);">{{ val }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Mashhur kategoriyalar bo'limi — sarlavha va "Barchasini ko'rish" tarjima qilinadi #}
+    <section style="margin-bottom: 80px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">{% trans "Mashhur kategoriyalar" %}</h2>
+            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">{% trans "Barchasini ko'rish" %}</a>
+        </div>
+        <div class="erp-home-cat-grid">
+            {% for cat in categories|slice:":8" %}
+            <a href="{% url 'category_detail' cat.slug %}" class="erp-home-cat-card">
+                <div class="erp-home-cat-icon">
+                    {% if cat.slug == 'divan' %}🛋️{% elif cat.slug == 'krovat' %}🛏️{% elif cat.slug == 'shkaf' %}🚪{% elif cat.slug == 'stol' %}🪑{% else %}📦{% endif %}
+                </div>
+                <h4 style="font-size: 17px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 8px;">{{ cat.name_uz }}</h4>
+                {# Mahsulot soni — "mahsulot" so'zi tarjima qilinadi #}
+                <p style="font-size: 13px; color: #94A3B8; margin: 0;">{{ cat.product_count|default:0 }} {% trans "mahsulot" %}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# Tayyor Mebellar (Retail/B2C) bo'limi — sarlavha va "Barchasi" havolasi tarjima qilinadi #}
+    {% trans "Tayyor Mebellar (Retail)" as default_furniture_title %}{# Standart sarlavha tarjimasi #}
+    <section style="margin-bottom: 80px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <h2 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); margin: 0; letter-spacing: -1.5px;">{{ cms.furniture_title|default:default_furniture_title }}</h2>
+            <a href="{% url 'services' %}" style="color: var(--secondary-brand); font-weight: 800; text-decoration: none; font-size: 14px; border-bottom: 2px solid var(--primary-brand); padding-bottom: 4px;">{% trans "Barchasi" %}</a>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+            {% for item in furniture_items %}
+            <div class="erp-card" style="background: white; border-radius: 20px; border: 1px solid #E2E8F0; overflow: hidden; transition: 0.3s;" onmouseover="this.style.borderColor='var(--primary-brand)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform='translateY(0)';">
+                <div style="height: 200px; background: #F1F5F9; position: relative;">
+                    <img src="{{ item.img }}" alt="{{ item.title_uz }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 12px; left: 12px; background: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; color: var(--secondary-brand); border: 1px solid #E2E8F0;">
+                        {{ item.category }}
+                    </div>
+                </div>
+                {# Mahsulot kartasi pastki qismi — "Narxi", "so'm", "Zaxira", "dona", "Savatga qo'shish" tarjima qilinadi #}
+                <div style="padding: 20px;">
+                    <h4 style="font-size: 16px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 12px; height: 44px; overflow: hidden;">{{ item.title_uz }}</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Narxi" %}</div>
+                            <div style="font-size: 18px; font-weight: 950; color: var(--secondary-brand);">{{ item.price|intcomma }} {% trans "so'm" %}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Zaxira" %}</div>
+                            <div style="font-size: 14px; font-weight: 800; color: {% if item.stock > 0 %}#10B981{% else %}#EF4444{% endif %};">{{ item.stock }} {% trans "dona" %}</div>
+                        </div>
+                    </div>
+                    <button class="erp-btn-primary" style="width: 100%; margin-top: 20px; height: 44px; font-size: 13px;">{% trans "Savatga qo'shish" %}</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Escrow Banner Module (TZ 21) -->
+    {% include 'includes/home_escrow.html' %}
+
+    <!-- Eng yaxshi Ustalar Module (TZ 11.5) -->
+    {% include 'includes/home_masters.html' %}
+    
+</div>
+{% endblock %}

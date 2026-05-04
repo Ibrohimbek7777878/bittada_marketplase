@@ -1,0 +1,127 @@
+{# ─────────────────────────────────────────────────────────────────────────── #}
+{# admin_create.html — Sayt admin paneli, Yangi mahsulot yaratish formasi      #}
+{# Yaratilgan sana: 2026-05-02                                                 #}
+{# Bog'liq view: apps.products.views.product_admin_create_view                 #}
+{# Maqsad: Foydalanuvchi (Seller/Admin) bizning ERP UI dizaynidan chiqmasdan   #}
+{#         yangi mahsulot qo'sha olishi uchun chiroyli forma. Django'ning      #}
+{#         standart admin formasi ishlatilmaydi.                               #}
+{# ─────────────────────────────────────────────────────────────────────────── #}
+{% extends base_template|default:"base_erp.html" %} {# Sidebar+navbar bilan ERP karkas #}
+
+{% block title %}{{ page_title|default:"Yangi mahsulot" }} — Bittada{% endblock %} {# Tab nomi #}
+
+{% block content %} {# Asosiy kontent bloki #}
+<div class="erp-page-wrapper" style="animation: erp-fade-in 300ms ease-out; max-width:900px; margin:0 auto;"> {# Sahifa konteyneri (markazda, max 900px) #}
+
+    {# ── 1. Sahifa header (orqaga qaytish + sarlavha) ─────────────────── #}
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;"> {# Header satri #}
+        <a href="{% url 'admin_product_list' %}" {# Mahsulotlar ro'yxatiga qaytish linki #}
+           style="width:40px; height:40px; border-radius:10px; background:white; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B; text-decoration:none; font-size:18px;"> {# Tugma stil #}
+            ← {# Orqaga ikon #}
+        </a>
+        <div> {# O'ng qism: matnlar #}
+            <div style="font-size:12px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Boshqaruv / Mahsulotlar</div> {# Breadcrumb #}
+            <h1 style="font-size:24px; font-weight:900; color:var(--secondary-brand); margin:0;">➕ Yangi mahsulot qo'shish</h1> {# Sarlavha #}
+        </div>
+    </div>
+
+    {# ── 2. Forma o'rami (kartochka) ─────────────────────────────────── #}
+    <form method="post" action="" {# POST so'rov bilan view'ga ma'lumot yuboriladi #}
+          style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:32px; box-shadow:var(--erp-shadow);"> {# Forma stil #}
+        {% csrf_token %} {# Django CSRF himoyasi (xavfsizlik talabi) #}
+
+        {# ── 3. Umumiy xato (forma yuqorisida) ─────────────────────── #}
+        {% if errors.__all__ %} {# __all__ — umumiy (maydon-bog'liq bo'lmagan) xato #}
+            <div style="padding:12px 16px; background:#FEE2E2; border:1px solid #FCA5A5; color:#991B1B; border-radius:8px; margin-bottom:16px; font-size:13px; font-weight:600;"> {# Xato banneri #}
+                ⚠️ {{ errors.__all__ }} {# Xato matni #}
+            </div>
+        {% endif %}
+
+        {# ── 4. Maydonlar grid (2 kolonka) ─────────────────────────── #}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;"> {# 2 kolonkali grid (mobil-da bir kolonka) #}
+
+            <div style="grid-column:1 / -1;"> {# Maydon 1: nom (to'liq qator) #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Mahsulot nomi (UZ) *</label> {# Yorliq #}
+                <input type="text" name="title_uz" value="{{ form_data.title_uz|default:'' }}" required {# POST'dan kelgan qiymat saqlanadi #}
+                       style="width:100%; height:44px; padding:0 14px; border:1px solid {% if errors.title_uz %}#FCA5A5{% else %}#E2E8F0{% endif %}; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;" {# Stil (xato bo'lsa qizil border) #}
+                       placeholder="Masalan: Klassik oshxona stoli"> {# Joylashtirgich matn #}
+                {% if errors.title_uz %}<div style="color:#EF4444; font-size:12px; margin-top:4px;">{{ errors.title_uz }}</div>{% endif %} {# Xato matni #}
+            </div>
+
+            <div> {# Maydon 2: SKU #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">SKU kodi *</label> {# Yorliq #}
+                <input type="text" name="sku" value="{{ form_data.sku|default:'' }}" required {# Majburiy maydon #}
+                       style="width:100%; height:44px; padding:0 14px; border:1px solid {% if errors.sku %}#FCA5A5{% else %}#E2E8F0{% endif %}; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC; font-family:'Courier New', monospace;" {# Mono shrift #}
+                       placeholder="Masalan: TBL-CLS-001"> {# Joy egasi #}
+                {% if errors.sku %}<div style="color:#EF4444; font-size:12px; margin-top:4px;">{{ errors.sku }}</div>{% endif %} {# Xato xabari #}
+            </div>
+
+            <div> {# Maydon 3: narx #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Narx (so'm) *</label> {# Yorliq #}
+                <input type="number" name="price" value="{{ form_data.price|default:'' }}" required min="0" step="1000" {# Faqat musbat qiymatlar #}
+                       style="width:100%; height:44px; padding:0 14px; border:1px solid {% if errors.price %}#FCA5A5{% else %}#E2E8F0{% endif %}; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;" {# Stil #}
+                       placeholder="Masalan: 1500000"> {# Joy egasi #}
+                {% if errors.price %}<div style="color:#EF4444; font-size:12px; margin-top:4px;">{{ errors.price }}</div>{% endif %} {# Xato #}
+            </div>
+
+            <div> {# Maydon 4: kategoriya #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Kategoriya *</label> {# Yorliq #}
+                <select name="category" required {# Majburiy tanlash #}
+                        style="width:100%; height:44px; padding:0 14px; border:1px solid {% if errors.category %}#FCA5A5{% else %}#E2E8F0{% endif %}; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;"> {# Stil (xato bo'lsa qizil border) #}
+                    <option value="">— Kategoriyani tanlang —</option> {# Default placeholder #}
+                    {% for cat in categories_list %} {# Faol kategoriyalar bo'yicha loop #}
+                        <option value="{{ cat.id }}" {% if form_data.category == cat.id|stringformat:'s' %}selected{% endif %}>{{ cat.name_uz }}</option> {# Tanlangan ID ni saqlash #}
+                    {% endfor %}
+                </select>
+                {% if errors.category %}<div style="color:#EF4444; font-size:12px; margin-top:4px;">{{ errors.category }}</div>{% endif %} {# Xato matni #}
+            </div>
+
+            <div> {# Maydon 5: zaxira #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Zaxira miqdori</label> {# Yorliq #}
+                <input type="number" name="stock_qty" value="{{ form_data.stock_qty|default:'0' }}" min="0" {# Faqat musbat #}
+                       style="width:100%; height:44px; padding:0 14px; border:1px solid #E2E8F0; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;" {# Stil #}
+                       placeholder="0"> {# Default placeholder #}
+            </div>
+
+            <div> {# Maydon 6: holat (status) #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Holat</label> {# Yorliq #}
+                <select name="status" {# ProductStatus dan tanlash #}
+                        style="width:100%; height:44px; padding:0 14px; border:1px solid #E2E8F0; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;"> {# Stil #}
+                    {% for value, label in status_choices %} {# Choices bo'yicha loop #}
+                        <option value="{{ value }}" {% if form_data.status == value %}selected{% endif %}>{{ label }}</option> {# Tanlanganni saqlash #}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div> {# Maydon 7: tur (product_type) #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Mahsulot turi</label> {# Yorliq #}
+                <select name="product_type" {# ProductType dan tanlash #}
+                        style="width:100%; height:44px; padding:0 14px; border:1px solid #E2E8F0; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC;"> {# Stil #}
+                    {% for value, label in type_choices %} {# Choices bo'yicha loop #}
+                        <option value="{{ value }}" {% if form_data.product_type == value %}selected{% endif %}>{{ label }}</option> {# Tanlanganni saqlash #}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="grid-column:1 / -1;"> {# Maydon 8: tavsif (to'liq qator) #}
+                <label style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px;">Tavsif (UZ)</label> {# Yorliq #}
+                <textarea name="description_uz" rows="5" {# 5 qator balandlikdagi textarea #}
+                          style="width:100%; padding:12px 14px; border:1px solid #E2E8F0; border-radius:10px; font-size:14px; outline:none; background:#F8FAFC; font-family:var(--erp-font); resize:vertical;" {# Vertical resize ruxsat #}
+                          placeholder="Mahsulot haqida batafsil...">{{ form_data.description_uz|default:'' }}</textarea> {# POST'dan qaytarilgan matn #}
+            </div>
+        </div>
+
+        {# ── 5. Action tugmalari (formaning oxirida) ───────────────── #}
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px; padding-top:20px; border-top:1px solid #E2E8F0;"> {# Action satri #}
+            <a href="{% url 'admin_product_list' %}" {# Bekor qilish — ro'yxatga qaytish #}
+               style="height:44px; padding:0 24px; border-radius:12px; background:#F1F5F9; color:#475569; font-size:14px; font-weight:800; display:inline-flex; align-items:center; text-decoration:none; border:1px solid #E2E8F0;"> {# Stil (passive) #}
+                Bekor qilish {# Matn #}
+            </a>
+            <button type="submit" {# Submit tugmasi (POST yuboradi) #}
+                    style="height:44px; padding:0 32px; border-radius:12px; background:var(--primary-brand); color:var(--secondary-brand); font-size:14px; font-weight:800; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px;"> {# Asosiy CTA stil #}
+                ✅ Saqlash {# Submit ikon + matn #}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %} {# content blokining yakuni #}

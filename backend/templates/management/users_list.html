@@ -1,0 +1,79 @@
+{# management/users_list.html — Bittada ERP, Foydalanuvchilar #}
+{# View: apps.management.views.users_list_view                #}
+{# API:  /dashboard/api/v1/users/                             #}
+{# Ruxsat: faqat admin/super_admin/staff (Seller emas)        #}
+{% extends base_template|default:"base_erp.html" %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div style="animation: erp-fade-in 300ms ease-out;">
+    <div style="margin-bottom:24px;">
+        <div style="font-size:12px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Bittada ERP / Management</div>
+        <h1 style="font-size:28px; font-weight:900; color:var(--secondary-brand); margin:8px 0 0;">👥 Foydalanuvchilar</h1>
+        <p style="color:#64748B; margin:8px 0 0; font-size:14px;">Mijozlar, sotuvchilar va xodimlarni boshqarish (faqat admin uchun)</p>
+    </div>
+
+    {# KPI - 4 ta #}
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:24px;">
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);">
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Jami</div>
+            <div style="font-size:28px; font-weight:900; color:var(--secondary-brand); margin-top:8px;">{{ kpis.total|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);">
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Mijozlar</div>
+            <div style="font-size:28px; font-weight:900; color:#3B82F6; margin-top:8px;">{{ kpis.customers|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);">
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Sotuvchilar</div>
+            <div style="font-size:28px; font-weight:900; color:#10B981; margin-top:8px;">{{ kpis.sellers|intcomma }}</div>
+        </div>
+        <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:20px; box-shadow:var(--erp-shadow);">
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase;">Bloklangan</div>
+            <div style="font-size:28px; font-weight:900; color:#EF4444; margin-top:8px;">{{ kpis.blacklisted|intcomma }}</div>
+        </div>
+    </div>
+
+    {# Foydalanuvchilar jadvali (skeleton) #}
+    <div style="background:white; border:1px solid #E2E8F0; border-radius:16px; padding:24px; box-shadow:var(--erp-shadow);">
+        <div style="padding:12px 16px; background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; margin-bottom:16px; font-size:13px; color:#92400E;">
+            ℹ️ <strong>Eslatma:</strong> Block/Unblock va rol o'zgartirish endpointlari API'da tayyor (POST /users/&lt;id&gt;/block/), UI tugmalari keyingi vazifada qo'shiladi.
+        </div>
+        <h3 style="margin:0 0 12px; font-size:16px; font-weight:800; color:var(--secondary-brand);">📋 Foydalanuvchilar (so'nggi 25 ta)</h3>
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                <thead style="background:#F8FAFC;">
+                    <tr>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Username</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Email</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Rol</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Holat</th>
+                        <th style="padding:10px 12px; text-align:left; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">Qo'shilgan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr style="border-bottom:1px solid #F1F5F9;">
+                        <td style="padding:10px 12px; font-weight:700;">{{ u.username|default:'—' }}</td>
+                        <td style="padding:10px 12px; color:#64748B;">{{ u.email|default:'—' }}</td>
+                        <td style="padding:10px 12px;"><span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; background:#F1F5F9; color:#475569;">{{ u.get_role_display|default:u.role }}</span></td>
+                        <td style="padding:10px 12px;">
+                            {% if u.is_active %}
+                                <span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; background:#D1FAE5; color:#065F46;">✅ Aktiv</span>
+                            {% else %}
+                                <span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; background:#FEE2E2; color:#991B1B;">🚫 Bloklangan</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding:10px 12px; color:#64748B; font-size:12px;">{{ u.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" style="padding:32px; text-align:center; color:#94A3B8;">📭 Foydalanuvchi topilmadi</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top:16px; font-size:12px; color:#94A3B8;">API: <code style="background:#F1F5F9; padding:2px 6px; border-radius:4px;">{{ api_url }}</code></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends base_template|default:"base_erp.html" %}
+
+{% block title %}Escrow - Xavfsiz savdo tizimi | Bittada{% endblock %}
+
+{% block content %}
+<div class="erp-escrow-container" style="padding: 24px; max-width: 1200px; margin: 0 auto;">
+    
+    <!-- Hero Section -->
+    <div style="background: var(--primary-brand); border-radius: 32px; padding: 80px 40px; text-align: center; margin-bottom: 64px; box-shadow: 0 20px 40px rgba(164, 212, 108, 0.2); border: 1px solid rgba(0,31,63,0.05); position: relative; overflow: hidden;">
+        <div style="position: relative; z-index: 2;">
+            <div style="font-size: 64px; margin-bottom: 24px;">🛡️</div>
+            <h1 style="font-size: 48px; font-weight: 950; color: var(--secondary-brand); margin-bottom: 16px; letter-spacing: -2px;">Bittada Escrow</h1>
+            <p style="font-size: 20px; color: rgba(0, 31, 63, 0.7); max-width: 650px; margin: 0 auto; line-height: 1.6; font-weight: 600;">O'zbekistondagi birinchi va eng xavfsiz mebel savdosi kafolati tizimi.</p>
+        </div>
+        <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: white; filter: blur(100px); opacity: 0.2;"></div>
+    </div>
+
+    <!-- How it works -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 80px;">
+        <div class="erp-card" style="padding: 40px; text-align: center; background: white; border-radius: 28px; border: 1px solid var(--erp-glass-border); backdrop-filter: blur(12px);">
+            <div style="font-size: 32px; margin-bottom: 24px;">1️⃣</div>
+            <h3 style="font-size: 20px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Buyurtma bering</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; font-weight: 500;">O'zingizga yoqqan mahsulot yoki xizmatni tanlang va to'lovni amalga oshiring.</p>
+        </div>
+        <div class="erp-card" style="padding: 40px; text-align: center; background: white; border-radius: 28px; border: 1px solid var(--erp-glass-border); backdrop-filter: blur(12px);">
+            <div style="font-size: 32px; margin-bottom: 24px;">2️⃣</div>
+            <h3 style="font-size: 20px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Mablag'ni muzlatish</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; font-weight: 500;">Pulingiz bizning xavfsiz hisobimizda mahsulot sizga yetib borguncha saqlanadi.</p>
+        </div>
+        <div class="erp-card" style="padding: 40px; text-align: center; background: white; border-radius: 28px; border: 1px solid var(--erp-glass-border); backdrop-filter: blur(12px);">
+            <div style="font-size: 32px; margin-bottom: 24px;">3️⃣</div>
+            <h3 style="font-size: 20px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 16px;">Tasdiqlash</h3>
+            <p style="font-size: 15px; color: #64748B; line-height: 1.6; font-weight: 500;">Siz mahsulotni qabul qilib olganingizdan so'ng, biz pulni sotuvchiga o'tkazib beramiz.</p>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div style="background: var(--secondary-brand); border-radius: 32px; padding: 64px; text-align: center; color: white;">
+        <h2 style="font-size: 32px; font-weight: 950; margin-bottom: 24px;">Xavfsiz savdoni hoziroq boshlang</h2>
+        <p style="font-size: 18px; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">Har bir tranzaksiya bizning mutaxassislarimiz tomonidan nazorat qilinadi.</p>
+        <a href="{% url 'home' %}" class="erp-btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 52px; padding: 0 32px;">Bozorga qaytish</a>
+    </div>
+
+</div>
+{% endblock %}

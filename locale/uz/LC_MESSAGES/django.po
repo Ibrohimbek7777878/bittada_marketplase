@@ -1,0 +1,231 @@
+# Uzbek (O'zbek) translations for Bittada Marketplace
+# Copyright (C) 2026 Bittada
+# This file is distributed under the same license as the bittada package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Bittada 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-02 13:00+0500\n"
+"PO-Revision-Date: 2026-05-02 13:00+0500\n"
+"Last-Translator: Bittada Team\n"
+"Language-Team: Uzbek\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/profile_erp.html:5
+msgid "Profil"
+msgstr "Profil"
+
+#: templates/profile_erp.html:140
+msgid "Mening profilim"
+msgstr "Mening profilim"
+
+#: templates/profile_erp.html:141
+msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgstr "Shaxsiy ma'lumotlar va sozlamalar"
+
+#: templates/profile_erp.html:155 templates/profile_erp.html:209
+msgid "Mijoz"
+msgstr "Mijoz"
+
+#: templates/profile_erp.html:160
+msgid "Ma'lumotlar"
+msgstr "Ma'lumotlar"
+
+#: templates/profile_erp.html:163
+msgid "Buyurtmalar"
+msgstr "Buyurtmalar"
+
+#: templates/profile_erp.html:166
+msgid "Sevimlilar"
+msgstr "Sevimlilar"
+
+#: templates/profile_erp.html:169
+msgid "Savat"
+msgstr "Savat"
+
+#: templates/profile_erp.html:175
+msgid "Chiqish"
+msgstr "Chiqish"
+
+#: templates/profile_erp.html:189
+msgid "Shaxsiy ma'lumotlar"
+msgstr "Shaxsiy ma'lumotlar"
+
+#: templates/profile_erp.html:198
+msgid "Username"
+msgstr "Username"
+
+#: templates/profile_erp.html:202
+msgid "Email manzili"
+msgstr "Email manzili"
+
+#: templates/profile_erp.html:203
+msgid "Kiritilmagan"
+msgstr "Kiritilmagan"
+
+#: templates/profile_erp.html:209
+msgid "Ismingiz"
+msgstr "Ismingiz"
+
+#: templates/profile_erp.html:210
+msgid "Ismingizni kiriting"
+msgstr "Ismingizni kiriting"
+
+#: templates/profile_erp.html:213
+msgid "Telefon raqamingiz"
+msgstr "Telefon raqamingiz"
+
+#: templates/profile_erp.html:219
+msgid "Yetkazib berish manzili"
+msgstr "Yetkazib berish manzili"
+
+#: templates/profile_erp.html:220
+msgid "To'liq manzilingizni kiriting"
+msgstr "To'liq manzilingizni kiriting"
+
+#: templates/profile_erp.html:225
+msgid "O'zgarishlarni saqlash"
+msgstr "O'zgarishlarni saqlash"
+
+#: templates/profile_erp.html:259
+msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
+msgstr "Ma'lumotlar muvaffaqiyatli yangilandi!"
+
+#: templates/profile_erp.html:262
+msgid "Yangilashda xatolik yuz berdi"
+msgstr "Yangilashda xatolik yuz berdi"
+
+#: templates/profile_erp.html:265
+msgid "Tizimda ulanish xatoligi yuz berdi"
+msgstr "Tizimda ulanish xatoligi yuz berdi"
+
+#: templates/home_erp.html:6
+msgid "Bosh sahifa"
+msgstr "Bosh sahifa"
+
+#: templates/home_erp.html:7
+msgid "Professional ERP Tizimi"
+msgstr "Professional ERP Tizimi"
+
+#: templates/checkout_erp.html:6
+msgid "Buyurtmani rasmiylashtirish"
+msgstr "Buyurtmani rasmiylashtirish"
+
+#: templates/checkout_erp.html:12
+msgid "Yetkazib berish ma'lumotlari"
+msgstr "Yetkazib berish ma'lumotlari"
+
+#: templates/checkout_erp.html:18
+msgid "Ism va familiya"
+msgstr "Ism va familiya"
+
+#: templates/checkout_erp.html:22
+msgid "Telefon raqami"
+msgstr "Telefon raqami"
+
+#: templates/checkout_erp.html:26
+msgid "Manzil"
+msgstr "Manzil"
+
+#: templates/checkout_erp.html:32
+msgid "Buyurtmani tasdiqlash"
+msgstr "Buyurtmani tasdiqlash"
+
+#: templates/checkout_erp.html:42
+msgid "Sizning buyurtmangiz"
+msgstr "Sizning buyurtmangiz"
+
+#: templates/checkout_erp.html:56
+msgid "Umumiy:"
+msgstr "Umumiy:"
+
+#: templates/includes/erp_navbar.html
+msgid "O'zbek"
+msgstr "O'zbek"
+
+#: templates/includes/erp_navbar.html
+msgid "Русский"
+msgstr "Русский"
+
+#: templates/includes/erp_navbar.html
+msgid "English"
+msgstr "English"
+
+#: templates/profile_erp.html
+msgid "Ortga"
+msgstr "Ortga"
+
+#: templates/cart_erp.html
+
+#: templates/cart_erp.html
+msgid "Sizning savatingiz"
+msgstr "Sizning savatingiz"
+
+#: templates/cart_erp.html
+msgid "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
+msgstr "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
+
+#: templates/cart_erp.html
+msgid "Savatingiz bo'sh"
+msgstr "Savatingiz bo'sh"
+
+#: templates/cart_erp.html
+msgid "Hali hech qanday mahsulot qo'shmadingiz."
+msgstr "Hali hech qanday mahsulot qo'shmadingiz."
+
+#: templates/cart_erp.html
+msgid "Bosh sahifaga qaytish"
+msgstr "Bosh sahifaga qaytish"
+
+#: templates/cart_erp.html
+msgid "Yuklanmoqda..."
+msgstr "Yuklanmoqda..."
+
+#: templates/cart_erp.html
+msgid "Buyurtma xulosasi"
+msgstr "Buyurtma xulosasi"
+
+#: templates/cart_erp.html
+msgid "Mahsulotlar"
+msgstr "Mahsulotlar"
+
+#: templates/cart_erp.html
+msgid "Yetkazib berish:"
+msgstr "Yetkazib berish:"
+
+#: templates/cart_erp.html
+msgid "Bepul"
+msgstr "Bepul"
+
+#: templates/cart_erp.html
+msgid "Jami:"
+msgstr "Jami:"
+
+#: templates/cart_erp.html
+msgid "Rasmiylashtirish"
+msgstr "Rasmiylashtirish"
+
+#: templates/cart_erp.html
+msgid "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
+msgstr "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
+
+#: templates/wishlist_erp.html
+
+#: templates/wishlist_erp.html
+msgid "Sizga yoqqan mahsulotlar to'plami"
+msgstr "Sizga yoqqan mahsulotlar to'plami"
+
+#: templates/wishlist_erp.html
+msgid "Hali sevimlilar ro'yxati bo'sh"
+msgstr "Hali sevimlilar ro'yxati bo'sh"
+
+#: templates/wishlist_erp.html
+msgid "O'zingizga yoqqan mahsulotlarni saqlab qo'ying."
+msgstr "O'zingizga yoqqan mahsulotlarni saqlab qo'ying."
+
+#: templates/wishlist_erp.html

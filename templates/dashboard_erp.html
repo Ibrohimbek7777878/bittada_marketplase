@@ -1,0 +1,192 @@
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+
+{% block title %}Command Center — Bittada Marketplace{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div style="margin-bottom: 40px; animation: erp-fade-in 400ms ease-out; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span style="background: rgba(164, 212, 108, 0.1); color: var(--secondary-brand); border: 1px solid var(--primary-brand); font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">Live Platforma</span>
+            <span style="width: 8px; height: 8px; background: var(--primary-brand); border-radius: 50%; box-shadow: 0 0 10px var(--primary-brand);"></span>
+        </div>
+        <h1 style="font-size: 36px; font-weight: 900; color: var(--secondary-brand); letter-spacing: -1.5px; margin: 0;">Command Center</h1>
+        <p style="color: #64748B; font-size: 16px; margin-top: 4px;">Platforma ko'rsatkichlari va tizim nazorati.</p>
+    </div>
+    
+    <div style="display: flex; gap: 12px;">
+        <button class="erp-btn-primary" style="background: white; border: 1px solid #E2E8F0; color: var(--secondary-brand); height: 44px;">📄 Hisobot</button>
+        <button class="erp-btn-primary" style="height: 44px; padding: 0 24px;">➕ Yangi mahsulot</button>
+    </div>
+</div>
+
+<!-- Analytics Grid (Brand Re-skin) -->
+<div class="erp-analytics-grid" style="animation: erp-fade-in 500ms ease-out; margin-bottom: 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+    <!-- GMV -->
+    <div class="brand-card">
+        <div class="brand-card__icon">💰</div>
+        <div class="brand-card__label">GMV (Jami Savdo)</div>
+        <div class="brand-card__value" id="stat-gmv">$128,430.50</div>
+        <div class="brand-card__trend up">📈 +12.5% <span>vs o'tgan oy</span></div>
+    </div>
+
+    <!-- Active Orders -->
+    <div class="brand-card">
+        <div class="brand-card__icon">🛒</div>
+        <div class="brand-card__label">Faol Buyurtmalar</div>
+        <div class="brand-card__value" id="stat-orders">156</div>
+        <div class="brand-card__trend neutral" id="stat-new-orders">📦 24 ta yangi</div>
+    </div>
+
+    <!-- Escrow -->
+    <div class="brand-card">
+        <div class="brand-card__icon">🛡️</div>
+        <div class="brand-card__label">Escrow Fondi</div>
+        <div class="brand-card__value" id="stat-escrow">$42,100.00</div>
+        <div class="brand-card__trend warning" id="stat-frozen-count">🔒 Muzlatilgan</div>
+    </div>
+
+    <!-- Credit Economy -->
+    <div class="brand-card">
+        <div class="brand-card__icon">💎</div>
+        <div class="brand-card__label">Kredit Iqtisodiyoti</div>
+        <div class="brand-card__value" id="stat-credit">₿ 450.2k</div>
+        <div class="brand-card__trend primary">🔥 Faol aylanma</div>
+    </div>
+</div>
+
+<!-- Operations Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; animation: erp-fade-in 600ms ease-out;">
+    <!-- Pending Actions -->
+    <div style="background: white; border-radius: 24px; padding: 32px; border: 1px solid var(--erp-glass-border); box-shadow: var(--erp-shadow);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 style="font-size: 20px; font-weight: 800; color: var(--secondary-brand); margin: 0;">Zudlik bilan bajariladigan amallar</h3>
+            <span id="pending-actions-count" style="font-size: 11px; font-weight: 800; color: var(--primary-brand); background: var(--secondary-brand); padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">... kutilmoqda</span>
+        </div>
+
+        <div id="pending-actions-list" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- System Insights -->
+    <div style="background: var(--secondary-brand); border-radius: 24px; padding: 32px; color: white; position: relative; overflow: hidden;">
+        <div style="position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; background: var(--primary-brand); filter: blur(100px); opacity: 0.15;"></div>
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 24px;">Tizim Analitikasi</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 24px; position: relative;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                    <span style="opacity: 0.6;">Foydalanuvchilar</span>
+                    <span style="color: var(--primary-brand); font-weight: 800;">+24%</span>
+                </div>
+                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <div style="width: 74%; height: 100%; background: var(--primary-brand); border-radius: 10px; box-shadow: 0 0 10px var(--primary-brand);"></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="font-size: 11px; color: var(--primary-brand); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">Xabarnoma</div>
+                <p style="font-size: 13px; line-height: 1.6; opacity: 0.8; margin: 0;">Bugun soat 22:00 da tizimda profilaktika ishlari rejalashtirilgan.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .brand-card {
+        background: white;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--erp-glass-border);
+        box-shadow: var(--erp-shadow);
+        transition: var(--erp-transition);
+        position: relative;
+    }
+    .brand-card:hover { transform: translateY(-4px); }
+    .brand-card__icon { font-size: 32px; margin-bottom: 16px; }
+    .brand-card__label { font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+    .brand-card__value { font-size: 26px; font-weight: 900; color: var(--secondary-brand); margin: 8px 0; }
+    .brand-card__trend { font-size: 12px; font-weight: 700; }
+    .brand-card__trend.up { color: #10B981; }
+    .brand-card__trend.neutral { color: var(--secondary-brand); }
+    .brand-card__trend.warning { color: #F59E0B; }
+    .brand-card__trend.primary { color: var(--primary-brand); }
+
+    .action-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px; background: #F8FAFC; border-radius: 16px;
+        border: 1px solid #E2E8F0; transition: var(--erp-transition);
+    }
+    .action-item:hover { border-color: var(--primary-brand); background: white; }
+    .action-icon {
+        width: 44px; height: 44px; background: white; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fetchDashboardStats = async () => {
+            try {
+                // Fetch Sales / GMV
+                const salesRes = await fetch('/api/v1/dashboard/stats/sales/');
+                if (salesRes.ok) {
+                    const salesData = (await salesRes.json()).data;
+                    document.getElementById('stat-gmv').innerText = '$' + salesData.gmv.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    document.getElementById('stat-orders').innerText = salesData.active_orders;
+                    document.getElementById('stat-new-orders').innerHTML = `📦 ${salesData.new_orders} ta yangi`;
+                }
+
+                // Fetch Escrow
+                const escrowRes = await fetch('/api/v1/dashboard/financials/escrow/');
+                if (escrowRes.ok) {
+                    const escrowData = (await escrowRes.json()).data;
+                    document.getElementById('stat-escrow').innerText = '$' + escrowData.total_escrow.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    document.getElementById('stat-frozen-count').innerHTML = `🔒 ${escrowData.frozen_funds_count} ta muzlatilgan`;
+                }
+
+                // Fetch Credit Economy
+                const creditRes = await fetch('/api/v1/dashboard/financials/credit-economy/');
+                if (creditRes.ok) {
+                    const creditData = (await creditRes.json()).data;
+                    document.getElementById('stat-credit').innerText = creditData.active_credits;
+                }
+
+                // Fetch Pending Actions
+                const pendingRes = await fetch('/api/v1/dashboard/operations/pending/');
+                if (pendingRes.ok) {
+                    const pendingData = (await pendingRes.json()).data;
+                    document.getElementById('pending-actions-count').innerText = `${pendingData.total_pending} kutilmoqda`;
+                    const listContainer = document.getElementById('pending-actions-list');
+                    listContainer.innerHTML = ''; // Clear existing
+                    pendingData.actions.forEach(action => {
+                        listContainer.innerHTML += `
+                            <div class="action-item">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div class="action-icon">${action.icon}</div>
+                                    <div>
+                                        <div style="font-weight: 800; color: var(--secondary-brand); font-size: 15px;">
+                                            ${action.title}
+                                        </div>
+                                        <div style="font-size: 12px; color: #64748B;">${action.subtitle}</div>
+                                    </div>
+                                </div>
+                                <button class="erp-btn-primary" style="height: 36px; font-size: 12px; padding: 0 16px;">${action.action}</button>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Dashboard stats sync failed:", err);
+            }
+        };
+
+        // Initial fetch and then every 5 minutes (300000ms)
+        fetchDashboardStats();
+        setInterval(fetchDashboardStats, 300000);
+    });
+</script>
+{% endblock %}

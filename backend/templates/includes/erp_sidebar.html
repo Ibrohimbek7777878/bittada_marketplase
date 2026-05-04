@@ -1,0 +1,113 @@
+<!-- prefix: erp-sidebar - New Brand Navy Theme -->
+<aside class="erp-sidebar">
+    <!-- Branding -->
+    <div class="erp-sidebar__branding" style="padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div style="font-size: 20px; font-weight: 900; color: white; letter-spacing: -0.5px;">
+            BITTADA<span style="color: var(--primary-brand);">.COMMAND</span>
+        </div>
+        <div style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; margin-top: 4px;">Enterprise Resource Planning</div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="erp-sidebar__user" style="margin-top: 24px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--primary-brand); display: flex; align-items: center; justify-content: center; color: var(--secondary-brand); font-weight: 900; font-size: 18px;">
+                {{ user.username|first|upper }}
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <h3 style="font-size: 14px; font-weight: 700; color: white; margin: 0;">{{ user.username }}</h3>
+                <span style="font-size: 10px; color: var(--primary-brand); font-weight: 800; text-transform: uppercase;">Super Admin</span>
+            </div>
+        </div>
+        {% if new_orders_count %}
+        <div title="Yangi buyurtmalar" style="background: #EF4444; color: white; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 6px;">
+            {{ new_orders_count }}
+        </div>
+        {% endif %}
+    </div>
+
+    {# ─────────────────────────────────────────────────────────────────── #}
+    {# NAVIGATSIYA — Bittada ERP boshqaruv tizimi sidebar (alohida ekotizim)  #}
+    {# 2026-05-02 v3:                                                        #}
+    {#   - Barcha boshqaruv linklari /dashboard/* ga ulandi (apps.management) #}
+    {#   - Django'ning quruq admini /hidden-core-database/ ga ko'chdi (DB only) #}
+    {#   - Har bir tugma ManagementAccessMiddleware orqali himoyalanadi      #}
+    {# ─────────────────────────────────────────────────────────────────── #}
+    <!-- Navigation -->
+    <nav style="margin-top: 32px; display: flex; flex-direction: column; gap: 4px;">
+        <!-- Group: Core -->
+        <div style="padding: 0 24px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Core</div>
+        <a href="{% url 'home' %}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">{# Saytning bosh sahifasi (B2C/B2B portal) #}
+            <span>📊</span> Dashboard
+        </a>
+        <a href="{% url 'mgmt:orders_list' %}" class="sidebar-link {% if '/dashboard/orders' in request.path %}active{% endif %}">{# Savdo — Bittada ERP custom UI #}
+            <span>📈</span> Savdo
+        </a>
+
+        <!-- Group: Marketplace -->
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Marketplace</div>
+        <a href="{% url 'mgmt:products_list' %}" class="sidebar-link {% if '/dashboard/products' in request.path %}active{% endif %}"><span>🛋️</span> Mahsulotlar</a>{# ERP — products_list_view #}
+        <a href="{% url 'services:services' %}" class="sidebar-link {% if '/services' in request.path and '/dashboard' not in request.path %}active{% endif %}"><span>🔧</span> Xizmatlar</a>{# Mavjud sayt sahifasi (alohida) #}
+
+        <!-- Group: Financials -->
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Moliya</div>
+        <a href="{% url 'mgmt:escrow_list' %}" class="sidebar-link {% if '/dashboard/escrow' in request.path %}active{% endif %}"><span>🛡️</span> Escrow Fund</a>{# ERP — escrow_list_view #}
+        <a href="{% url 'mgmt:credit_list' %}" class="sidebar-link {% if '/dashboard/credit' in request.path %}active{% endif %}"><span>💳</span> Credit Economy</a>{# ERP — credit_list_view #}
+
+        <!-- Group: User Management -->
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">Management</div>
+        <a href="{% url 'mgmt:users_list' %}" class="sidebar-link {% if request.path == '/dashboard/users/' %}active{% endif %}"><span>👥</span> Foydalanuvchilar</a>{# ERP — users_list_view (admin only) #}
+        <a href="{% url 'mgmt:blacklist' %}" class="sidebar-link {% if '/dashboard/users/blacklist' in request.path %}active{% endif %}" style="color: #F87171 !important;"><span>🚫</span> Qora ro'yxat</a>{# ERP — blacklist_view (admin only) #}
+
+        <!-- System -->
+        <div style="padding: 16px 24px 8px; font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">System</div>
+        <a href="/hidden-core-database/" class="sidebar-link" target="_blank" rel="noopener" title="Django ORM/DB darajasidagi tekshirish (faqat tizim ma'muri uchun)"><span>⚙️</span> DB Console</a>{# Django'ning quruq admin paneli — maxfiy joyda #}
+        
+        <!-- Health Monitor -->
+        <div style="margin-top: auto; padding: 24px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);">
+            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: 12px;">System Health</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: white;">
+                    <span>Redis</span>
+                    <span id="sidebar-redis-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #EF4444;"></span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: white;">
+                    <span>Celery</span>
+                    <span id="sidebar-celery-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #EF4444;"></span>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'logout' %}" class="sidebar-link" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <span>🚪</span> Logout
+        </a>
+    </nav>
+</aside>
+
+<style>
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        text-decoration: none;
+        color: #4A4A4A !important; /* High contrast dark as requested */
+        font-size: 14px;
+        font-weight: 700;
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+        opacity: 1 !important;
+    }
+    .sidebar-link:hover {
+        background: rgba(121, 184, 88, 0.1);
+        border-left: 4px solid #79B858;
+        color: #4A4A4A !important;
+        opacity: 1 !important;
+    }
+    .sidebar-link.active {
+        background: #79B858 !important; /* Distinct green background as requested */
+        border-left: 4px solid #4ade80 !important;
+        color: #FFFFFF !important; /* White text when active */
+        opacity: 1 !important;
+    }
+</style>

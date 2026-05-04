@@ -1,0 +1,83 @@
+{% extends base_template|default:'base_erp.html' %} <!-- Dinamik karkasdan meros olish -->
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Sevimlilar" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<a href="{% url 'profile' %}" class="back-button animate-fade-in-up">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    {% trans "Ortga" %}
+</a>
+
+<div class="btd-page-header">
+    <h1 class="btd-page-header__title">{% trans "Sevimlilar" %}</h1>
+    <p class="btd-page-header__subtitle">{% trans "Sizga yoqqan mahsulotlar to'plami" %}</p>
+</div>
+
+<div id="wishlist-empty" style="display: none;" class="btd-empty-state" style="margin-top: 64px;">
+    <div style="font-size: 64px; margin-bottom: var(--space-md);">❤️</div>
+    <h2>{% trans "Hali sevimlilar ro'yxati bo'sh" %}</h2>
+    <p>{% trans "O'zingizga yoqqan mahsulotlarni saqlab qo'ying." %}</p>
+    <a href="{% url 'home' %}" class="btd-btn btd-btn--primary" style="margin-top: var(--space-lg);">{% trans "Bosh sahifaga qaytish" %}</a>
+</div>
+
+<div id="wishlist-grid" class="btd-products" style="margin-top: var(--space-xl);">
+    <!-- Items will be loaded here via JS -->
+    <div class="btd-loading">{% trans "Yuklanmoqda..." %}</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const wishlist = getWishlist();
+        const gridContainer = document.getElementById('wishlist-grid');
+        const emptyState = document.getElementById('wishlist-empty');
+
+        if (wishlist.length === 0) {
+            gridContainer.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        try {
+            gridContainer.innerHTML = '';
+            for (const uuid of wishlist) {
+                const response = await fetch(`/api/v1/products/product/${uuid}/`);
+                if (response.ok) {
+                    const product = await response.json();
+                    
+                    // Simple card template for wishlist
+                    const cardHtml = `
+                        <div class="btd-product-card">
+                            <button class="btd-product-card__wishlist btd-product-card__wishlist--active" onclick="handleWishlistToggle('${product.uuid}')">❤️</button>
+                            <div class="btd-product-card__image" onclick="window.location.href='/product/${product.uuid}/'">
+                                <img src="${product.images?.[0]?.image || '/static/img/placeholder.png'}" alt="${product.title_uz}">
+                            </div>
+                            <div class="btd-product-card__content">
+                                <div class="btd-product-card__category">${product.category_name || 'Mebel'}</div>
+                                <h3 class="btd-product-card__title">${product.title_uz}</h3>
+                                <div class="btd-product-card__price">
+                                    <span class="btd-product-card__price-current">${Number(product.price).toLocaleString()} so'm</span>
+                                </div>
+                                <button class="btd-btn btd-btn--primary btd-btn--sm btd-btn--full" onclick="addToCart('${product.uuid}')">Savatga qo'shish</button>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.insertAdjacentHTML('beforeend', cardHtml);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading wishlist:', error);
+            gridContainer.innerHTML = '<div class="btd-alert btd-alert--error">Ma\'lumotlarni yuklashda xatolik yuz berdi.</div>';
+        }
+    });
+
+    function handleWishlistToggle(uuid) {
+        toggleWishlist(uuid);
+        window.location.reload();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bittada — Ekotizim{% endblock %}
+
+{% block content %}
+<!-- 
+  SPA uchun asosiy konteyner. 
+  Vite/Vanilla JS main.js fayli ushbu #app elementiga ulanadi.
+-->
+<div id="app"></div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- 
+  Vite orqali build qilingan frontendni yuklaymiz. 
+  Agar dev rejimda bo'lsak, Vite dev serverdan olishi mumkin, 
+  lekin bu loyiha "single-port" rejimida Django orqali statik xizmat ko'rsatishga sozlangan.
+-->
+<script type="module" src="{% static 'main.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,391 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="{{ lang|default:'uz' }}" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ description|default:'Bittada Mebel Marketplace — O\'zbekistondagi eng katta mebel va ishlab chiqarish marketplace' }}">
+    <title>{% block title %}Bittada Mebel Marketplace{% endblock %}</title>
+    
+    <!-- Favicon - New Brand Green -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+    
+    <!-- Fonts - TZ 4-band: Inter shrifti -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=1.1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --erp-font: 'Inter', sans-serif;
+            --primary-brand: #A4D46C; /* Light Lime Green (New Logo) */
+            --secondary-brand: #001F3F; /* Deep Navy Blue (New Logo) */
+            --erp-bg: #F8FAFC;
+            --erp-glass: rgba(255, 255, 255, 0.7); 
+            --erp-glass-border: rgba(164, 212, 108, 0.2); /* Subtle Green Tint */
+            --erp-shadow: 0 4px 12px rgba(0, 31, 63, 0.05);
+            --erp-shadow-heavy: 0 20px 25px -5px rgba(0, 31, 63, 0.1);
+            --erp-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Sementic colors */
+            --erp-primary: var(--secondary-brand);
+            --erp-accent: var(--primary-brand);
+        }
+
+        /* Page entry animation */
+        @keyframes erp-fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced fade-in-up animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+
+        /* Skeleton loader styles */
+        @keyframes skeleton-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .skeleton-loader {
+            background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 31, 63, 0.05);
+        }
+
+        .skeleton-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 24px;
+            background: #E2E8F0;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            background: #E2E8F0;
+            border-radius: 6px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-text-short {
+            width: 60%;
+        }
+
+        .skeleton-text-medium {
+            width: 80%;
+        }
+
+        .skeleton-input {
+            height: 48px;
+            background: #F1F5F9;
+            border-radius: 12px;
+            border: 2px solid #E2E8F0;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+/* Back button style */
+     .back-button {
+         display: inline-flex;
+         align-items: center;
+         gap: 8px;
+         color: #64748B;
+         font-weight: 600;
+         font-size: 14px;
+         text-decoration: none;
+         padding: 8px 16px;
+         border-radius: 10px;
+         transition: all 0.2s ease;
+         margin-bottom: 24px;
+         background: white;
+         border: 1px solid #E2E8F0;
+     }
+     .back-button:hover {
+         background: rgba(37, 99, 235, 0.08);
+         color: #2563EB;
+         transform: translateX(-4px);
+     }
+     .back-button i {
+         width: 18px;
+         height: 18px;
+     }
+
+        .back-button:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: #2563EB;
+            transform: translateX(-4px);
+        }
+
+        .back-button i {
+            width: 18px;
+            height: 18px;
+        }
+
+        body {
+            font-family: var(--erp-font);
+            background: var(--erp-bg);
+            margin: 0;
+            color: #1E293B;
+            animation: erp-fade-in 300ms ease-out;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Glassmorphism - Navy Theme */
+        .erp-sidebar { 
+            width: 280px; 
+            background: var(--secondary-brand); /* Navy Background for Sidebar */
+            display: flex; 
+            flex-direction: column; 
+            padding: 24px 0; 
+            position: sticky; 
+            top: 72px; 
+            height: calc(100vh - 72px); 
+            overflow-y: auto; 
+            z-index: 900; 
+            transition: var(--erp-transition);
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Navbar styles - Clean White Glass */
+        .erp-nav { 
+            height: 72px; 
+            background: rgba(255, 255, 255, 0.95); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 40px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--erp-glass-border); 
+            backdrop-filter: blur(12px); 
+            transition: var(--erp-transition);
+        }
+
+        .erp-modal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 31, 63, 0.4); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+            backdrop-filter: blur(8px); 
+            transition: var(--erp-transition);
+        }
+
+        .erp-modal__content, .erp-card, .brand-card { 
+            background: white; 
+            padding: 48px; 
+            border-radius: 24px; 
+            max-width: 480px; 
+            width: 90%; 
+            text-align: center; 
+            box-shadow: var(--erp-shadow-heavy); 
+            border: 1px solid var(--erp-glass-border);
+            animation: erp-modal-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Scoped UI Components */
+        {% include 'includes/erp_styles.css' %}
+    </style>
+
+    {% block extra_css %}{% endblock %}
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column; background: var(--erp-bg); color: var(--secondary-brand); font-family: var(--erp-font);">
+
+    <!-- Modular Navbar -->
+    {% include 'includes/erp_navbar.html' %}
+
+    <div class="erp-layout" style="display: flex; flex: 1;">
+        <!-- Modular Sidebar (Auth only) -->
+        {% if user.is_authenticated %}
+            {% include 'includes/erp_sidebar.html' %}
+        {% endif %}
+
+        <main class="erp-main" id="main-content" style="flex: 1; padding: 40px; display: flex; flex-direction: column; min-height: calc(100vh - 200px);">
+            <div style="flex: 1;">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Global Footer (Cleaned) -->
+            <footer style="margin-top: auto; width: 100%; padding: 24px 0; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; font-size: 13px; color: #94A3B8; font-weight: 600;">
+                <div>&copy; 2026 Bittada Marketplace. Barcha huquqlar himoyalangan.</div>
+                <div style="display: flex; gap: 32px; align-items: center;">
+                    <a href="{% url 'company' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Kompaniya haqida</a>
+                    <a href="{% url 'services' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Xizmatlar</a>
+                    <a href="{% url 'manufacturing' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">Ishlab chiqarish</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Floating Help Button (FAB) - TZ §21 & 27 -->
+    <a href="#" class="faq-fab" title="Yordam va FAQ">
+        <i class="bi bi-question-lg"></i>
+    </a>
+
+    <style>
+        .faq-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 56px;
+            height: 56px;
+            background: var(--primary-brand);
+            color: var(--secondary-brand);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 10px 25px rgba(164, 212, 108, 0.4);
+            z-index: 9999;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            border: 2.5px solid white;
+            padding: 0;
+            line-height: 1;
+        }
+        .faq-fab:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 30px rgba(164, 212, 108, 0.5);
+        }
+    </style>
+
+    <!-- Modular Guest Modal -->
+    {% include 'includes/erp_guest_modal.html' %}
+
+    <script>
+        // Global Auth Interceptor
+        const isUserAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+
+        // System Health Check - Zero Error Absolute Path
+        async function checkSystemHealth() {
+            try {
+                const resp = await fetch('/api/v1/system/health/');
+                if (!resp.ok) throw new Error('API Error');
+                
+                const data = await resp.json();
+                
+                // Update elements if they exist
+                const celeryDot = document.getElementById('sidebar-celery-dot');
+                const redisDot = document.getElementById('sidebar-redis-dot');
+                const footerCeleryDot = document.querySelector('#status-celery span');
+                const footerRedisDot = document.querySelector('#status-redis span');
+                
+                const updateDot = (dot, status) => {
+                    if (!dot) return;
+                    const isOnline = status === 'online' || status === true;
+                    dot.style.background = isOnline ? 'var(--primary-brand)' : '#EF4444';
+                    dot.style.boxShadow = isOnline ? '0 0 10px var(--primary-brand)' : '0 0 10px rgba(239, 68, 68, 0.4)';
+                    dot.className = isOnline ? 'bg-success' : 'bg-danger';
+                };
+
+                updateDot(celeryDot, data.celery);
+                updateDot(redisDot, data.redis);
+                updateDot(footerCeleryDot, data.celery);
+                updateDot(footerRedisDot, data.redis);
+                
+            } catch(e) {
+                console.warn('System health monitoring paused: ', e.message);
+            }
+        }
+        
+        if(isUserAuthenticated) {
+            checkSystemHealth();
+            setInterval(checkSystemHealth, 30000);
+        }
+
+        // Vanilla JS Tooltip System
+        document.addEventListener('mouseover', (e) => {
+            const el = e.target.closest('.btd-tooltip');
+            if (!el) return;
+            
+            const text = el.getAttribute('data-tooltip');
+            const tooltip = document.createElement('div');
+            tooltip.className = 'erp-tooltip-popup';
+            tooltip.innerText = text;
+            document.body.appendChild(tooltip);
+            
+            const rect = el.getBoundingClientRect();
+            tooltip.style.top = (rect.top - 40) + 'px';
+            tooltip.style.left = rect.left + 'px';
+            
+            el.addEventListener('mouseleave', () => tooltip.remove(), { once: true });
+        });
+    </script>
+    
+    <style>
+        .erp-tooltip-popup {
+            position: fixed; background: var(--secondary-brand); color: white;
+            padding: 8px 12px; border-radius: 8px; font-size: 11px;
+            z-index: 3000; pointer-events: none;
+            box-shadow: var(--erp-shadow-heavy);
+            animation: erp-fade-in 150ms ease-out;
+        }
+        .erp-btn-primary {
+            background: var(--primary-brand);
+            color: var(--secondary-brand);
+            font-weight: 800;
+            border: none;
+            border-radius: 12px;
+            padding: 0 24px;
+            height: 48px;
+            cursor: pointer;
+            transition: var(--erp-transition);
+        }
+        .erp-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(164, 212, 108, 0.3);
+        }
+    </style>
+    <!-- 3D Model Viewer Support - TZ 2-band (GLB/AR) -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

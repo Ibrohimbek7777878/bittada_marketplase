@@ -1,0 +1,77 @@
+{% extends base_template|default:'base_erp.html' %} <!-- Dinamik karkasdan meros olish -->
+{% load static %}
+
+{% block title %}Ishlab chiqaruvchilar — Bittada Mebel Marketplace{% endblock %}
+
+{% block content %}
+<div class="btd-page-header">
+    <h1 class="btd-page-header__title">Mahalliy ishlab chiqaruvchilar</h1>
+    <p class="btd-page-header__subtitle">To'g'ridan-to'g'ri fabrikadan xarid qiling va ortiqcha xarajatlardan qoching</p>
+</div>
+
+<!-- Featured Manufacturers -->
+<div class="btd-grid btd-grid--2" style="margin-top: var(--space-xl);">
+    <div class="btd-card btd-card--horizontal">
+        <div class="btd-card__image" style="width: 200px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+            🏢
+        </div>
+        <div class="btd-card__body">
+            <div class="btd-badge btd-badge--success" style="margin-bottom: 8px;">Premium Partner</div>
+            <h3 class="btd-card__title">Samarqand Mebel Fabrikasi</h3>
+            <p class="btd-card__text">20 yillik tajribaga ega bo'lgan O'zbekistondagi eng yirik mebel ishlab chiqaruvchilardan biri.</p>
+            <div class="btd-card__stats" style="display: flex; gap: 16px; margin-top: 16px; font-size: 13px; color: var(--btd-text-muted);">
+                <span>📦 1,200+ mahsulot</span>
+                <span>⭐ 4.9 reyting</span>
+            </div>
+            <div class="btd-card__footer" style="margin-top: 16px;">
+                <button class="btd-btn btd-btn--primary">Do'konni ko'rish</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="btd-card btd-card--horizontal">
+        <div class="btd-card__image" style="width: 200px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+            🏭
+        </div>
+        <div class="btd-card__body">
+            <div class="btd-badge btd-badge--info" style="margin-bottom: 8px;">Verified</div>
+            <h3 class="btd-card__title">Toshkent Wood Craft</h3>
+            <p class="btd-card__text">Tabiiy yog'ochdan tayyorlangan zamonaviy mebellar va eshiklar ishlab chiqaruvchisi.</p>
+            <div class="btd-card__stats" style="display: flex; gap: 16px; margin-top: 16px; font-size: 13px; color: var(--btd-text-muted);">
+                <span>📦 450+ mahsulot</span>
+                <span>⭐ 4.7 reyting</span>
+            </div>
+            <div class="btd-card__footer" style="margin-top: 16px;">
+                <button class="btd-btn btd-btn--primary">Do'konni ko'rish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manufacturer Directory -->
+<div class="section" style="margin-top: var(--space-2xl);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);">
+        <h2 class="section-title" style="margin: 0;">Barcha korxonalar</h2>
+        <div class="btd-search" style="max-width: 300px;">
+            <input type="text" class="btd-search__input" placeholder="Korxonani qidirish...">
+        </div>
+    </div>
+
+    <div class="btd-grid btd-grid--4">
+        {% for i in "12345678" %}
+        <div class="btd-card btd-card--interactive">
+            <div class="btd-card__body text-center">
+                <div style="width: 64px; height: 64px; border-radius: var(--radius-md); background: var(--btd-bg-soft); margin: 0 auto var(--space-md); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    🏭
+                </div>
+                <h4 style="margin-bottom: 4px;">Mebel Brand #{{ i }}</h4>
+                <p style="font-size: 12px; color: var(--btd-text-muted); margin-bottom: var(--space-md);">Toshkent, O'zbekiston</p>
+                <div style="font-size: 13px; font-weight: 600; color: var(--btd-primary);">
+                    85 ta mahsulot
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

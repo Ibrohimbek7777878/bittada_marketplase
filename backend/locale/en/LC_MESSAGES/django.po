@@ -1,0 +1,237 @@
+# English translations for Bittada Marketplace
+# Copyright (C) 2026 Bittada
+# This file is distributed under the same license as the bittada package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Bittada 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-02 13:00+0500\n"
+"PO-Revision-Date: 2026-05-02 13:00+0500\n"
+"Last-Translator: Bittada Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/profile_erp.html:5
+msgid "Profil"
+msgstr "Profile"
+
+#: templates/profile_erp.html:140
+msgid "Mening profilim"
+msgstr "My Profile"
+
+#: templates/profile_erp.html:141
+msgid "Shaxsiy ma'lumotlar va sozlamalar"
+msgstr "Personal Information and Settings"
+
+#: templates/profile_erp.html:155 templates/profile_erp.html:209
+msgid "Mijoz"
+msgstr "Customer"
+
+#: templates/profile_erp.html:160
+msgid "Ma'lumotlar"
+msgstr "Information"
+
+#: templates/profile_erp.html:163
+msgid "Buyurtmalar"
+msgstr "Orders"
+
+#: templates/profile_erp.html:166
+msgid "Sevimlilar"
+msgstr "Favorites"
+
+#: templates/profile_erp.html:169
+msgid "Savat"
+msgstr "Cart"
+
+#: templates/profile_erp.html:175
+msgid "Chiqish"
+msgstr "Logout"
+
+#: templates/profile_erp.html:189
+msgid "Shaxsiy ma'lumotlar"
+msgstr "Personal Information"
+
+#: templates/profile_erp.html:198
+msgid "Username"
+msgstr "Username"
+
+#: templates/profile_erp.html:202
+msgid "Email manzili"
+msgstr "Email Address"
+
+#: templates/profile_erp.html:203
+msgid "Kiritilmagan"
+msgstr "Not provided"
+
+#: templates/profile_erp.html:209
+msgid "Ismingiz"
+msgstr "Your Name"
+
+#: templates/profile_erp.html:210
+msgid "Ismingizni kiriting"
+msgstr "Enter your name"
+
+#: templates/profile_erp.html:213
+msgid "Telefon raqamingiz"
+msgstr "Your Phone Number"
+
+#: templates/profile_erp.html:219
+msgid "Yetkazib berish manzili"
+msgstr "Delivery Address"
+
+#: templates/profile_erp.html:220
+msgid "To'liq manzilingizni kiriting"
+msgstr "Enter your full address"
+
+#: templates/profile_erp.html:225
+msgid "O'zgarishlarni saqlash"
+msgstr "Save Changes"
+
+#: templates/profile_erp.html:259
+msgid "Ma'lumotlar muvaffaqiyatli yangilandi!"
+msgstr "Information updated successfully!"
+
+#: templates/profile_erp.html:262
+msgid "Yangilashda xatolik yuz berdi"
+msgstr "Error occurred while updating"
+
+#: templates/profile_erp.html:265
+msgid "Tizimda ulanish xatoligi yuz berdi"
+msgstr "Connection error occurred"
+
+#: templates/home_erp.html:6
+msgid "Bosh sahifa"
+msgstr "Home"
+
+#: templates/home_erp.html:6
+msgid "Professional ERP Tizimi"
+msgstr "Professional ERP System"
+
+#: templates/checkout_erp.html:6
+msgid "Buyurtmani rasmiylashtirish"
+msgstr "Checkout"
+
+#: templates/checkout_erp.html:12
+msgid "Yetkazib berish ma'lumotlari"
+msgstr "Delivery Information"
+
+#: templates/checkout_erp.html:18
+msgid "Ism va familiya"
+msgstr "First and Last Name"
+
+#: templates/checkout_erp.html:22
+msgid "Telefon raqami"
+msgstr "Phone Number"
+
+#: templates/checkout_erp.html:26
+msgid "Manzil"
+msgstr "Address"
+
+#: templates/checkout_erp.html:32
+msgid "Buyurtmani tasdiqlash"
+msgstr "Confirm Order"
+
+#: templates/checkout_erp.html:42
+msgid "Sizning buyurtmangiz"
+msgstr "Your Order"
+
+#: templates/checkout_erp.html:56
+msgid "Umumiy:"
+msgstr "Total:"
+
+#: templates/includes/erp_navbar.html
+msgid "O'zbek"
+msgstr "O'zbek"
+
+#: templates/includes/erp_navbar.html
+msgid "Русский"
+msgstr "Russian"
+
+#: templates/includes/erp_navbar.html
+msgid "English"
+msgstr "English"
+
+#: templates/profile_erp.html
+msgid "Ortga"
+msgstr "Back"
+
+#: templates/cart_erp.html
+msgid "Savat"
+msgstr "Cart"
+
+#: templates/cart_erp.html
+msgid "Sizning savatingiz"
+msgstr "Your Cart"
+
+#: templates/cart_erp.html
+msgid "Tanlangan mahsulotlarni ko'zdan kechiring va buyurtma bering"
+msgstr "Review selected products and place order"
+
+#: templates/cart_erp.html
+msgid "Savatingiz bo'sh"
+msgstr "Your cart is empty"
+
+#: templates/cart_erp.html
+msgid "Hali hech qanday mahsulot qo'shmadingiz."
+msgstr "You haven't added any products yet."
+
+#: templates/cart_erp.html
+msgid "Bosh sahifaga qaytish"
+msgstr "Back to Home"
+
+#: templates/cart_erp.html
+msgid "Yuklanmoqda..."
+msgstr "Loading..."
+
+#: templates/cart_erp.html
+msgid "Buyurtma xulosasi"
+msgstr "Order Summary"
+
+#: templates/cart_erp.html
+msgid "Mahsulotlar"
+msgstr "Products"
+
+#: templates/cart_erp.html
+msgid "Yetkazib berish:"
+msgstr "Delivery:"
+
+#: templates/cart_erp.html
+msgid "Bepul"
+msgstr "Free"
+
+#: templates/cart_erp.html
+msgid "Jami:"
+msgstr "Total:"
+
+#: templates/cart_erp.html
+msgid "Rasmiylashtirish"
+msgstr "Checkout"
+
+#: templates/cart_erp.html
+msgid "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz."
+msgstr "By confirming the order, you agree to the public offer."
+
+#: templates/wishlist_erp.html
+msgid "Sevimlilar"
+msgstr "Favorites"
+
+#: templates/wishlist_erp.html
+msgid "Sizga yoqqan mahsulotlar to'plami"
+msgstr "Collection of products you like"
+
+#: templates/wishlist_erp.html
+msgid "Hali sevimlilar ro'yxati bo'sh"
+msgstr "Wishlist is empty"
+
+#: templates/wishlist_erp.html
+msgid "O'zingizga yoqqan mahsulotlarni saqlab qo'ying."
+msgstr "Save products you like."
+
+#: templates/wishlist_erp.html
+msgid "Bosh sahifaga qaytish"
+msgstr "Back to Home"

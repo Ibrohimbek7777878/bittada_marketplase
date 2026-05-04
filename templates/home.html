@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Bittada - Mebel Marketplace" %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="shop-hero">
+  <div class="container">
+    <h1 class="shop-title">{% trans "Mebel marketplace" %}</h1>
+    <p class="shop-subtitle">{% trans "Uylar uchun sifatli mebel, eshik va oynalar. Ishlab chiqaruvchidan to'g'ridan-to'g'ri xarid qiling." %}</p>
+    
+    <!-- Categories Grid -->
+    <div class="categories-grid">
+      {% for cat in categories %}
+        <a href="/category/{{ cat.slug }}/" class="category-card">
+          <div class="category-icon">
+            {% if cat.slug == 'mebel' or cat.slug == 'furniture' %}🛋️
+            {% elif cat.slug == 'yotoqxona' %}🛏️
+            {% elif cat.slug == 'oshxona' %}🍽️
+            {% elif cat.slug == 'mehmonxona' %}🪑
+            {% elif cat.slug == 'bolalar' %}🧸
+            {% elif cat.slug == 'ofis' %}📚
+            {% elif cat.slug == 'bog' %}🌳
+            {% elif cat.slug == 'eshik' %}🚪
+            {% elif cat.slug == 'oyna' %}🪟
+            {% elif cat.slug == 'bathroom' %}🛁
+            {% else %}📦{% endif %}
+          </div>
+          <h3 class="category-name">{{ cat.name_uz }}</h3>
+          <span class="category-count">{% blocktrans count counter=cat.product_count %}{{ counter }} ta mahsulot{% plural %}{{ counter }} ta mahsulot{% endblocktrans %}</span>
+        </a>
+      {% empty %}
+        {# Bo'sh kategoriya holatlari uchun statik fallback (har biri tarjima qilinadi) #}
+        <div class="category-card">
+          <div class="category-icon">🛋️</div>
+          <h3 class="category-name">{% trans "Mebel" %}</h3>
+          <span class="category-count">{% trans "0 ta mahsulot" %}</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🚪</div>
+          <h3 class="category-name">{% trans "Eshiklar" %}</h3>
+          <span class="category-count">{% trans "0 ta mahsulot" %}</span>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🪟</div>
+          <h3 class="category-name">{% trans "Oynalar" %}</h3>
+          <span class="category-count">{% trans "0 ta mahsulot" %}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Tavsiya etilgan mahsulotlar bo'limi — bo'lim sarlavhasi tarjima qilinadi #}
+{% if featured_products %}
+<section class="section" style="background: var(--color-gray-50);">
+  <div class="container">
+    <h2 class="section-title">{% trans "Tavsiya etilgan" %}</h2>
+    <div class="products-grid">
+      {% for product in featured_products %}
+        {% include 'includes/product_card.html' with product=product %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# Yangi mahsulotlar bo'limi — sarlavha va "Barcha mahsulotlar" tugmasi tarjima qilinadi #}
+{% if new_products %}
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">{% trans "Yangi mahsulotlar" %}</h2>
+    <div class="products-grid">
+      {% for product in new_products %}
+        {% include 'includes/product_card.html' with product=product %}
+      {% endfor %}
+    </div>
+    <div style="text-align: center; margin-top: 32px;">
+      <a href="/shop/" class="btn btn-primary">{% trans "Barcha mahsulotlar" %}</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# Xususiyatlar bo'limi (4 ta blok) — har bir sarlavha va tavsif i18n orqali tarjima qilinadi #}
+<section class="section" style="background: var(--color-gray-50);">
+  <div class="container">
+    <h2 class="section-title">{% trans "Nima uchun Bittada?" %}</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px;">
+      <div style="text-align: center; padding: 32px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🏭</div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{% trans "Ishlab chiqaruvchidan to'g'ridan-to'g'ri" %}</h3>
+        <p style="color: var(--color-gray-500);">{% trans "Ortacha sotuvchisiz, narxlar qimmat emas" %}</p>
+      </div>
+      <div style="text-align: center; padding: 32px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{% trans "Tekshirilgan sotuvchilar" %}</h3>
+        <p style="color: var(--color-gray-500);">{% trans "Barcha ishlab chiqaruvchilar tekshiruvdan o'tgan" %}</p>
+      </div>
+      <div style="text-align: center; padding: 32px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🚚</div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{% trans "Yetkazib berish" %}</h3>
+        <p style="color: var(--color-gray-500);">{% trans "O'zbekiston bo'ylab yetkazib berish xizmati" %}</p>
+      </div>
+      <div style="text-align: center; padding: 32px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{% trans "Xavfsiz to'lov" %}</h3>
+        <p style="color: var(--color-gray-500);">{% trans "Buyurtma tugaguncha pul saqlanadi" %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,939 @@
+{% load static %}
+{% load i18n %}
+<header class="erp-header-wrapper" style="position: sticky; top: 0; left: 0; width: 100%; z-index: 2000; background: white; border-bottom: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+    <nav class="erp-nav" style="display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 40px; max-width: 1800px; margin: 0 auto;">
+        
+        <!-- Group 1: Logo & Catalog (Left) -->
+        <div style="display: flex; align-items: center; gap: 32px; flex: 1;">
+            <a href="/" class="navbar-brand" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--secondary-brand); font-weight: 950; font-size: 24px; letter-spacing: -1.5px;">
+                <div style="width: 38px; height: 38px; background: var(--primary-brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(164, 212, 108, 0.3);">
+                    <span style="color: var(--secondary-brand); font-size: 22px; font-weight: 950;">B</span>
+                </div>
+                <span class="brand-text">Bittada</span>
+            </a>
+
+            <!-- Catalog Mega-Menu Trigger (Hover-based) -->
+            <div class="katalog-wrapper" style="position: relative; height: 72px; display: flex; align-items: center;">
+                {# Katalog tugmasi: cms.nav_catalog mavjud bo'lsa undan oladi, aks holda i18n orqali tarjima qiladi #}
+                {% trans "Katalog" as default_nav_catalog %}{# Default Katalog matnini tarjima qilamiz va keyin |default filtri bilan ishlatamiz #}
+                <button class="catalog-btn" style="display: flex; align-items: center; gap: 10px; background: var(--secondary-brand); color: white; border: none; padding: 0 20px; height: 44px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: var(--erp-transition);">
+                    <i class="bi bi-grid-fill"></i> {{ cms.nav_catalog|default:default_nav_catalog }}
+                </button>
+                <script>
+        // Mega Menu Interaction Fix: Close on link click
+        document.querySelectorAll('.mega-list a').forEach(link => {
+            link.addEventListener('click', () => {
+                const menu = document.getElementById('mega-menu');
+                menu.style.display = 'none';
+                setTimeout(() => { menu.style.display = ''; }, 500); // Reset for hover
+            });
+        });
+    </script>
+                
+                <!-- Mega Menu Overlay (Hover controlled) -->
+                <div id="mega-menu" class="mega-menu-overlay">
+                    <div class="mega-menu-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 40px 40px 32px;">
+
+                            {# ── Column 1: Mebellar (DB dan dinamik) ── #}
+                            {% trans "Mebellar" as default_cat_furniture %}{# Mebellar ustun sarlavhasining tarjimasi #}
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-house-heart" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_furniture|default:default_cat_furniture }}
+                                </h4>
+                                <ul class="mega-list">
+                                    {% if nav_categories.furniture %}
+                                        {% for cat in nav_categories.furniture %}
+                                        <li>
+                                            <a href="{% url 'category_detail' cat.slug %}">
+                                                <i class="bi bi-chevron-right"></i> {{ cat.name_uz }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {# DB bo'sh bo'lganda statik fallback (har bir element {% trans %} bilan tarjima qilinadi) #}
+                                        <li><a href="{% url 'category_detail' 'yotoqxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Yotoqxona" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'mehmonxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Mehmonxona" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'oshxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Oshxona" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'ofis-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Ofis" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'bolalar-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Bolalar mebellari" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'yumshoq-mebellar' %}"><i class="bi bi-chevron-right"></i> {% trans "Yumshoq mebellar" %}</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            {# ── Column 2: Ishlab chiqarish (DB dan dinamik) ── #}
+                            {% trans "Ishlab chiqarish" as default_cat_prod %}{# Ishlab chiqarish ustun sarlavhasining tarjimasi #}
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-factory" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_prod|default:default_cat_prod }}
+                                </h4>
+                                <ul class="mega-list">
+                                    {% if nav_categories.manufacturing %}
+                                        {% for cat in nav_categories.manufacturing %}
+                                        <li>
+                                            <a href="{% url 'category_detail' cat.slug %}">
+                                                <i class="bi bi-chevron-right"></i> {{ cat.name_uz }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {# Statik fallback — har bir element {% trans %} bilan tarjima qilinadi #}
+                                        <li><a href="{% url 'category_detail' 'xom-ashyo' %}"><i class="bi bi-chevron-right"></i> {% trans "Xom-ashyo (DSP/MDF)" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'furnitura' %}"><i class="bi bi-chevron-right"></i> {% trans "Furnitura" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'fasadlar' %}"><i class="bi bi-chevron-right"></i> {% trans "Fasadlar" %}</a></li>
+                                        <li><a href="{% url 'manufacturing' %}"><i class="bi bi-chevron-right"></i> {% trans "Ulgurji savdo" %}</a></li>
+                                        <li><a href="{% url 'category_detail' 'maxsus-buyurtmalar' %}"><i class="bi bi-chevron-right"></i> {% trans "Maxsus buyurtmalar" %}</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            {# ── Column 3: Xonalar bo'yicha (TZ §12.2) — barcha matnlar tarjima qilinadi ── #}
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-door-open" style="color:var(--primary-brand);"></i>
+                                    {% trans "Xonalar bo'yicha" %}
+                                </h4>
+                                <ul class="mega-list">
+                                    <li><a href="{% url 'category_detail' 'yotoqxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Yotoqxona to'plamlari" %}</a></li>
+                                    <li><a href="{% url 'category_detail' 'mehmonxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Mehmonxona interyeri" %}</a></li>
+                                    <li><a href="{% url 'category_detail' 'oshxona-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Oshxona modullari" %}</a></li>
+                                    <li><a href="{% url 'category_detail' 'bolalar-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Bolalar xonasi" %}</a></li>
+                                    <li><a href="{% url 'category_detail' 'ofis-mebellari' %}"><i class="bi bi-chevron-right"></i> {% trans "Ofis mebellari" %}</a></li>
+                                </ul>
+                            </div>
+
+                            {# ── Column 4: Platforma ── #}
+                            {% trans "Platforma" as default_cat_platform %}{# Platforma ustun sarlavhasining tarjimasi #}
+                            <div>
+                                <h4 class="mega-col-heading">
+                                    <i class="bi bi-info-circle" style="color:var(--primary-brand);"></i>
+                                    {{ cms.cat_platform|default:default_cat_platform }}
+                                </h4>
+                                <ul class="mega-list">
+                                    <li><a href="{% url 'company' %}"><i class="bi bi-chevron-right"></i> {% trans "Biz haqimizda" %}</a></li>
+                                    <li><a href="{% url 'showroom' %}"><i class="bi bi-chevron-right"></i> {% trans "Showroom (3D)" %}</a></li>
+                                    <li><a href="{% url 'register' %}?role=seller"><i class="bi bi-chevron-right"></i> {% trans "Hamkorlik shartlari" %}</a></li>
+                                    {% if user.is_authenticated %}
+                                    <li><a href="{% url 'services:booking_dashboard' %}"><i class="bi bi-chevron-right"></i> {% trans "Mening buyurtmalarim" %}</a></li>
+                                    {% endif %}
+                                    <li><a href="#" title="{% trans 'Tez kunda' %}"><i class="bi bi-chevron-right"></i> {% trans "Blog" %} <span style="font-size:10px;opacity:.5;">({% trans "tez kunda" %})</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {# Promo Banner — brendning yashil gradientidagi reklama bloki, barcha matnlari tarjima qilinadi #}
+                        {% trans "Bittada Premium Showroom" as default_promo_title %}{# Banner sarlavhasining standart tarjimasi #}
+                        {% trans "Mahsulotlarni 3D ko'rinishida o'z uyingizga joylashtirib ko'ring." as default_promo_desc %}{# Banner tavsifi tarjimasi #}
+                        {% trans "Boshlash" as default_promo_btn %}{# Banner tugmasi matni tarjimasi #}
+                        <div style="background: linear-gradient(90deg, #88c343 0%, #5a9a1f 100%); padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 24px 24px; position: relative; overflow: hidden;">
+                            <div style="display: flex; align-items: center; gap: 20px; position: relative; z-index: 2;">
+                                <div style="font-size: 42px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));">🛋️</div>
+                                <div>
+                                    <h5 style="margin:0; font-weight:950; font-size:18px; color:var(--secondary-brand); letter-spacing:-0.5px;">{{ cms.promo_title|default:default_promo_title }}</h5>
+                                    <p style="margin:4px 0 0; font-size:13px; font-weight:600; color:var(--secondary-brand); opacity:.85;">{{ cms.promo_desc|default:default_promo_desc }}</p>
+                                </div>
+                            </div>
+                            <a href="/showroom-3d/" class="showroom-cta-btn">{{ cms.promo_btn|default:default_promo_btn }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Group 2: Markaziy navigatsiya (asosiy bo'limlar) — har bir nom CMS yoki i18n orqali tarjima qilinadi #}
+        {% trans "Bosh sahifa" as default_nav_home %}{# Bosh sahifa havolasining standart tarjimasi #}
+        {% trans "Showroom (3D)" as default_nav_showroom %}{# Showroom havolasining tarjimasi #}
+        {% trans "Xizmatlar" as default_nav_services %}{# Xizmatlar havolasining tarjimasi #}
+        {% trans "Ishlab chiqarish" as default_nav_prod %}{# Ishlab chiqarish havolasining tarjimasi #}
+        <div class="nav-links-center" style="display: flex; align-items: center; justify-content: center; gap: 12px; flex: 2;">
+            <a href="{% url 'home' %}" class="nav-link-premium {% if request.path == '/' %}active{% endif %}">
+                <i class="bi bi-house-door"></i> {{ cms.nav_home|default:default_nav_home }}
+            </a>
+            <a href="{% url 'showroom' %}" class="nav-link-premium {% if 'showroom' in request.path %}active{% endif %}">
+                <i class="bi bi-box"></i> {{ cms.nav_showroom|default:default_nav_showroom }}
+            </a>
+            <a href="{% url 'services' %}" class="nav-link-premium {% if 'services' in request.path %}active{% endif %}">
+                <i class="bi bi-tools"></i> {{ cms.nav_services|default:default_nav_services }}
+            </a>
+            <a href="{% url 'manufacturing' %}" class="nav-link-premium {% if 'manufacturing' in request.path %}active{% endif %}">
+                <i class="bi bi-factory"></i> {{ cms.nav_prod|default:default_nav_prod }}
+            </a>
+        </div>
+
+        <!-- Group 3: Universal Search & Profile (Right) -->
+        <div style="display: flex; align-items: center; gap: 16px; flex: 1.5; justify-content: flex-end;">
+            
+            {# Umumiy qidiruv paneli (o'ng tomon) — placeholder matni CMS yoki i18n orqali tarjima qilinadi #}
+            {% trans "Mahsulotlar, sotuvchilar, hashtaglar..." as default_search_placeholder %}{# Qidiruv placeholder tarjimasi #}
+            <div class="search-container-right" style="position: relative; width: 280px;">
+                <form action="{% url 'services' %}" method="get">
+                    <input type="text" name="q" placeholder="{{ cms.search_placeholder|default:default_search_placeholder }}" class="search-input-premium">
+                    <i class="bi bi-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 14px;"></i>
+                </form>
+            </div>
+
+            {# Header amallari (qo'ng'iroq, savat) — title atributlari ham tarjima qilinadi #}
+            <div style="display: flex; align-items: center; gap: 12px; padding-left: 16px; border-left: 1px solid #E2E8F0;">
+                <button class="header-icon-btn-v2" title="{% trans 'Bildirishnomalar' %}" style="position:relative;">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <a href="{% if user.is_authenticated %}#cart{% else %}{% url 'login' %}{% endif %}" class="header-icon-btn-v2" title="{% trans 'Savatcha' %}" style="position:relative; text-decoration:none; color:inherit;"
+                   id="cart-btn"
+                   hx-get="/api/v1/cart/count/"
+                   hx-trigger="every 30s"
+                   hx-swap="innerHTML"
+                   hx-target="#cart-count">
+                    <i class="bi bi-cart3"></i>
+                    {% if user.is_authenticated %}
+                    <span id="cart-count" style="position:absolute;top:-4px;right:-4px;background:var(--primary-brand);color:var(--secondary-brand);font-size:10px;font-weight:900;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;">0</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Modern Language Switcher (TZ §23) -->
+            <div class="lang-switcher-wrapper">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                
+                <button class="lang-switcher-btn" type="button" id="langDropdown" aria-expanded="false">
+                    <span class="lang-flag">{% if LANGUAGE_CODE == 'uz' %}🇺🇿{% elif LANGUAGE_CODE == 'ru' %}🇷🇺{% else %}🇬🇧{% endif %}</span>
+                    <span class="lang-code">{{ LANGUAGE_CODE|upper }}</span>
+                    <i class="bi bi-chevron-down lang-chevron"></i>
+                </button>
+                
+                <div class="lang-dropdown" id="langDropdownMenu">
+                    {% for language in languages %}
+                        <form action="{% url 'set_language' %}" method="post" class="lang-form">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path|slice:'3:' }}">
+                            <input name="language" type="hidden" value="{{ language.code }}">
+                            <button type="submit" class="lang-option {% if language.code == LANGUAGE_CODE %}active{% endif %}">
+                                <span class="lang-option-flag">
+                                    {% if language.code == 'uz' %}🇺🇿
+                                    {% elif language.code == 'ru' %}🇷🇺
+                                    {% else %}🇬🇧
+                                    {% endif %}
+                                </span>
+                                <span class="lang-option-name">{{ language.name_local }}</span>
+                                <span class="lang-option-code">{{ language.code|upper }}</span>
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+            {# 2026-05-02 v3: Command Center → Bittada ERP boshqaruv ekotizimi (/dashboard/) #}
+            {# Django'ning quruq admini /hidden-core-database/ da maxfiy turadi (DB tekshirish uchun). #}
+            <a href="{% url 'mgmt:index' %}" class="erp-btn-primary" style="height: 44px; padding: 0 20px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border-radius: 12px; background: #0F172A; color: white; border: none;">
+                <i class="bi bi-shield-lock"></i> {% trans "Command Center" %} {# Bittada ERP boshqaruv ekotizimi nomi #}
+            </a>
+            {% endif %}
+            <a href="{% url 'profile' %}" class="erp-btn-primary" style="height: 44px; padding: 0 20px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border-radius: 12px; background: var(--secondary-brand); color: var(--primary-brand); border: 2px solid var(--primary-brand);">
+                <i class="bi bi-person-circle"></i> {% trans "Profil" %}
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="erp-btn-primary" style="height: 44px; padding: 0 24px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; border-radius: 12px;">{% trans "Kirish" %}</a>
+            {% endif %}
+
+            {# Mobil rejim uchun menyu tugmasi — aria-label tarjima qilinadi (skrinlugatlar uchun) #}
+            <button id="mobileMenuBtn" class="mobile-menu-toggle" aria-label="{% trans 'Menyu' %}">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+    </nav>
+</header>
+
+<style>
+    /* ── Mega Menu: smooth slide-down animation (200ms cubic-bezier) ── */
+    .mega-menu-overlay {
+        position: absolute;
+        top: 72px;
+        left: -40px;
+        width: 100vw;
+        background: white;
+        box-shadow: 0 20px 60px rgba(0,31,63,0.12);
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1900;
+        border-top: 3px solid var(--primary-brand);
+        transform: translateY(-12px);
+        pointer-events: none;
+        /* Single authoritative transition — no display toggling needed */
+        transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                    visibility 200ms;
+    }
+    .katalog-wrapper:hover .mega-menu-overlay,
+    .katalog-wrapper:focus-within .mega-menu-overlay {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .katalog-wrapper:hover .catalog-btn {
+        background: var(--primary-brand) !important;
+        color: var(--secondary-brand) !important;
+    }
+    
+    .mega-menu-content { max-width: 1400px; margin: 0 auto; }
+    .mega-list { list-style: none; padding: 0; margin: 0; }
+    .mega-list li { margin-bottom: 14px; }
+    .mega-list a {
+        text-decoration: none;
+        color: #64748B;
+        font-size: 14.5px;
+        font-weight: 600;
+        transition: color 180ms cubic-bezier(0.4,0,0.2,1),
+                    padding-left 180ms cubic-bezier(0.4,0,0.2,1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .mega-list a i { font-size: 10px; opacity: 0; transition: opacity 180ms cubic-bezier(0.4,0,0.2,1); color: var(--primary-brand); }
+    .mega-list a:hover { color: var(--primary-brand); padding-left: 8px; }
+    .mega-list a:hover i { opacity: 1; }
+
+    /* ── Global skeleton loader ── */
+    @keyframes skeleton-shimmer {
+        0%   { background-position: -600px 0; }
+        100% { background-position: 600px 0; }
+    }
+    .skeleton {
+        background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+        background-size: 600px 100%;
+        animation: skeleton-shimmer 1.4s infinite linear;
+        border-radius: 8px;
+    }
+    .skeleton-card {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        border: 1px solid #F1F5F9;
+    }
+    .skeleton-card .sk-avatar { width: 60px; height: 60px; border-radius: 16px; margin-bottom: 16px; }
+    .skeleton-card .sk-line { height: 12px; border-radius: 6px; margin-bottom: 10px; }
+    .skeleton-card .sk-line.w-80 { width: 80%; }
+    .skeleton-card .sk-line.w-60 { width: 60%; }
+    .skeleton-card .sk-btn  { height: 40px; border-radius: 12px; width: 100%; margin-top: 16px; }
+
+    /* Column headings */
+    .mega-col-heading {
+        color: var(--secondary-brand);
+        font-weight: 950;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-brand);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+    }
+
+    /* Sub-group labels inside service column */
+    .mega-subgroup-label {
+        font-size: 10px !important;
+        font-weight: 900 !important;
+        color: #94A3B8 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        pointer-events: none;
+    }
+
+    /* Showroom CTA button */
+    .showroom-cta-btn {
+        background: white;
+        color: #5a9a1f;
+        text-decoration: none;
+        padding: 12px 32px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        animation: showroom-pulse 2s infinite;
+        z-index: 2;
+        white-space: nowrap;
+    }
+    .showroom-cta-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        color: var(--secondary-brand);
+    }
+    .showroom-cta-btn::after {
+        content: '';
+        position: absolute;
+        top: -50%; left: -60%;
+        width: 20%; height: 200%;
+        background: rgba(255,255,255,0.4);
+        transform: rotate(30deg);
+        animation: showroom-shimmer 3s infinite;
+    }
+    @keyframes showroom-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+        70%  { box-shadow: 0 0 0 15px rgba(255,255,255,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    @keyframes showroom-shimmer {
+        0%   { left: -60%; }
+        20%  { left: 120%; }
+        100% { left: 120%; }
+    }
+
+    .nav-link-premium {
+        text-decoration: none;
+        color: var(--secondary-brand);
+        font-size: 14px;
+        font-weight: 800;
+        padding: 10px 16px;
+        border-radius: 12px;
+        transition: var(--erp-transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.7;
+    }
+    .nav-link-premium:hover, .nav-link-premium.active {
+        opacity: 1;
+        background: rgba(164, 212, 108, 0.1);
+        color: var(--secondary-brand);
+    }
+    .nav-link-premium.active {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        box-shadow: 0 4px 12px rgba(164, 212, 108, 0.2);
+    }
+
+    .search-input-premium {
+        width: 100%;
+        height: 44px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 0 20px 0 44px;
+        font-size: 13px;
+        color: var(--secondary-brand);
+        font-weight: 600;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .search-input-premium:focus {
+        width: 450px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        background: white;
+        border-color: var(--primary-brand);
+        box-shadow: var(--erp-shadow-heavy);
+        z-index: 10;
+    }
+
+    .header-icon-btn-v2 {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: var(--secondary-brand);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 10px;
+        transition: var(--erp-transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header-icon-btn-v2:hover {
+        background: #F1F5F9;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1200px) {
+        .brand-text { display: none; }
+        .nav-links-center { gap: 4px; }
+        .nav-link-premium { padding: 8px 10px; font-size: 12px; }
+
+        /* ── Mobile Menu Toggle (visible only on mobile) ── */
+        .mobile-menu-toggle {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .mobile-menu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-brand);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 22px;
+            color: var(--secondary-brand);
+            cursor: pointer;
+            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(164, 212, 108, 0.8);
+            transform: scale(1.05);
+        }
+
+        .nav-links-center,
+        .search-container-right,
+        .lang-switcher-wrapper,
+        .header-icon-btn-v2[title="Bildirishnomalar"] {
+            display: none;
+        }
+
+        .erp-nav {
+            padding: 0 20px;
+        }
+    }
+
+    /* ── Mobile Menu Overlay ── */
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        max-width: 380px;
+        height: 100vh;
+        background: white;
+        box-shadow: -20px 0 60px rgba(0, 31, 63, 0.2);
+        transform: translateX(100%);
+        transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 3000;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-menu-overlay.active {
+        transform: translateX(0);
+    }
+
+    .mobile-menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .mobile-menu-close {
+        background: #F1F5F9;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 20px;
+        color: var(--secondary-brand);
+        cursor: pointer;
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mobile-menu-close:hover {
+        background: #E2E8F0;
+        transform: rotate(90deg);
+    }
+
+    .mobile-menu-nav {
+        flex: 1;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+    }
+
+    .mobile-menu-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        text-decoration: none;
+        color: var(--secondary-brand);
+        font-weight: 700;
+        font-size: 16px;
+        border-radius: 12px;
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mobile-menu-nav a:hover {
+        background: rgba(164, 212, 108, 0.1);
+        color: var(--secondary-brand);
+        padding-left: 20px;
+    }
+
+    .mobile-menu-nav a i {
+        font-size: 20px;
+        color: var(--primary-brand);
+    }
+
+    .mobile-menu-footer {
+        padding: 24px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    /* ── Modern Language Switcher (TZ §23) ── */
+    .lang-switcher-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .lang-switcher-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, rgba(164, 212, 108, 0.1) 0%, rgba(164, 212, 108, 0.05) 100%);
+        border: 2px solid var(--primary-brand);
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--secondary-brand);
+        cursor: pointer;
+        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(164, 212, 108, 0.15);
+    }
+
+    .lang-switcher-btn:hover {
+        background: linear-gradient(135deg, var(--primary-brand) 0%, rgba(164, 212, 108, 0.8) 100%);
+        color: var(--secondary-brand);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(164, 212, 108, 0.3);
+    }
+
+    .lang-switcher-btn[aria-expanded="true"] {
+        background: var(--primary-brand);
+        box-shadow: 0 4px 12px rgba(164, 212, 108, 0.4);
+    }
+
+    .lang-switcher-btn[aria-expanded="true"] .lang-chevron {
+        transform: rotate(180deg);
+    }
+
+    .lang-flag {
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .lang-code {
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .lang-chevron {
+        font-size: 12px;
+        transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--primary-brand);
+    }
+
+    .lang-switcher-btn:hover .lang-chevron,
+    .lang-switcher-btn[aria-expanded="true"] .lang-chevron {
+        color: var(--secondary-brand);
+    }
+
+    /* ── Language Dropdown ── */
+    .lang-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        min-width: 180px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 31, 63, 0.15);
+        border: 1px solid #E2E8F0;
+        padding: 8px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-12px) scale(0.95);
+        transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2100;
+    }
+
+    .lang-dropdown.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+    .lang-form {
+        margin: 0;
+    }
+
+    .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        border: none;
+        background: transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--secondary-brand);
+        text-align: left;
+    }
+
+    .lang-option:hover {
+        background: rgba(164, 212, 108, 0.1);
+        color: var(--secondary-brand);
+    }
+
+    .lang-option.active {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        font-weight: 800;
+    }
+
+    .lang-option-flag {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .lang-option-name {
+        flex: 1;
+    }
+
+    .lang-option-code {
+        font-size: 11px;
+        font-weight: 700;
+        color: #94A3B8;
+        background: #F1F5F9;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .lang-option.active .lang-option-code {
+        background: rgba(0, 31, 63, 0.1);
+        color: var(--secondary-brand);
+    }
+
+    /* ── Mobile Language Switcher ── */
+    @media (max-width: 768px) {
+        .lang-switcher-wrapper {
+            display: none;
+        }
+
+        .lang-switcher-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid #E2E8F0;
+            margin-top: 16px;
+        }
+
+        .lang-switcher-mobile-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .lang-switcher-mobile-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-option-mobile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--secondary-brand);
+            cursor: pointer;
+            transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lang-option-mobile.active {
+            border-color: var(--primary-brand);
+            background: var(--primary-brand);
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // ── Modern Language Switcher (TZ §23) ──
+    const langDropdownBtn = document.getElementById('langDropdown');
+    const langDropdownMenu = document.getElementById('langDropdownMenu');
+
+    if (langDropdownBtn && langDropdownMenu) {
+        // Toggle dropdown on button click
+        langDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = langDropdownBtn.getAttribute('aria-expanded') === 'true';
+            langDropdownBtn.setAttribute('aria-expanded', !isExpanded);
+            langDropdownMenu.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!langDropdownBtn.contains(e.target) && !langDropdownMenu.contains(e.target)) {
+                langDropdownBtn.setAttribute('aria-expanded', 'false');
+                langDropdownMenu.classList.remove('active');
+            }
+        });
+
+        // Close dropdown on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && langDropdownMenu.classList.contains('active')) {
+                langDropdownBtn.setAttribute('aria-expanded', 'false');
+                langDropdownMenu.classList.remove('active');
+                langDropdownBtn.focus();
+            }
+        });
+    }
+
+    // ── Category filter chip toggle ──
+    const filterContainer = document.getElementById('filter-container');
+    if (filterContainer) {
+        filterContainer.addEventListener('click', function(evt) {
+            const chip = evt.target.closest('a');
+            if (chip) {
+                this.querySelectorAll('a').forEach(el => {
+                    el.classList.remove('filter-chip-active');
+                    el.classList.add('filter-chip');
+                });
+                chip.classList.add('filter-chip-active');
+                chip.classList.remove('filter-chip');
+            }
+        });
+    }
+
+    // ── Close mega menu on any link click inside it ──
+    document.querySelectorAll('.mega-list a').forEach(link => {
+        link.addEventListener('click', () => {
+            // Remove focus so CSS :focus-within closes the menu
+            if (document.activeElement) document.activeElement.blur();
+        });
+    });
+
+    // ── HTMX booking → update cart counter ──
+    document.body.addEventListener('htmx:afterRequest', (evt) => {
+        const url = evt.detail.pathInfo?.requestPath || '';
+        if (url.includes('/book/')) {
+            // Refresh cart count badge
+            const badge = document.getElementById('cart-count');
+            if (badge) {
+                const cur = parseInt(badge.textContent) || 0;
+                badge.textContent = cur + 1;
+                badge.style.transform = 'scale(1.4)';
+                setTimeout(() => badge.style.transform = 'scale(1)', 300);
+            }
+        }
+    });
+
+    // ── Mobile Navigation Toggle ──
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+
+        // Close menu when clicking on a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+});
+</script>
+
+<!-- Mobile Navigation Overlay -->
+<div id="mobileMenu" class="mobile-menu-overlay">
+    <div class="mobile-menu-header">
+        <div style="display: flex; align-items: center; gap: 10px; font-weight: 950; font-size: 24px; color: var(--secondary-brand);">
+            <div style="width: 38px; height: 38px; background: var(--primary-brand); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <span style="color: var(--secondary-brand); font-size: 22px; font-weight: 950;">B</span>
+            </div>
+            <span>Bittada</span>
+        </div>
+        <button id="mobileMenuClose" class="mobile-menu-close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    {# Mobil menyu navigatsiyasi — har bir havola matni i18n orqali tarjima qilinadi #}
+    <nav class="mobile-menu-nav">
+        <a href="{% url 'home' %}"><i class="bi bi-house-door"></i> {% trans "Bosh sahifa" %}</a>
+        <a href="{% url 'showroom' %}"><i class="bi bi-box"></i> {% trans "Showroom (3D)" %}</a>
+        <a href="{% url 'services' %}"><i class="bi bi-tools"></i> {% trans "Xizmatlar" %}</a>
+        <a href="{% url 'manufacturing' %}"><i class="bi bi-factory"></i> {% trans "Ishlab chiqarish" %}</a>
+        <a href="{% url 'services:booking_dashboard' %}"><i class="bi bi-calendar-check"></i> {% trans "Mening buyurtmalarim" %}</a>
+    </nav>
+
+    <!-- Mobile Language Switcher (TZ §23) -->
+    <div class="lang-switcher-mobile">
+        <div class="lang-switcher-mobile-title">Til / Language</div>
+        <div class="lang-switcher-mobile-options">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+                <form action="{% url 'set_language' %}" method="post" style="margin: 0;">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path|slice:'3:' }}">
+                    <input name="language" type="hidden" value="{{ language.code }}">
+                    <button type="submit" class="lang-option-mobile {% if language.code == LANGUAGE_CODE %}active{% endif %}">
+                        <span>
+                            {% if language.code == 'uz' %}🇺🇿
+                            {% elif language.code == 'ru' %}🇷🇺
+                            {% else %}🇬🇧
+                            {% endif %}
+                        </span>
+                        <span>{{ language.code|upper }}</span>
+                    </button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Mobil menyu footer'i — Profil/Kirish tugmalari ham tarjima qilinadi #}
+    <div class="mobile-menu-footer">
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="erp-btn-primary" style="width: 100%; justify-content: center;">
+                <i class="bi bi-person-circle"></i> {% trans "Profil" %}
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="erp-btn-primary" style="width: 100%; justify-content: center;">
+                <i class="bi bi-person-circle"></i> {% trans "Kirish" %}
+            </a>
+        {% endif %}
+    </div>
+</div>
+
