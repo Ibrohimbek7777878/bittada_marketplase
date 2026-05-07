@@ -1,0 +1,19 @@
+{% load i18n %}
+
+{% if products %}
+    {% for product in products %}
+        {% include "dashboard/sellers/partials/product_card.html" with product=product %}
+    {% endfor %}
+{% else %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <img src="https://illustrations.popsy.co/amber/box-opening.svg" style="width: 200px; margin-bottom: 24px;" alt="No products">
+        <h3 style="color: #1E293B; font-weight: 800;">{% trans "Hozircha mahsulotlar yo'q" %}</h3>
+        <p style="color: #64748B; margin-bottom: 24px;">{% trans "Sotuvni boshlash uchun birinchi mahsulotingizni qo'shing." %}</p>
+        <button class="btn-submit" style="width: auto; padding: 12px 32px;"
+                hx-get="{% url 'dashboard:add_product_modal' %}"
+                hx-target="#modal-container"
+                hx-on::after-request="document.getElementById('modal-container').classList.add('show')">
+            {% trans "Birinchi mahsulotni qo'shish" %}
+        </button>
+    </div>
+{% endif %}

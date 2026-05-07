@@ -1,9 +1,23 @@
-"""Auth routes — `/api/v1/auth/...`"""
+"""Auth routes — `/api/v1/auth/...`
+
+Daxlsizlik eslatma: mavjud DRF API URL'lari o'zgartirilmagan. Faqat 1 ta
+yangi yo'l qo'shildi: `telegram/` (name="telegram_login") — vazifa
+shartiga ko'ra. Mavjud `telegram-login-redirect` ham saqlanadi.
+"""
 from __future__ import annotations
 
 from django.urls import path
 
-from .views import OtpConfirmView, OtpRequestView, RegisterView, TokenRefresh, TokenView, SocialLoginView, TelegramCallbackView
+from .views import (
+    OtpConfirmView,
+    OtpRequestView,
+    RegisterView,
+    TelegramAuthView,  # Yangi: TelegramCallbackView'ning alias'i (views.py oxirida)
+    TelegramCallbackView,
+    TokenRefresh,
+    TokenView,
+    SocialLoginView,
+)
 
 app_name = "auth_methods"
 
@@ -17,4 +31,7 @@ urlpatterns = [
     path("telegram/callback/", TelegramCallbackView.as_view(), name="telegram-callback"),
     path("telegram/login/", TelegramCallbackView.as_view(), name="telegram-login-redirect"),
     path("telegram-callback/", TelegramCallbackView.as_view(), name="telegram-callback-root"),
+    # === YANGI: vazifa shartiga ko'ra `name="telegram_login"` (underscore bilan) ===
+    # Template'da: {% url 'auth_methods:telegram_login' %}
+    path("telegram/", TelegramAuthView.as_view(), name="telegram_login"),
 ]

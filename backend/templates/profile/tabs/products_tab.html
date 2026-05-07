@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Products tab. Required context: products, is_owner. #}
+
+{% if products %}
+  <div class="bp-grid">
+    {% for product in products %}
+      {% include "profile/partials/product_card.html" with product=product %}
+    {% endfor %}
+  </div>
+{% else %}
+  {% if is_owner %}
+    {% include "profile/partials/empty_state.html" with icon="bi-bag" title=_("No products yet") body=_("Publish your first product from the seller dashboard.") %}
+  {% else %}
+    {% include "profile/partials/empty_state.html" with icon="bi-bag" title=_("No products") body=_("Nothing here yet.") %}
+  {% endif %}
+{% endif %}

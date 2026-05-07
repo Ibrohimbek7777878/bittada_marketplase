@@ -1,0 +1,140 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/orders/list.html                          #}
+{#                                                                       #}
+{# Sotuvchiga kelgan barcha buyurtmalar ro'yxati.                       #}
+{# View: SellerOrderListView (paginate_by=20)                           #}
+{# URL: /dashboard/seller/orders/                                       #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - orders: paginated QuerySet                                        #}
+{#  - page_obj: Django Page                                             #}
+{#  - status_choices: filter dropdown uchun (OrderStatus.choices)       #}
+{#  - current_status: hozirgi GET ?status= qiymati                      #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}
+{% load i18n %}
+
+{% block dashboard_content %}
+
+  {# Sahifa sarlavhasi #}
+  <div class="content-header">
+    <h1>{% trans "Buyurtmalar" %}</h1>
+  </div>
+
+  {# Status filter formasi (GET) #}
+  <form method="get" class="seller-card" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+    <label style="font-size:13px; color:#6b7280;">{% trans "Status:" %}</label>
+    <select name="status" class="form-input" style="max-width:240px;">
+      <option value="">{% trans "Barchasi" %}</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>
+          {{ label }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-outline">{% trans "Filterlash" %}</button>
+    {% if current_status %}
+      <a href="{% url 'seller:orders_list' %}" style="font-size:13px;">{% trans "Tozalash" %}</a>
+    {% endif %}
+  </form>
+
+  {# Buyurtmalar jadvali yoki bo'sh holat #}
+  {% if orders %}
+    <div class="seller-card" style="padding:0; overflow:hidden;">
+      <table class="seller-table">
+        <thead>
+          <tr>
+            <th>{% trans "Buyurtma" %}</th>
+            <th>{% trans "Mijoz" %}</th>
+            <th>{% trans "Mahsulotlar" %}</th>
+            <th>{% trans "Sana" %}</th>
+            <th>{% trans "Summa" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th style="text-align:right;">{% trans "Amal" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+            <tr>
+              {# Buyurtma ID — qisqartirilgan UUID #}
+              <td style="font-family: monospace; font-size: 13px;">
+                #{{ order.id|truncatechars:8 }}
+              </td>
+              {# Mijoz nomi (FK customer) #}
+              <td style="font-weight: 500;">
+                @{{ order.customer.username }}
+              </td>
+              {# Mahsulotlar — birinchi item nomi + qolgan soni #}
+              <td>
+                {% with items=order.items.all %}
+                  {% if items %}
+                    {{ items.0.product.title_uz|truncatechars:40 }}
+                    {% if items|length > 1 %}
+                      <span style="color:#6b7280; font-size:12px;">
+                        +{{ items|length|add:"-1" }} {% trans "boshqa" %}
+                      </span>
+                    {% endif %}
+                  {% else %}
+                    <span style="color:#9ca3af;">—</span>
+                  {% endif %}
+                {% endwith %}
+              </td>
+              {# Sana #}
+              <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+              {# Summa #}
+              <td>{{ order.total_price|floatformat:0 }} so'm</td>
+              {# Status badge — CSS klassi status nomidan #}
+              <td>
+                <span class="status-badge {{ order.status }}">
+                  {{ order.get_status_display }}
+                </span>
+              </td>
+              {# Tahrirlash linki #}
+              <td style="text-align:right;">
+                <a href="{% url 'seller:order_detail' pk=order.pk %}"
+                   class="btn btn-outline" style="font-size:13px; padding:6px 12px;">
+                  {% trans "Ko'rish" %} →
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Pagination — page_obj orqali #}
+    {% if page_obj.has_other_pages %}
+      <nav class="pagination" style="margin-top:24px;" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+             class="pagination-btn">← {% trans "Oldingi" %}</a>
+        {% endif %}
+        <span class="pagination-btn active">
+          {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+             class="pagination-btn">{% trans "Keyingi" %} →</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  {% else %}
+    {# Bo'sh holat #}
+    <div class="seller-card seller-empty">
+      <div class="seller-empty-icon">📦</div>
+      {% if current_status %}
+        <div>{% trans "Bu statusdagi buyurtma yo'q." %}</div>
+        <a href="{% url 'seller:orders_list' %}" style="font-size:13px;">
+          {% trans "Filterni tozalash" %}
+        </a>
+      {% else %}
+        <div>{% trans "Hali buyurtmalar yo'q." %}</div>
+        <div style="font-size:13px; margin-top:8px;">
+          {% trans "Mijozlar mahsulotingizni buyurtma qilganda shu yerda ko'rinadi." %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{% endblock %}

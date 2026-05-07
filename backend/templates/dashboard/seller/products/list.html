@@ -1,0 +1,145 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/products/list.html                        #}
+{#                                                                       #}
+{# Sotuvchining mahsulotlar ro'yxati.                                   #}
+{# View: SellerProductListView (paginate_by=20)                         #}
+{# URL: /dashboard/seller/products/                                     #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - products: paginated QuerySet (page_obj.object_list)               #}
+{#  - page_obj: Django Page obyekt                                      #}
+{#  - paginator                                                          #}
+{#  - status_choices: filter dropdown uchun                             #}
+{#  - current_status: hozirgi GET ?status= qiymati                      #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}
+{% load i18n %}
+
+{% block dashboard_content %}
+
+  {# Sahifa sarlavhasi + tugmalar #}
+  <div class="content-header">
+    <h1>{% trans "Mening mahsulotlarim" %}</h1>
+    <div class="actions">
+      <a href="{% url 'seller:product_create' %}" class="btn btn-primary">
+        + {% trans "Yangi mahsulot" %}
+      </a>
+    </div>
+  </div>
+
+  {# Filter formasi (GET — sahifa qayta yuklanadi) #}
+  <form method="get" class="seller-card" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+    <label style="font-size:13px; color: var(--color-gray-600);">{% trans "Holat:" %}</label>
+    <select name="status" class="form-input" style="max-width:200px;">
+      <option value="">{% trans "Barchasi" %}</option>
+      {# Status choices — CBV view'dan ProductStatus.choices keladi #}
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>
+          {{ label }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-outline">{% trans "Filterlash" %}</button>
+    {% if current_status %}
+      <a href="{% url 'seller:products_list' %}" style="font-size:13px;">{% trans "Tozalash" %}</a>
+    {% endif %}
+  </form>
+
+  {# Mahsulotlar jadvali yoki bo'sh holat #}
+  {% if products %}
+    <div class="seller-card" style="padding:0; overflow:hidden;">
+      <table class="seller-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">{% trans "Rasm" %}</th>
+            <th>{% trans "Nomi" %}</th>
+            <th>{% trans "Kategoriya" %}</th>
+            <th>{% trans "Narx" %}</th>
+            <th>{% trans "Zaxira" %}</th>
+            <th>{% trans "Holat" %}</th>
+            <th style="text-align:right;">{% trans "Amal" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+            <tr>
+              {# Rasm thumbnail — birinchi mavjud rasm yoki placeholder #}
+              <td>
+                {% with first_image=product.images.first %}
+                  {% if first_image %}
+                    <img src="{{ first_image.image.url }}"
+                         alt="{{ product.title_uz }}"
+                         style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                  {% else %}
+                    <div style="width:48px; height:48px; background:var(--color-gray-100); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--color-gray-400);">
+                      📦
+                    </div>
+                  {% endif %}
+                {% endwith %}
+              </td>
+              <td style="font-weight:500;">
+                {{ product.title_uz|truncatechars:50 }}
+                {# SKU (agar mavjud bo'lsa) — kichik matn pastida #}
+                {% if product.sku %}
+                  <div style="font-size:12px; color:var(--color-gray-500);">SKU: {{ product.sku }}</div>
+                {% endif %}
+              </td>
+              <td>{{ product.category.name_uz }}</td>
+              <td>{{ product.price|floatformat:0 }} so'm</td>
+              <td>{{ product.stock_qty }}</td>
+              <td>
+                <span class="status-badge {{ product.status }}">{{ product.get_status_display }}</span>
+              </td>
+              <td style="text-align:right;">
+                {# Tahrirlash linki (faqat o'z mahsulotlari uchun — view'da tekshiriladi) #}
+                <a href="{% url 'seller:product_edit' pk=product.pk %}" class="btn btn-outline" style="font-size:13px; padding:6px 12px;">
+                  {% trans "Tahrirlash" %}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Pagination — page_obj orqali #}
+    {% if page_obj.has_other_pages %}
+      <nav class="pagination" style="margin-top:24px;" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+          {# previous_page_number — joriy sahifa-1 #}
+          {# current_status'ni ham olib o'tamiz (filter saqlanishi uchun) #}
+          <a href="?page={{ page_obj.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+             class="pagination-btn">← {% trans "Oldingi" %}</a>
+        {% endif %}
+
+        {# Joriy sahifa raqami #}
+        <span class="pagination-btn active">
+          {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+             class="pagination-btn">{% trans "Keyingi" %} →</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  {% else %}
+    {# Bo'sh holat — hech qanday mahsulot yo'q (yoki filter mos kelmadi) #}
+    <div class="seller-card seller-empty">
+      <div class="seller-empty-icon">📭</div>
+      {% if current_status %}
+        <div>{% trans "Bu filterga mos mahsulot topilmadi." %}</div>
+        <a href="{% url 'seller:products_list' %}" style="font-size:13px;">
+          {% trans "Filterni tozalash" %}
+        </a>
+      {% else %}
+        <div>{% trans "Hozircha hech qanday mahsulot yo'q." %}</div>
+        <a href="{% url 'seller:product_create' %}" class="btn btn-primary" style="margin-top:12px;">
+          {% trans "Birinchi mahsulotni qo'shish" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{% endblock %}

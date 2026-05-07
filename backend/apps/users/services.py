@@ -62,13 +62,20 @@ def create_user_with_profile( # Foydalanuvchi va profilni birgalikda yaratish
     username: str | None = None, # Username (ixtiyoriy)
     role: str = Role.CUSTOMER, # Rol (sukut bo'yicha xaridor)
     account_type: str = AccountType.INDIVIDUAL, # Hisob turi (shaxsiy)
-    professions: list[str] | None = None, # Kasblar (sotuvchilar uchun)
+    professions: list[str] | None = None, # Kasblar (sotuvchilar/ustalar uchun)
 ) -> User: # User obyektini qaytaradi
-    """Create a user and the empty Profile row in a single transaction.""" # Funksiya tavsifi
+    """Create a user and the empty Profile row in a single transaction."""
     
-    # Sotuvchi bo'lmagan foydalanuvchilar kasb tanlay olmasligini tekshirish
-    if professions and role not in {Role.SELLER, Role.INTERNAL_SUPPLIER}:
-        raise DomainError("Faqat sotuvchilar kasblarni tanlashi mumkin.")
+    # Audit: yangi professional rollar ham kasb tanlay olishi kerak
+    allowed_roles = {
+        Role.SELLER, Role.INTERNAL_SUPPLIER,
+        Role.SELLER_RETAIL, Role.SELLER_MANUFACTURER, Role.SELLER_LOGISTICS, Role.SELLER_COMPONENT,
+        Role.DESIGNER_INTERIOR, Role.DESIGNER_3D, Role.FIXER_MASTER, Role.FIXER_REPAIR,
+        Role.PARTNER_MATERIAL, Role.PARTNER_SERVICE
+    }
+
+    if professions and role not in allowed_roles:
+        raise DomainError("Faqat sotuvchilar va mutaxassislar kasblarni tanlashi mumkin.")
 
     # Kasblar mavjudligini tekshirish
     valid_professions = {p.value for p in Profession}
@@ -79,23 +86,27 @@ def create_user_with_profile( # Foydalanuvchi va profilni birgalikda yaratish
     # Foydalanuvchini yaratish
     user = User.objects.create_user(
         email=email,
-        phone=phone, # Telefon raqamini uzatish
+        phone=phone,
         password=password,
         username=username,
         role=role,
         account_type=account_type,
+        is_staff=False,
+        is_superuser=False,
     )
     
-    # Foydalanuvchi uchun bo'sh profil yaratish
-    Profile.objects.create(user=user, professions=professions or [])
+    # Foydalanuvchi uchun bo'sh profil yaratish yoki mavjudini olish
+    # get_or_create UNIQUE constraint failed xatolarini oldini oladi
+    profile, created = Profile.objects.get_or_create(user=user)
+    if professions:
+        profile.professions = professions
+        profile.save(update_fields=['professions'])
     
-    # --- YANGI: Foydalanuvchi uchun hamyon (Wallet) yaratish (TZ 14) ---
-    from apps.billing.services import create_wallet_for_user # Circular import oldini olish uchun shu yerda import qilamiz
-    create_wallet_for_user(user=user) # Hamyon yaratish funksiyasini chaqiramiz
+    # Hamyon yaratish
+    from apps.billing.services import create_wallet_for_user
+    create_wallet_for_user(user=user)
     
-    # -----------------------------------------------------------------
-
-    return user # Yaratilgan foydalanuvchini qaytarish
+    return user
 
 
 @transaction.atomic
@@ -105,8 +116,8 @@ def update_profile(*, user: User, **fields: Any) -> Profile:
 
     professions = fields.pop("professions", None)
     if professions is not None:
-        if not user.is_seller:
-            raise DomainError("Only sellers can set professions.")
+        if not (user.is_seller or user.is_specialist or user.is_partner):
+            raise DomainError("Only professionals can set professions.")
         valid = {p.value for p in Profession}
         bad = [p for p in professions if p not in valid]
         if bad:
@@ -115,7 +126,7 @@ def update_profile(*, user: User, **fields: Any) -> Profile:
 
     for key, value in fields.items():
         if not hasattr(profile, key):
-            continue  # silently ignore unknown keys; serializer is the gate
+            continue
         setattr(profile, key, value)
 
     profile.save()
@@ -141,7 +152,7 @@ def grant_permission(
     *, target: User, action_key: str, allowed: bool = True, note: str = "",
     actor: User | None = None,
 ) -> PermissionGrant:
-    """Per-user permission override (super_admin only — caller enforces this)."""
+    """Per-user permission override (super_admin only)."""
     if actor and actor.role != Role.SUPER_ADMIN:
         raise DomainError("Only super_admin can edit permission grants.", code="permission_denied")
     grant, created = PermissionGrant.objects.update_or_create(
@@ -155,5 +166,5 @@ def grant_permission(
 
 
 def mark_seen(user: User) -> None:
-    """Touch `last_seen_at` — called by middleware on each authenticated request."""
+    """Touch `last_seen_at`."""
     User.objects.filter(pk=user.pk).update(last_seen_at=timezone.now())

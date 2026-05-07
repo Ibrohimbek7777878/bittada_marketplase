@@ -1,0 +1,120 @@
+{% extends "dashboard/base_role_dashboard.html" %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    .products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .filter-group {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    .search-input {
+        padding: 10px 16px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        font-size: 14px;
+        width: 300px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--primary-brand); }
+    
+    .category-select {
+        padding: 10px 16px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    /* Modal Styles */
+    #modal-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+    #modal-container.show { display: flex; }
+    .modal-content {
+        background: white;
+        padding: 32px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block main_title %}{% trans "Mening mahsulotlarim" %}{% endblock %}
+
+{% block main_content %}
+<div class="products-header">
+    <div class="filter-group">
+        <input type="text" name="q" placeholder="{% trans 'Nomi yoki SKU bo\'yicha qidirish...' %}" 
+               class="search-input"
+               hx-get="{% url 'dashboard:my_products' %}"
+               hx-trigger="keyup changed delay:500ms"
+               hx-target="#product-grid"
+               hx-push-url="true">
+        
+        <select name="category" class="category-select"
+                hx-get="{% url 'dashboard:my_products' %}"
+                hx-target="#product-grid"
+                hx-push-url="true">
+            <option value="">{% trans "Barcha kategoriyalar" %}</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name_uz }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button class="btn-submit" style="margin-top: 0;"
+            hx-get="{% url 'dashboard:add_product_modal' %}"
+            hx-target="#modal-container"
+            hx-on::after-request="document.getElementById('modal-container').classList.add('show')">
+        <i class="bi bi-plus-lg"></i> {% trans "Yangi mahsulot" %}
+    </button>
+</div>
+
+<div id="product-grid" class="products-grid">
+    {% include "dashboard/sellers/partials/product_list_fragment.html" %}
+</div>
+
+<!-- Modal Container -->
+<div id="modal-container" onclick="if(event.target == this) this.classList.remove('show')">
+    <!-- HTMX will load content here -->
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="position: fixed; bottom: 24px; right: 24px; background: #057A55; color: white; padding: 12px 24px; border-radius: 10px; transform: translateY(100px); transition: transform 0.3s; z-index: 1001;">
+    <span id="toast-message"></span>
+</div>
+
+<script>
+    document.body.addEventListener('showToast', function(evt){
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = evt.detail.value;
+        toast.style.transform = 'translateY(0)';
+        setTimeout(() => { toast.style.transform = 'translateY(100px)'; }, 3000);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends "base_erp.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block extra_head %}
+    <!-- Chart.js and HTMX (Assumed in base_erp.html, but ensuring here) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Success Notification Container -->
+    <div id="toast-container" style="position: fixed; top: 24px; right: 24px; z-index: 9999; pointer-events: none;"></div>
+
+    <div class="content-header" style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <h1 style="font-size: 28px; font-weight: 800; color: var(--secondary-brand);">
+                {{ user.get_role_display }} {% trans "Paneli" %} 👋
+            </h1>
+            <p style="color: #64748B;">{% trans "Xush kelibsiz! Bu yerda siz o'z faoliyatingizni boshqarishingiz mumkin." %}</p>
+        </div>
+        <div style="background: var(--primary-brand); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; color: var(--secondary-brand);">
+            <i class="bi bi-shield-check"></i> Verified
+        </div>
+    </div>
+
+    <!-- Role-specific Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px;">
+        {% block dashboard_stats %}{% endblock %}
+    </div>
+
+    <!-- Main Content Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 32px;">
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+            <div class="erp-card" style="text-align: left; padding: 32px;">
+                <h3 style="margin-bottom: 24px; font-size: 18px; font-weight: 700;">{% block main_title %}{% trans "Faoliyat" %}{% endblock %}</h3>
+                {% block main_content %}{% endblock %}
+            </div>
+
+            <!-- Dashboard Analytics Chart -->
+            <div class="erp-card" style="padding: 32px;">
+                <h3 style="margin-bottom: 24px; font-size: 18px; font-weight: 700;">{% trans "Tahlillar" %}</h3>
+                <div style="height: 300px;">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+            <!-- Dynamic Action Form -->
+            <div class="erp-card" style="padding: 24px;">
+                <h4 style="margin-bottom: 16px; font-size: 16px; font-weight: 700;">{% trans "Tezkor Amallar" %}</h4>
+                <div id="form-container">
+                    {% block dashboard_form %}
+                        <p style="font-size: 13px; color: #64748B;">{% trans "Bu yerda sizning rolingizga xos formalar paydo bo'ladi." %}</p>
+                    {% endblock %}
+                </div>
+            </div>
+
+            <div class="erp-card" style="text-align: left; padding: 24px;">
+                <h4 style="margin-bottom: 16px; font-size: 16px; font-weight: 700;">{% trans "Bildirishnomalar" %}</h4>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="notification-item">
+                        <strong>{% trans "Tizim" %}:</strong> {% trans "Profil verifikatsiyadan o'tdi." %}
+                    </div>
+                    <div class="notification-item">
+                        <strong>{% trans "Yangilik" %}:</strong> {% trans "Yangi hamkorlik shartlari e'lon qilindi." %}
+                    </div>
+                </div>
+            </div>
+            
+            {% block side_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Success Notification Logic
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.innerHTML = `<i class="bi bi-check-circle-fill"></i> {% trans "Muvaffaqiyatli saqlandi!" %}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+    });
+
+    // Default Chart Implementation
+    const ctx = document.getElementById('dashboardChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: '{% trans "Haftalik faollik" %}',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    borderColor: '#A4D46C',
+                    backgroundColor: 'rgba(164, 212, 108, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+            }
+        });
+    }
+</script>
+
+<style>
+    .stat-box {
+        background: white; padding: 24px; border-radius: 20px;
+        border: 1px solid var(--erp-glass-border); box-shadow: var(--erp-shadow);
+        transition: transform 0.2s;
+    }
+    .stat-box:hover { transform: translateY(-4px); }
+    .stat-value { font-size: 24px; font-weight: 800; color: var(--secondary-brand); margin: 8px 0; }
+    .stat-label { font-size: 14px; color: #64748B; font-weight: 600; }
+    
+    .dummy-item { 
+        padding: 16px; border-bottom: 1px solid #F1F5F9; display: flex; 
+        justify-content: space-between; align-items: center; 
+    }
+    .dummy-item:last-child { border-bottom: none; }
+
+    .notification-item {
+        padding: 12px; background: #F8FAFC; border-radius: 12px; font-size: 13px;
+        border-left: 4px solid var(--primary-brand);
+    }
+
+    .success-toast {
+        background: #057A55; color: white; padding: 12px 24px; border-radius: 12px;
+        font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 10px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        transition: all 0.5s ease; animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .field-input {
+        width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0;
+        border-radius: 10px; font-size: 14px; margin-bottom: 12px;
+        outline: none; transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: var(--primary-brand); }
+    .btn-submit {
+        width: 100%; background: var(--secondary-brand); color: var(--primary-brand);
+        border: 2px solid var(--primary-brand); padding: 12px; border-radius: 10px;
+        font-weight: 800; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-submit:hover { background: var(--primary-brand); color: var(--secondary-brand); }
+</style>
+{% endblock %}

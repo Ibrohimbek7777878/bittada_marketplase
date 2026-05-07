@@ -58,19 +58,20 @@
     }
 
     .btd-menu__item:hover {
-        background: rgba(37, 99, 235, 0.08);
-        color: #2563EB;
+        background: var(--profile-accent);
+        color: var(--profile-primary);
         transform: translateX(5px) scale(1.02);
     }
 
     .btd-menu__item--active {
-        background: #2563EB;
+        background: var(--profile-primary);
         color: white !important;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 4px 12px var(--profile-shadow);
     }
 
     .btd-menu__item--active:hover {
-        background: #1d4ed8;
+        background: var(--profile-primary);
+        opacity: 0.9;
         transform: scale(1.02);
     }
 
@@ -84,9 +85,9 @@
     }
 
     .btd-form-input:focus {
-        border-color: #2563EB;
+        border-color: var(--profile-primary);
         background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        box-shadow: 0 0 0 4px var(--profile-accent);
     }
 
     .btd-form-input:disabled {
@@ -118,6 +119,71 @@
 
     .btn-loading .btn-text {
         display: none;
+    }
+
+    /* Dynamic Theme Variables */
+    :root {
+        --profile-primary: #2563EB;
+        --profile-accent: rgba(37, 99, 235, 0.1);
+        --profile-bg-gradient: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+        --profile-shadow: rgba(37, 99, 235, 0.3);
+    }
+
+    [data-role="seller"] {
+        --profile-primary: #0EA5E9; /* Professional Blue */
+        --profile-accent: rgba(14, 165, 233, 0.1);
+        --profile-bg-gradient: linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%);
+        --profile-shadow: rgba(14, 165, 233, 0.3);
+    }
+
+    [data-role="designer"] {
+        --profile-primary: #F59E0B; /* Creative Amber/Gold */
+        --profile-accent: rgba(245, 158, 11, 0.1);
+        --profile-bg-gradient: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        --profile-shadow: rgba(245, 158, 11, 0.3);
+    }
+
+    [data-role="customer"] {
+        --profile-primary: #10B981; /* Clean Green */
+        --profile-accent: rgba(16, 185, 129, 0.1);
+        --profile-bg-gradient: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+        --profile-shadow: rgba(16, 185, 129, 0.3);
+    }
+
+    /* Transition modes */
+    .view-mode, .edit-mode {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hidden-mode {
+        opacity: 0;
+        transform: scale(0.98) translateY(10px);
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+    }
+
+    /* Instagram Style Grid */
+    .btd-instagram-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        margin-top: 24px;
+    }
+    .btd-grid-item {
+        aspect-ratio: 1;
+        background: #F1F5F9;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+    .btd-grid-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .btd-grid-item:hover img {
+        transform: scale(1.1);
     }
 
     /* Responsivlik */
@@ -193,7 +259,7 @@
 </div>
 
 <!-- Actual Content (hidden initially, shown after loading) -->
-<div id="profile-content" style="display: none;">
+<div id="profile-content" style="display: none;" data-role="{{ user.role|default:'customer' }}">
     <div class="btd-page-header animate-fade-in-up animate-delay-1" style="margin-bottom: 40px;">
         <h1 class="btd-page-header__title" style="font-weight: 800; color: #0F172A;">{% trans "Mening profilim" %}</h1>
         <p class="btd-page-header__subtitle" style="color: #64748B;">{% trans "Shaxsiy ma'lumotlar va sozlamalar" %}</p>
@@ -205,27 +271,56 @@
             <div class="btd-glass-card">
                 <div class="btd-card__body p-0" style="padding: 24px 0;">
                     <div class="text-center" style="padding: 0 24px 24px 24px; border-bottom: 1px solid rgba(226, 232, 240, 0.6);">
-                        <div style="width: 90px; height: 90px; border-radius: 24px; background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; margin: 0 auto 16px; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);">
+                        <div style="width: 90px; height: 90px; border-radius: 24px; background: var(--profile-bg-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; margin: 0 auto 16px; box-shadow: 0 10px 15px -3px var(--profile-shadow);">
                             {{ user.username|first|upper }}
                         </div>
                         <h3 style="margin-bottom: 4px; font-weight: 700; color: #0F172A;">{{ user.username }}</h3>
-                        <span style="background: rgba(37, 99, 235, 0.1); color: #2563EB; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
-                            {% trans user.role|default:"Mijoz" %}
+                        <span style="background: var(--profile-accent); color: var(--profile-primary); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
+                            {{ user.get_role_display }}
                         </span>
                     </div>
                     <div class="btd-menu" style="margin-top: 16px;">
                         <a href="{% url 'profile' %}" class="btd-menu__item btd-menu__item--active">
                             <i class="bi bi-person-fill"></i> {% trans "Ma'lumotlar" %}
                         </a>
-                        <a href="{% url 'orders' %}" class="btd-menu__item">
-                            <i class="bi bi-bag-check-fill"></i> {% trans "Buyurtmalar" %}
-                        </a>
-                        <a href="{% url 'wishlist' %}" class="btd-menu__item">
-                            <i class="bi bi-heart-fill"></i> {% trans "Sevimlilar" %}
-                        </a>
-                        <a href="{% url 'cart' %}" class="btd-menu__item">
-                            <i class="bi bi-cart-fill"></i> {% trans "Savat" %}
-                        </a>
+
+                        {# --- ROL ASOSIDA DINAMIK MENYU --- #}
+                        {% if user.is_seller %}
+                            <a href="{% url 'dashboard:seller_my_products' %}" class="btd-menu__item">
+                                <i class="bi bi-box-seam-fill"></i> {% trans "Mahsulotlarim" %}
+                            </a>
+                        {% endif %}
+
+                        {% if user.role == 'seller_logistics' %}
+                            <a href="{% url 'dashboard:seller_my_products' %}" class="btd-menu__item">
+                                <i class="bi bi-truck"></i> {% trans "Yetkazmalar" %}
+                            </a>
+                        {% endif %}
+
+                        {% if user.is_specialist %}
+                            <a href="{% url 'user_profile' username=user.username %}" class="btd-menu__item">
+                                <i class="bi bi-collection-fill"></i> {% trans "Portfolio" %}
+                            </a>
+                        {% endif %}
+
+                        {% if user.is_partner %}
+                            <a href="{% url 'dashboard:seller_my_products' %}" class="btd-menu__item">
+                                <i class="bi bi-handshake"></i> {% trans "Hamkorlik" %}
+                            </a>
+                        {% endif %}
+
+                        {% if user.is_customer %}
+                            <a href="{% url 'orders' %}" class="btd-menu__item">
+                                <i class="bi bi-bag-check-fill"></i> {% trans "Buyurtmalar" %}
+                            </a>
+                            <a href="{% url 'wishlist' %}" class="btd-menu__item">
+                                <i class="bi bi-heart-fill"></i> {% trans "Sevimlilar" %}
+                            </a>
+                            <a href="{% url 'cart' %}" class="btd-menu__item">
+                                <i class="bi bi-cart-fill"></i> {% trans "Savat" %}
+                            </a>
+                        {% endif %}
+
                         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(226, 232, 240, 0.6);">
                             <form action="{% url 'logout' %}" method="POST" style="display: block;">
                                 {% csrf_token %}
@@ -239,54 +334,245 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="btd-profile-content animate-fade-in-up animate-delay-3">
+        <!-- Main Content Card -->
+        <div class="btd-profile-content animate-fade-in-up animate-delay-3" style="position: relative;">
             <div class="btd-glass-card">
                 <div class="btd-card__body" style="padding: 40px;">
-                    <h3 style="font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
-                        <i class="bi bi-shield-lock" style="color: #2563EB;"></i> {% trans "Shaxsiy ma'lumotlar" %}
-                    </h3>
                     
-                    <form id="profile-form">
-                        {% csrf_token %}
-                        
-                        <!-- Read-only qism -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; padding: 24px; background: rgba(248, 250, 252, 0.5); border-radius: 16px; border: 1px dashed #E2E8F0;">
-                            <div class="btd-form-group">
-                                <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Username" %}</label>
-                                <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">@{{ user.username }}</div>
+                    <!-- 1. VIEW MODE -->
+                    <div id="view-mode" class="view-mode">
+                        <div style="position: relative; margin-bottom: 60px;">
+                            <!-- Cover Image -->
+                            <div style="height: 200px; background: var(--profile-bg-gradient); border-radius: 20px; overflow: hidden; position: relative;">
+                                {% if profile.cover_image %}
+                                    <img src="{{ profile.cover_image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% endif %}
+                                <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15, 23, 42, 0.6) 0%, transparent 100%);"></div>
                             </div>
-                            <div class="btd-form-group">
-                                <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Email manzili" %}</label>
-                                <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">{{ user.email|default:_("Kiritilmagan") }}</div>
+                            
+                            <!-- Avatar Overlay -->
+                            <div style="position: absolute; bottom: -40px; left: 40px; display: flex; align-items: flex-end; gap: 24px;">
+                                <div style="width: 120px; height: 120px; border-radius: 30px; background: white; padding: 6px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                                    <div style="width: 100%; height: 100%; border-radius: 24px; background: var(--profile-bg-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 800;">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                </div>
+                                <div style="padding-bottom: 12px;">
+                                    <h2 style="margin: 0; font-size: 28px; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ user.username }}</h2>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                                        <span style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(4px); color: white; padding: 2px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            {% trans user.role|default:"Mijoz" %}
+                                        </span>
+                                        <span style="color: rgba(255, 255, 255, 0.8); font-size: 13px; font-weight: 500;">
+                                            <i class="bi bi-geo-alt-fill"></i> {{ profile.address_text|default:_("Manzil kiritilmagan") }}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 24px;">
-                            <div class="btd-form-group">
-                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Ismingiz" %}</label>
-                                <input type="text" name="first_name" value="{{ user.first_name }}" class="btd-form-input" placeholder="{% trans 'Ismingizni kiriting' %}" style="width: 100%;">
-                            </div>
-                            <div class="btd-form-group">
-                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Telefon raqamingiz" %}</label>
-                                <input type="tel" name="phone" value="{{ user.phone|default:'' }}" class="btd-form-input" placeholder="+998 90 123 45 67" style="width: 100%;">
-                            </div>
-                        </div>
-
-                        {# Yetkazib berish manzili maydoni — placeholder uchun apostrofli matn xavfsiz tarzda olinadi #}
-                        {% trans "To'liq manzilingizni kiriting" as ph_full_address %}
-                        <div class="btd-form-group" style="margin-bottom: 32px;">
-                            <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Yetkazib berish manzili" %}</label>
-                            <textarea name="address" class="btd-form-input" rows="3" placeholder="{{ ph_full_address }}" style="width: 100%; resize: none;">{{ user_profile.address|default:'' }}</textarea>
-                        </div>
-
-                        <div style="display: flex; justify-content: flex-end;">
-                            <button type="submit" id="save-btn" class="btd-btn btd-btn--primary" style="padding: 14px 40px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; min-width: 160px; background: #2563EB; border: none; color: white; cursor: pointer; transition: all 0.3s ease;">
-                                <span class="btn-text">{% trans "O'zgarishlarni saqlash" %}</span>
-                                <div class="spinner"></div>
+                            
+                            <!-- Edit Button Top Right -->
+                            <button onclick="toggleMode('edit')" class="btd-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.9); color: #0F172A; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                                <i class="bi bi-pencil-square"></i> {% trans "Tahrirlash" %}
                             </button>
                         </div>
-                    </form>
+
+                        <div style="display: grid; grid-template-columns: 1fr 320px; gap: 40px;">
+                            <div>
+                                <!-- Bio Section -->
+                                <section style="margin-bottom: 40px;">
+                                    <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                        <i class="bi bi-body-text" style="color: var(--profile-primary);"></i> {% trans "Biografiya" %}
+                                    </h3>
+                                    <div style="color: #475569; line-height: 1.6; font-size: 15px;">
+                                        {{ profile.bio|default:_("Hali biografiya kiritilmagan. O'zingiz haqingizda bir oz so'zlab bering...") }}
+                                    </div>
+                                </section>
+
+                                <!-- Video Intro -->
+                                {% if profile.video_intro %}
+                                <section style="margin-bottom: 40px;">
+                                    <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                                        <i class="bi bi-play-circle-fill" style="color: var(--profile-primary);"></i> {% trans "Video tanishtiruv" %}
+                                    </h3>
+                                    <div style="border-radius: 20px; overflow: hidden; aspect-ratio: 16/9; background: #000;">
+                                        <video controls style="width: 100%; height: 100%;">
+                                            <source src="{{ profile.video_intro.url }}" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </section>
+                                {% endif %}
+
+                                <!-- Role-specific Content -->
+                                {% if user.role == 'seller' or user.role == 'designer' %}
+                                <section>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                        <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin: 0; display: flex; align-items: center; gap: 10px;">
+                                            <i class="bi bi-grid-3x3-gap-fill" style="color: var(--profile-primary);"></i> {% trans "Portfolio & Islohotlar" %}
+                                        </h3>
+                                        <a href="#" style="color: var(--profile-primary); font-weight: 700; font-size: 14px; text-decoration: none;">{% trans "Barchasini ko'rish" %}</a>
+                                    </div>
+                                    <div class="btd-instagram-grid" style="margin-top: 0;">
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a1/400/400" alt="Work"></div>
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a2/400/400" alt="Work"></div>
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a3/400/400" alt="Work"></div>
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a4/400/400" alt="Work"></div>
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a5/400/400" alt="Work"></div>
+                                        <div class="btd-grid-item" style="border-radius: 12px;"><img src="https://picsum.photos/seed/a6/400/400" alt="Work"></div>
+                                    </div>
+                                </section>
+                                {% endif %}
+                            </div>
+
+                            <aside>
+                                <!-- Statistics Card -->
+                                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+                                    <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">{% trans "Statistika" %}</h4>
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #64748B; font-weight: 600; font-size: 14px;">{% trans "Ko'rishlar" %}</span>
+                                            <span style="font-weight: 800; color: #0F172A;">{{ profile.profile_views }}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #64748B; font-weight: 600; font-size: 14px;">{% trans "Reyting" %}</span>
+                                            <span style="font-weight: 800; color: #F59E0B;"><i class="bi bi-star-fill"></i> {{ profile.rating|default:"5.0" }}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #64748B; font-weight: 600; font-size: 14px;">{% trans "Sharhlar" %}</span>
+                                            <span style="font-weight: 800; color: #0F172A;">{{ profile.review_count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Info Card -->
+                                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 24px;">
+                                    <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">{% trans "Kontakt" %}</h4>
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 32px; height: 32px; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; color: var(--profile-primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                                <i class="bi bi-telephone-fill"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Telefon" %}</div>
+                                                <div style="font-size: 14px; font-weight: 700; color: #0F172A;">{{ user.phone|default:_("Kiritilmagan") }}</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 32px; height: 32px; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; color: var(--profile-primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Email" %}</div>
+                                                <div style="font-size: 14px; font-weight: 700; color: #0F172A; word-break: break-all;">{{ user.email|default:_("Kiritilmagan") }}</div>
+                                            </div>
+                                        </div>
+                                        {% if profile.telegram %}
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 32px; height: 32px; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; color: #0088cc; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                                <i class="bi bi-telegram"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Telegram</div>
+                                                <div style="font-size: 14px; font-weight: 700; color: #0F172A;">@{{ profile.telegram }}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <!-- 2. EDIT MODE -->
+                    <div id="edit-mode" class="edit-mode hidden-mode">
+                        <h3 style="font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
+                            <i class="bi bi-pencil-square" style="color: var(--profile-primary);"></i> {% trans "Ma'lumotlarni tahrirlash" %}
+                        </h3>
+                        
+                        <form id="profile-form">
+                            {% csrf_token %}
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; padding: 24px; background: #F8FAFC; border-radius: 16px; border: 1px dashed #E2E8F0;">
+                                <div class="btd-form-group">
+                                    <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Username" %}</label>
+                                    <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">@{{ user.username }}</div>
+                                </div>
+                                <div class="btd-form-group">
+                                    <label class="btd-form-label" style="font-weight: 700; color: #64748B; font-size: 13px;">{% trans "Email manzili" %}</label>
+                                    <div style="font-weight: 600; color: #0F172A; margin-top: 4px;">{{ user.email|default:_("Kiritilmagan") }}</div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                                <div class="btd-form-group">
+                                    <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Ismingiz" %}</label>
+                                    <input type="text" name="first_name" value="{{ user.first_name }}" class="btd-form-input" placeholder="{% trans 'Ismingizni kiriting' %}" style="width: 100%;">
+                                </div>
+                                <div class="btd-form-group">
+                                    <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Telefon raqamingiz" %}</label>
+                                    <input type="tel" name="phone" value="{{ user.phone|default:'' }}" class="btd-form-input" placeholder="+998 90 123 45 67" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <!-- Social/Media Branding -->
+                            <div style="margin-bottom: 32px; padding: 24px; background: #F8FAFC; border-radius: 20px; border: 1px solid #E2E8F0;">
+                                <h4 style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-megaphone-fill" style="color: var(--profile-primary);"></i> {% trans "Brending va Media" %}
+                                </h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                                    <div class="btd-form-group">
+                                        <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Muqova rasmi" %}</label>
+                                        <input type="file" name="cover_image" class="btd-form-input" accept="image/*" style="width: 100%;">
+                                        <small style="color: #64748B;">{% trans "Tavsiya etilgan o'lcham: 1200x400" %}</small>
+                                    </div>
+                                    <div class="btd-form-group">
+                                        <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Video tanishtiruv" %}</label>
+                                        <input type="file" name="video_intro" class="btd-form-input" accept="video/*" style="width: 100%;">
+                                        <small style="color: #64748B;">{% trans "Maksimal hajm: 20MB" %}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btd-form-group" style="margin-bottom: 24px;">
+                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Biografiya" %}</label>
+                                <textarea name="bio" class="btd-form-input" rows="4" placeholder="{% trans 'O\'zingiz haqingizda bir oz so\'zlab bering...' %}" style="width: 100%; resize: none;">{{ profile.bio|default:'' }}</textarea>
+                            </div>
+
+                            <div class="btd-form-group" style="margin-bottom: 32px;">
+                                <label class="btd-form-label" style="font-weight: 700; color: #475569; margin-bottom: 8px;">{% trans "Yetkazib berish manzili" %}</label>
+                                <textarea name="address_text" class="btd-form-input" rows="2" placeholder="{% trans 'To\'liq manzilingizni kiriting' %}" style="width: 100%; resize: none;">{{ profile.address_text|default:'' }}</textarea>
+                            </div>
+
+                            <!-- Design Preferences (JSON Mock) -->
+                            <div style="margin-bottom: 32px; padding: 20px; background: #F1F5F9; border-radius: 16px;">
+                                <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 16px;">{% trans "Dizayn sozlamalari" %}</h4>
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="flex: 1;">
+                                        <label style="display: block; font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 6px;">{% trans "Asosiy rang" %}</label>
+                                        <input type="color" name="pref_primary_color" value="#2563EB" style="width: 100%; height: 40px; border-radius: 8px; border: 1px solid #E2E8F0; padding: 4px; background: white;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display: block; font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 6px;">{% trans "Mavzu" %}</label>
+                                        <select name="pref_theme" class="btd-form-input" style="width: 100%;">
+                                            <option value="light">{% trans "Yorug'" %}</option>
+                                            <option value="dark">{% trans "Tungi" %}</option>
+                                            <option value="glass">{% trans "Shisha" %}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                                <button type="button" onclick="toggleMode('view')" class="btd-btn" style="padding: 14px 24px; border-radius: 14px; font-weight: 700; background: #F1F5F9; border: none; color: #64748B; cursor: pointer;">
+                                    {% trans "Bekor qilish" %}
+                                </button>
+                                <button type="submit" id="save-btn" class="btd-btn" style="padding: 14px 40px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; min-width: 160px; background: var(--profile-primary); border: none; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px var(--profile-shadow);">
+                                    <span class="btn-text">{% trans "Saqlash" %}</span>
+                                    <div class="spinner"></div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -299,9 +585,11 @@
         // Hide skeleton and show content after a brief delay
         setTimeout(function() {
             document.getElementById('skeleton-loader').style.display = 'none';
-            document.getElementById('profile-content').style.display = 'block';
+            const content = document.getElementById('profile-content');
+            content.style.display = 'block';
+            
             // Re-trigger animations for content
-            const animatedElements = document.querySelectorAll('#profile-content .animate-fade-in-up');
+            const animatedElements = content.querySelectorAll('.animate-fade-in-up');
             animatedElements.forEach((el, index) => {
                 el.style.opacity = '0';
                 el.style.animation = 'none';
@@ -309,8 +597,26 @@
                     el.style.animation = '';
                 }, index * 50);
             });
-        }, 800); // 800ms skeleton display time
+        }, 800);
     });
+
+    // View/Edit Mode Toggle
+    function toggleMode(mode) {
+        const view = document.getElementById('view-mode');
+        const edit = document.getElementById('edit-mode');
+        
+        if (mode === 'edit') {
+            view.classList.add('hidden-mode');
+            setTimeout(() => {
+                edit.classList.remove('hidden-mode');
+            }, 400);
+        } else {
+            edit.classList.add('hidden-mode');
+            setTimeout(() => {
+                view.classList.remove('hidden-mode');
+            }, 400);
+        }
+    }
 </script>
 {% endblock %}
 
@@ -338,13 +644,17 @@
             });
             
             if (response.ok) {
-                showToast('Ma\'lumotlar muvaffaqiyatli yangilandi!', 'success');
+                notify('Ma\'lumotlar muvaffaqiyatli yangilandi!', 'success');
+                // Ma'lumotlarni yangilash (lokal)
+                toggleMode('view');
+                // Aslida bu yerda sahifani yangilash yoki UI dagi matnlarni o'zgartirish kerak
+                // Masalan: location.reload();
             } else {
                 const errorData = await response.json();
-                showToast(errorData.message || 'Yangilashda xatolik yuz berdi', 'error');
+                notify(errorData.message || 'Yangilashda xatolik yuz berdi', 'error');
             }
         } catch (error) {
-            showToast('Tizimda ulanish xatoligi yuz berdi', 'error');
+            notify('Tizimda ulanish xatoligi yuz berdi', 'error');
         } finally {
             // Yuklanish animatsiyasini o'chirish
             setTimeout(() => {
@@ -354,11 +664,12 @@
         }
     });
 
-    // Toast xabarlarini ko'rsatish uchun yordamchi funksiya (agar base_erp da bo'lmasa)
-    function showToast(message, type) {
+    // Toast xabarlarini ko'rsatish uchun yordamchi funksiya
+    function notify(message, type) {
         if (typeof window.showToast === 'function') {
             window.showToast(message, type);
         } else {
+            // Agar global toast bo'lmasa, sodda xabar chiqarish
             alert(message);
         }
     }

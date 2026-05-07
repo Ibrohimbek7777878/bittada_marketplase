@@ -33,20 +33,25 @@ def method_enabled(method: str) -> bool:
 
 
 @transaction.atomic # Tranzaksiya ichida ishlashni ta'minlaydi (xato bo'lsa hamma narsa bekor bo'ladi)
-def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiyasi (rolga mos maydonlar bilan)
-    *, # Faqat nomlangan argumentlarni qabul qiladi
-    email: str | None = None, # Email (ixtiyoriy)
-    phone: str | None = None, # Telefon (ixtiyoriy)
-    password: str, # Parol (majburiy)
-    first_name: str = "", # Ism (barcha rollar uchun)
-    username: str | None = None, # Username (ixtiyoriy)
-    role: str = "customer", # Rol (sukut bo'yicha xaridor)
-    account_type: str = "individual", # Hisob turi (shaxsiy)
-    professions: list[str] | None = None, # Kasblar (sotuvchilar uchun - TZ 6.3)
-    company_name: str = "", # Kompaniya nomi (sotuvchilar uchun)
-    experience: int | None = None, # Tajriba yillar soni (sotuvchilar uchun)
-    invite_code: str = "", # Taklif kodi (ichki ta'minotchilar uchun)
-) -> User: # User obyektini qaytaradi
+def register_with_email_password(
+    *,
+    email: str | None = None,
+    phone: str | None = None,
+    password: str,
+    first_name: str = "",
+    username: str | None = None,
+    role: str = "customer",
+    account_type: str = "individual",
+    professions: list[str] | None = None,
+    company_name: str = "",
+    experience: int | None = None,
+    invite_code: str = "",
+    stir: str = "",
+    mfo: str = "",
+    bank_account: str = "",
+    contract_number: str = "",
+    **kwargs,
+) -> User:
     # Agar na email, na telefon berilgan bo'lsa, xato berish
     if not email and not phone:
         raise DomainError("Email yoki telefon raqami kiritilishi shart.")
@@ -57,7 +62,6 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
     
     # Telefon orqali ro'yxatdan o'tish usuli yoqilganligini tekshirish
     if phone and not method_enabled(AuthMethod.PHONE_OTP):
-        # Bu yerda telefon/parol usuli alohida AuthMethod sifatida bo'lmagani uchun PHONE_OTP dan foydalanamiz
         pass 
 
     # Agar email berilgan bo'lsa va u allaqachon bazada bo'lsa
@@ -70,8 +74,8 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
 
     # XAVFSIZLIK: admin va super_admin rollari uchun ochiq register bloklash (TZ 8.2)
     from apps.users.models import Role
-    if role in {Role.ADMIN, Role.SUPER_ADMIN}: # Agar rol admin yoki super_admin bo'lsa
-        raise DomainError( # Xato qaytarish
+    if role in {Role.ADMIN, Role.SUPER_ADMIN}:
+        raise DomainError(
             "Admin va Super Admin rollari uchun ochiq ro'yxatdan o'tish mumkin emas. "
             "Ularni faqat createsuperuser yoki Admin Panel orqali yaratish mumkin."
         )
@@ -79,7 +83,7 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
     # Foydalanuvchini va uning profilini yaratish
     user = create_user_with_profile(
         email=email,
-        phone=phone, # Telefon raqamini ham uzatamiz
+        phone=phone,
         password=password,
         username=username,
         role=role,
@@ -88,17 +92,25 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
     )
 
     # Profilga rolga mos qo'shimcha maydonlarni yozish
-    profile = user.profile # Foydalanuvchi profilini olish
-    if first_name: # Agar ism berilgan bo'lsa
-        profile.display_name = first_name # Profilga display_name sifatida yozish
-    if company_name: # Agar kompaniya nomi berilgan bo'lsa (sotuvchilar uchun)
-        profile.company_name = company_name # Profilga kompaniya nomini yozish
-    if experience is not None: # Agar tajriba berilgan bo'lsa (sotuvchilar uchun)
-        # Tajriba ma'lumotini bio ga qo'shish (keyinchalik alohida field bo'ladi)
-        profile.bio = f"Tajriba: {experience} yil" # Profilga tajriba ma'lumotini yozish
-    profile.save() # Profilni saqlash
+    profile = user.profile
+    if first_name:
+        profile.display_name = first_name
+    if company_name:
+        profile.company_name = company_name
+    if stir:
+        profile.stir = stir
+    if mfo:
+        profile.mfo = mfo
+    if bank_account:
+        profile.bank_account = bank_account
+    if contract_number:
+        profile.contract_number = contract_number
+    if experience is not None:
+        profile.bio = f"Tajriba: {experience} yil"
+        
+    profile.save()
 
-    return user # Yaratilgan foydalanuvchini qaytarish
+    return user
 
 
 @transaction.atomic

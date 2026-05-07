@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="products-grid">
+  {% for service in services %}
+    <div class="product-card">
+      <div class="product-info">
+        <span class="product-category">{{ service.get_category_display }}</span>
+        <h3 class="product-title">{{ service.title }}</h3>
+        <div class="product-price-row">
+          <div class="price-block">
+            <span class="current-price">{{ service.starting_price }} so'm</span>
+            <span class="meta-item">{{ service.get_price_type_display }}</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          {% if user.is_authenticated %}
+            <a href="#" class="btn btn-primary" style="width:100%;font-size:13px;padding:8px 16px;">{% trans "Bron qilish" %}</a>
+          {% else %}
+            <a href="/{{ LANGUAGE_CODE }}/login/" class="btn btn-outline" style="width:100%;font-size:13px;padding:8px 16px;">{% trans "Bron qilish" %}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty-state">
+      <p class="text-muted">{% trans "Xizmatlar topilmadi." %}</p>
+    </div>
+  {% endfor %}
+</div>

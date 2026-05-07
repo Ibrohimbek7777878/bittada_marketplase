@@ -81,17 +81,17 @@ def system_health_view(request):
     Dashboard footeridagi indikatorlar uchun ishlatiladi.
     """
     from django.core.cache import cache
-    import redis
     from django.conf import settings
     
     # 1. Redis holatini tekshirish (To'g'ridan-to'g'ri ping orqali)
     redis_alive = False
     try:
+        import redis
         # Cache backend'dan redis connectionni olishga harakat qilamiz
         r = redis.from_url(settings.CACHES['default']['LOCATION'])
         if r.ping():
             redis_alive = True
-    except Exception:
+    except (ImportError, Exception):
         # Fallback: Cache orqali tekshirish
         try:
             cache.set('health_check', 'ok', timeout=5)

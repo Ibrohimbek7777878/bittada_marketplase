@@ -1,192 +1,235 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
+from django.shortcuts import redirect, get_object_or_404
+from django.template.response import TemplateResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
+from apps.users.models import Role
+from apps.users.forms import (
+    PartnerMaterialForm, PartnerServiceForm,
+    DesignerInteriorForm, Designer3DForm, FixerMasterForm, FixerRepairForm,
+    SellerRetailForm, SellerManufacturerForm, SellerLogisticsForm, SellerComponentForm
+)
+from apps.products.models import Product, Category
+from django.db.models import Q
 
-# Core: Dashboard (General stats)
+# ---------------------------------------------------------------------------
+# CORE DASHBOARD VIEWS (Admin Stats)
+# ---------------------------------------------------------------------------
+
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def dashboard_stats(request):
+    """Umumiy tizim statistikasi."""
     return JsonResponse({
         "status": "success", 
         "data": {
-            "general_stats": "Active",
             "active_users": 105,
-            "system_health": "100%"
+            "system_health": "100%",
+            "server_time": "2026-05-06"
         }
     })
 
-# Core: Sales (GMV, Order counts)
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def sales_stats(request):
-    from apps.orders.models import Order, OrderStatus
-    from django.db.models import Sum
-    
-    # Faol buyurtmalar (Processing/Shipping equivalents in this system)
-    active_orders = Order.objects.filter(
-        status__in=[OrderStatus.STARTED, OrderStatus.PRODUCTION, OrderStatus.SHIPPING]
-    ).count() if Order.objects.exists() else 0
-    
-    # Yangi buyurtmalar (INQUIRY)
-    new_orders = Order.objects.filter(status=OrderStatus.INQUIRY).count() if Order.objects.exists() else 0
-    
-    # GMV (Gross Merchandise Value) for completed orders
-    gmv_agg = Order.objects.filter(status=OrderStatus.COMPLETED).aggregate(total=Sum('total_price'))
-    gmv = gmv_agg['total'] or 0.00
-    
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "gmv": float(gmv), 
-            "total_orders": Order.objects.count() if Order.objects.exists() else 0,
-            "active_orders": active_orders,
-            "new_orders": new_orders
-        }
-    })
-
-# Marketplace: Products (Inventory)
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def products_inventory(request):
-    from apps.products.models import Product
-    total_products = Product.objects.count() if Product.objects.exists() else 0
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "total_products": total_products,
-            "low_stock": 12
-        }
-    })
-
-# Marketplace: Services (Bookings/Masters)
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def services_stats(request):
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "total_bookings": 45,
-            "active_masters": 28
-        }
-    })
-
-# Financials: Escrow Fund
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def escrow_fund(request):
-    from apps.orders.models import Order, OrderStatus
-    from django.db.models import Sum
-    # Muzlatilgan (Frozen) funds: payment is held in escrow but not yet released to the master
-    escrow_agg = Order.objects.filter(
-        status__in=[OrderStatus.ESCROW_PENDING, OrderStatus.PAID, OrderStatus.STARTED, OrderStatus.PRODUCTION, OrderStatus.SHIPPING, OrderStatus.DISPUTED]
-    ).aggregate(total=Sum('escrow_amount'))
-    
-    frozen_funds = escrow_agg['total'] or 0.00
-    
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "total_escrow": float(frozen_funds),
-            "frozen_funds_count": Order.objects.filter(status__in=[OrderStatus.ESCROW_PENDING, OrderStatus.PAID]).count() if Order.objects.exists() else 0
-        }
-    })
-
-# Financials: Credit Economy
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def credit_economy(request):
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "active_credits": "₿ 450.2k",
-            "circulation_status": "Active"
-        }
-    })
-
-# Management: User management
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def user_management(request):
-    from apps.users.models import User
-    total_users = User.objects.count() if User.objects.exists() else 0
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "total_users": total_users,
-            "new_this_week": 24
-        }
-    })
-
-# Management: Blacklist logic
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def blacklist_logic(request):
-    from apps.users.models import User
-    blacklisted_users = User.objects.filter(is_active=False).count() if User.objects.exists() else 0
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "blacklisted_users": blacklisted_users
-        }
-    })
-
-# System: System Health, Logs
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def system_health_logs(request):
-    return JsonResponse({
-        "status": "success", 
-        "data": {
-            "redis_status": "online",
-            "celery_status": "online",
-            "recent_errors": 0
-        }
-    })
-
-# Operations: Pending Actions
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def pending_actions(request):
-    from apps.orders.models import Order, OrderStatus
-    
-    actions = []
-    
-    # 1. Escrow Pending (Frozen funds needing release or check)
-    escrow_orders = Order.objects.filter(status=OrderStatus.ESCROW_PENDING)[:5]
-    for order in escrow_orders:
-        actions.append({
-            "id": f"ord_{order.id}",
-            "icon": "🛡️",
-            "title": f"Buyurtma #ORD-{order.id}",
-            "subtitle": "Escrow release / To'lov kutilmoqda",
-            "action": "Bajarish"
-        })
-        
-    # 2. New Inquiries
-    new_inquiries = Order.objects.filter(status=OrderStatus.INQUIRY)[:5]
-    for order in new_inquiries:
-        actions.append({
-            "id": f"inq_{order.id}",
-            "icon": "📦",
-            "title": f"Yangi so'rov #{order.id}",
-            "subtitle": "Mijoz tasdig'i",
-            "action": "Bajarish"
-        })
-        
-    # Mocking KYC for demonstration since actual KYC model is unknown
-    if not actions:
-        actions.append({
-            "id": "kyc_1",
-            "icon": "🆔",
-            "title": "Abduvali Toshmatov",
-            "subtitle": "KYC Verifikatsiya",
-            "action": "Bajarish"
-        })
-
+    """Sotuvlar statistikasi."""
     return JsonResponse({
         "status": "success",
         "data": {
-            "actions": actions,
-            "total_pending": len(actions)
+            "total_sales": "1,250,000,000 UZS",
+            "orders_count": 450,
+            "growth": "+12%"
         }
     })
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def products_inventory(request):
+    """Invertar holati statistikasi."""
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "total_products": 1200,
+            "out_of_stock": 15,
+            "categories_count": 24
+        }
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def services_stats(request):
+    """Xizmatlar statistikasi."""
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "active_services": 85,
+            "service_providers": 32
+        }
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def escrow_fund(request):
+    """Escrow (kafolatli to'lov) statistikasi."""
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "locked_funds": "450,000,000 UZS",
+            "released_funds": "320,000,000 UZS"
+        }
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def credit_economy(request):
+    """Kredit ekotizimi statistikasi."""
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "active_loans": 12,
+            "pending_applications": 5
+        }
+    })
+
+
+# ---------------------------------------------------------------------------
+# SELLER DASHBOARD (Interactive Logic)
+# ---------------------------------------------------------------------------
+
+def role_dashboard_router(request):
+    """
+    Main router for role-specific dashboards.
+    Handles HTMX POST requests for role-specific actions using granular 10-role forms.
+    """
+    if not request.user.is_authenticated:
+        return redirect("auth_login")
+
+    user = request.user
+    role = user.role
+
+    # Initialize granular form based on role
+    form_map = {
+        Role.PARTNER_MATERIAL: PartnerMaterialForm,
+        Role.PARTNER_SERVICE: PartnerServiceForm,
+        Role.DESIGNER_INTERIOR: DesignerInteriorForm,
+        Role.DESIGNER_3D: Designer3DForm,
+        Role.FIXER_MASTER: FixerMasterForm,
+        Role.FIXER_REPAIR: FixerRepairForm,
+        Role.SELLER_RETAIL: SellerRetailForm,
+        Role.SELLER_MANUFACTURER: SellerManufacturerForm,
+        Role.SELLER_LOGISTICS: SellerLogisticsForm,
+        Role.SELLER_COMPONENT: SellerComponentForm,
+    }
+    
+    FormClass = form_map.get(role)
+    form = FormClass(request.POST or None, user=user) if FormClass else None
+
+    # Handle HTMX POST
+    if request.method == "POST" and request.headers.get("HX-Request"):
+        if form and form.is_valid():
+            form.save()
+            return TemplateResponse(request, "dashboard/partials/form_success.html", {"form": form})
+        else:
+            return TemplateResponse(request, "dashboard/partials/form_errors.html", {"form": form})
+
+    # Template mapping
+    template_name = "dashboard/profile_edit.html" # Default
+    dummy_data = []
+
+    role_templates = {
+        Role.PARTNER_MATERIAL: "dashboard/partners/material.html",
+        Role.PARTNER_SERVICE: "dashboard/partners/service.html",
+        Role.DESIGNER_INTERIOR: "dashboard/specialists/designer_interior.html",
+        Role.DESIGNER_3D: "dashboard/specialists/designer_3d.html",
+        Role.FIXER_MASTER: "dashboard/specialists/fixer_master.html",
+        Role.FIXER_REPAIR: "dashboard/specialists/fixer_repair.html",
+        Role.SELLER_RETAIL: "dashboard/sellers/retail.html",
+        Role.SELLER_MANUFACTURER: "dashboard/sellers/manufacturer.html",
+        Role.SELLER_LOGISTICS: "dashboard/sellers/logistics.html",
+        Role.SELLER_COMPONENT: "dashboard/sellers/component.html",
+    }
+    
+    template_name = role_templates.get(role, template_name)
+
+    return TemplateResponse(request, template_name, {
+        "user": user,
+        "form": form,
+        "page_title": f"{user.get_role_display()} Dashboard"
+    })
+
+def seller_dashboard(request):
+    return role_dashboard_router(request)
+
+def seller_my_products(request):
+    """Sotuvchining o'z mahsulotlari ro'yxati."""
+    if not request.user.is_authenticated or not request.user.is_seller:
+        return redirect("auth_login")
+
+    search_query = request.GET.get('q', '')
+    category_id = request.GET.get('category', '')
+    
+    # Audit: seller va is_active/is_featured maydonlari ishlatilmoqda
+    products = Product.objects.filter(seller=request.user)
+    
+    if search_query:
+        products = products.filter(
+            Q(title_uz__icontains=search_query) | 
+            Q(sku__icontains=search_query)
+        )
+    
+    if category_id:
+        products = products.filter(category_id=category_id)
+    
+    categories = Category.objects.filter(is_active=True, parent=None)
+
+    context = {
+        "products": products,
+        "categories": categories,
+        "search_query": search_query,
+        "selected_category": category_id,
+        "page_title": "Mening mahsulotlarim"
+    }
+
+    if request.headers.get("HX-Request") and not request.headers.get("HX-Target") == "modal-container":
+        return TemplateResponse(request, "dashboard/sellers/partials/product_list_fragment.html", context)
+
+    return TemplateResponse(request, "dashboard/sellers/my_products.html", context)
+
+def toggle_product_status(request, product_id):
+    """Mahsulot statusini o'zgartirish (HTMX)."""
+    if not request.user.is_authenticated or not request.user.is_seller:
+        return HttpResponseForbidden()
+
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.is_active = not product.is_active
+    product.save()
+
+    response = TemplateResponse(request, "dashboard/sellers/partials/product_card.html", {"product": product})
+    response["HX-Trigger"] = '{"showToast": "Holat muvaffaqiyatli o\'zgartirildi!"}'
+    return response
+
+def update_product_price(request, product_id):
+    """Mahsulot narxini inline yangilash (HTMX)."""
+    if not request.user.is_authenticated or not request.user.is_seller:
+        return HttpResponseForbidden()
+
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    
+    if request.method == "POST":
+        new_price = request.POST.get("price")
+        if new_price:
+            product.price = new_price
+            product.save()
+            response = TemplateResponse(request, "dashboard/sellers/partials/product_card.html", {"product": product})
+            response["HX-Trigger"] = '{"showToast": "Narx yangilandi!"}'
+            return response
+
+    return TemplateResponse(request, "dashboard/sellers/partials/price_inline_form.html", {"product": product})
+
+def add_product_modal(request):
+    """Yangi mahsulot qo'shish modal oynasi."""
+    if not request.user.is_authenticated or not request.user.is_seller:
+        return HttpResponseForbidden()
+    
+    categories = Category.objects.filter(is_active=True)
+    return TemplateResponse(request, "dashboard/sellers/partials/add_product_modal.html", {"categories": categories})

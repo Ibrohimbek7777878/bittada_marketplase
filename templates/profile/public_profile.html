@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}@{{ viewed_user.username }} — Bittada{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Profile layout */
+  .profile-layout { display: grid; grid-template-columns: 320px 1fr; gap: 32px; padding: 32px 0; }
+  @media (max-width: 968px) { .profile-layout { grid-template-columns: 1fr; } }
+
+  /* Sidebar */
+  .profile-sidebar { background: white; border: 1px solid var(--color-gray-200); border-radius: 16px; padding: 32px 24px; text-align: center; position: sticky; top: 88px; }
+  @media (max-width: 968px) { .profile-sidebar { position: static; } }
+  .profile-avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; display: block; }
+  .profile-avatar-placeholder { width: 96px; height: 96px; border-radius: 50%; background: var(--color-blue-600); color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; margin: 0 auto 16px; }
+  .profile-username { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+  .profile-display-name { color: var(--color-gray-500); font-size: 15px; margin: 0 0 12px; }
+  .profile-bio { color: var(--color-gray-600); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+  .profile-meta { display: flex; justify-content: center; gap: 16px; font-size: 13px; color: var(--color-gray-500); margin-bottom: 16px; }
+  .profile-rating { display: flex; align-items: center; gap: 4px; }
+
+  /* Tabs */
+  .profile-tabs { background: white; border: 1px solid var(--color-gray-200); border-radius: 16px; overflow: hidden; }
+  .tab-nav { display: flex; border-bottom: 1px solid var(--color-gray-200); }
+  .tab-btn { padding: 14px 24px; font-size: 14px; font-weight: 500; color: var(--color-gray-500); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+  .tab-btn:hover { color: var(--color-gray-700); }
+  .tab-btn.active { color: var(--color-blue-600); border-bottom-color: var(--color-blue-600); }
+  .tab-content { padding: 24px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="profile-layout">
+    <aside class="profile-sidebar">
+      {% if profile and profile.avatars.all %}
+        {% with avatar=profile.avatars.all|first %}
+          <img src="{{ avatar.image.url }}" alt="{{ viewed_user.username }}" class="profile-avatar">
+        {% endwith %}
+      {% else %}
+        <div class="profile-avatar-placeholder">{{ viewed_user.username|first|upper }}</div>
+      {% endif %}
+
+      <h1 class="profile-username">@{{ viewed_user.username }}</h1>
+      <p class="profile-display-name">{{ profile.display_name|default:viewed_user.username }}</p>
+      {% if profile and profile.bio %}<p class="profile-bio">{{ profile.bio }}</p>{% endif %}
+
+      <div class="profile-meta">
+        {% if profile.address_text %}<span>{{ profile.address_text }}</span>{% endif %}
+        <span class="profile-rating">⭐ {{ profile.rating|default:"0" }}</span>
+      </div>
+
+      {% if is_owner %}
+        <a href="{% url 'users:profile_edit' viewed_user.username %}" class="btn btn-primary btn-full">{% trans "Tahrirlash" %}</a>
+      {% endif %}
+    </aside>
+
+    <div class="profile-tabs">
+      <div class="tab-nav">
+        {% if show_products %}
+          <button class="tab-btn active" data-tab-target="products" type="button">{% trans "Mahsulotlar" %}</button>
+        {% endif %}
+        {% if show_portfolio %}
+          <button class="tab-btn {% if not show_products %}active{% endif %}" data-tab-target="portfolio" type="button">{% trans "Portfolio" %}</button>
+        {% endif %}
+        {% if show_services %}
+          <button class="tab-btn {% if not show_products and not show_portfolio %}active{% endif %}" data-tab-target="services" type="button">{% trans "Xizmatlar" %}</button>
+        {% endif %}
+      </div>
+
+      <div class="tab-content">
+        {% if show_products %}
+          <div class="tab-panel active" data-tab-panel="products">
+            {% include 'profile/_products_tab.html' %}
+          </div>
+        {% endif %}
+        {% if show_portfolio %}
+          <div class="tab-panel {% if not show_products %}active{% endif %}" data-tab-panel="portfolio">
+            {% include 'profile/_portfolio_tab.html' %}
+          </div>
+        {% endif %}
+        {% if show_services %}
+          <div class="tab-panel {% if not show_products and not show_portfolio %}active{% endif %}" data-tab-panel="services">
+            {% include 'profile/_services_tab.html' %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const buttons = document.querySelectorAll("[data-tab-target]");
+  const panels = document.querySelectorAll("[data-tab-panel]");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.tabTarget;
+      buttons.forEach((item) => item.classList.toggle("active", item === button));
+      panels.forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.tabPanel === target);
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

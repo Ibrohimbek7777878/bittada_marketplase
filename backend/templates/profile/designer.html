@@ -1,0 +1,92 @@
+{% extends 'base_erp.html' %}
+{% load i18n static humanize %}
+
+{% block title %}{{ viewed_user.username }} — {% trans "Dizayner" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-hero {
+        background: var(--secondary-brand);
+        color: white;
+        padding: 60px 0;
+        border-radius: 0 0 40px 40px;
+        margin-bottom: 40px;
+    }
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+    }
+    .portfolio-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: white;
+        border: 1px solid #E2E8F0;
+        transition: transform 0.3s;
+    }
+    .portfolio-card:hover {
+        transform: translateY(-8px);
+    }
+    .portfolio-img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+    }
+    .designer-badge {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-hero">
+    <div class="container" style="display: flex; gap: 40px; align-items: center;">
+        <div style="width: 120px; height: 120px; background: white; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+            🎨
+        </div>
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <h1 style="font-size: 36px; font-weight: 900; margin: 0;">{{ viewed_user.username }}</h1>
+                <span class="designer-badge">{% trans "Premium Dizayner" %}</span>
+            </div>
+            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 24px; max-width: 600px;">
+                {{ profile.bio|default:"Mebel va interyer dizayni sohasida professional yondashuv." }}
+            </p>
+            <div style="display: flex; gap: 16px;">
+                {% if is_owner %}
+                <a href="{% url 'users:profile_edit' viewed_user.username %}" class="erp-btn-primary" style="background: white; color: var(--secondary-brand);">{% trans "Profilni tahrirlash" %}</a>
+                {% else %}
+                <button class="erp-btn-primary" style="background: var(--primary-brand); color: var(--secondary-brand);">{% trans "Hamkorlikni boshlash" %}</button>
+                <button class="erp-btn-secondary" style="border-color: white; color: white;">{% trans "Xabar yuborish" %}</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="font-size: 28px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 32px;">{% trans "Portfolio Galereyasi" %}</h2>
+    
+    <div class="portfolio-grid">
+        {% for item in portfolio %}
+        <div class="portfolio-card">
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" class="portfolio-img">
+            <div style="padding: 20px;">
+                <h3 style="font-size: 18px; font-weight: 800; margin: 0 0 8px 0;">{{ item.title }}</h3>
+                <p style="font-size: 14px; color: #64748B;">{{ item.description|truncatechars:80 }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: #F8FAFC; border-radius: 30px; border: 2px dashed #E2E8F0;">
+            <p style="font-size: 18px; color: #64748B;">{% trans "Hozircha portfolio elementlari yo'q." %}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

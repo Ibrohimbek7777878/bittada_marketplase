@@ -1,0 +1,87 @@
+{# ===================================================================== #}
+{# templates/chat/message_partial.html                                  #}
+{#                                                                       #}
+{# HTMX swap fragment — faqat xabarlar ro'yxatining HTML fragmenti.    #}
+{# Polling target: /chat/room/<room_id>/messages/ (har 3s)             #}
+{# Send target:    /chat/room/<room_id>/send/ (POST javobi)            #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - messages: list[Message] (sender prefetched)                      #}
+{#  - current_user: request.user (xabar 'men' yoki 'boshqa' uchun)    #}
+{#                                                                       #}
+{# Bu fragment to'liq HTML hujjat EMAS — faqat <li>...</li> elementlari#}
+{# ===================================================================== #}
+{% load i18n %}
+
+{% if messages %}
+  {# Xabarlar ro'yxati — har biri pufakcha shaklida #}
+  {% for msg in messages %}
+    {# `is_mine` — xabar joriy user tomonidan yuborilganmi (CSS klassi uchun) #}
+    {% with is_mine=msg.sender_id|stringformat:"s"|slice:":0" %}{% endwith %}
+    <li class="msg-row {% if msg.sender_id == current_user.id %}msg-mine{% else %}msg-other{% endif %}">
+
+      {# Avatar — agar boshqa user bo'lsa, chap tomonda; o'ziniki — yopiladi (chunki o'ngda) #}
+      {% if msg.sender_id != current_user.id %}
+        {% with avatar=msg.sender.profile.avatars.first %}
+          {% if avatar %}
+            <img src="{{ avatar.image.url }}"
+                 alt="{{ msg.sender.username }}"
+                 class="msg-avatar">
+          {% else %}
+            <div class="msg-avatar msg-avatar-placeholder">
+              {{ msg.sender.username|slice:":1"|upper }}
+            </div>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
+      {# Xabar pufakchasi — sarlavha (username + vaqt) + matn + attachment #}
+      <div class="msg-bubble">
+        {# Faqat boshqa userniki bo'lsa username ko'rsatamiz #}
+        {% if msg.sender_id != current_user.id %}
+          <div class="msg-meta">
+            <strong>@{{ msg.sender.username }}</strong>
+            <span class="msg-time">{{ msg.created_at|date:"H:i" }}</span>
+          </div>
+        {% endif %}
+
+        {# Matn — bo'sh bo'lsa ham (faqat fayl yuborilgan bo'lsa) ko'rsatmaymiz #}
+        {% if msg.text %}
+          <div class="msg-text">{{ msg.text|linebreaksbr }}</div>
+        {% endif %}
+
+        {# Biriktirilgan fayl — rasm bo'lsa <img>, boshqa bo'lsa download link #}
+        {% if msg.attachment %}
+          {% with name=msg.attachment.name|lower %}
+            {% if name|slice:"-4:" == ".png" or name|slice:"-4:" == ".jpg" or name|slice:"-5:" == ".jpeg" or name|slice:"-5:" == ".webp" or name|slice:"-4:" == ".gif" %}
+              {# Rasm — preview #}
+              <a href="{{ msg.attachment.url }}" target="_blank" rel="noopener">
+                <img src="{{ msg.attachment.url }}"
+                     alt="attachment"
+                     class="msg-attachment-img">
+              </a>
+            {% else %}
+              {# Boshqa fayl — download link #}
+              <a href="{{ msg.attachment.url }}"
+                 target="_blank" rel="noopener"
+                 class="msg-attachment-file">
+                📎 {{ msg.attachment.name|cut:"chat_attachments/" }}
+              </a>
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+
+        {# O'z xabari — vaqt pastda kichkina #}
+        {% if msg.sender_id == current_user.id %}
+          <div class="msg-time msg-time-mine">{{ msg.created_at|date:"H:i" }}</div>
+        {% endif %}
+      </div>
+    </li>
+  {% endfor %}
+{% else %}
+  {# Hech qanday xabar yo'q — bo'sh state #}
+  <li class="chat-empty">
+    <div style="font-size:42px; margin-bottom:8px;">💬</div>
+    <div>{% trans "Hali xabar yo'q. Birinchi yozing!" %}</div>
+  </li>
+{% endif %}

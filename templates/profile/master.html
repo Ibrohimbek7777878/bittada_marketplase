@@ -1,0 +1,116 @@
+{% extends 'base_erp.html' %}
+{% load i18n static humanize %}
+
+{% block title %}{{ viewed_user.username }} — {% trans "Usta" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .master-hero {
+        background: #F8FAFC;
+        padding: 60px 0;
+        border-bottom: 1px solid #E2E8F0;
+        margin-bottom: 40px;
+    }
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .status-available { background: #DCFCE7; color: #166534; }
+    .status-busy { background: #FEE2E2; color: #991B1B; }
+    
+    .stats-card {
+        background: white;
+        padding: 24px;
+        border-radius: 20px;
+        border: 1px solid #E2E8F0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="master-hero">
+    <div class="container" style="display: flex; gap: 40px; align-items: flex-start;">
+        <div style="width: 140px; height: 140px; background: var(--secondary-brand); border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 60px; color: var(--primary-brand);">
+            🛠️
+        </div>
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px;">
+                <h1 style="font-size: 32px; font-weight: 900; margin: 0; color: var(--secondary-brand);">{{ viewed_user.username }}</h1>
+                {% if viewed_user.profile.is_open_for_booking %}
+                <span class="status-badge status-available">● {% trans "Mavjud" %}</span>
+                {% else %}
+                <span class="status-badge status-busy">● {% trans "Band" %}</span>
+                {% endif %}
+            </div>
+            
+            <p style="font-size: 18px; color: #475569; margin-bottom: 24px; line-height: 1.6;">
+                {{ profile.bio|default:"Mebel o'rnatish va ta'mirlash bo'yicha ko'p yillik tajribaga ega mutaxassis." }}
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px;">
+                <div class="stats-card">
+                    <div style="font-size: 24px; font-weight: 900; color: var(--secondary-brand);">{{ profile.rating|default:"5.0" }}</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Reyting" %}</div>
+                </div>
+                <div class="stats-card">
+                    <div style="font-size: 24px; font-weight: 900; color: var(--secondary-brand);">{{ profile.review_count|default:"15" }}+</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Sharhlar" %}</div>
+                </div>
+                <div class="stats-card">
+                    <div style="font-size: 24px; font-weight: 900; color: var(--secondary-brand);">10 {% trans "yil" %}</div>
+                    <div style="font-size: 13px; color: #64748B;">{% trans "Tajriba" %}</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 16px;">
+                {% if is_owner %}
+                <a href="{% url 'users:profile_edit' viewed_user.username %}" class="erp-btn-primary">{% trans "Profilni tahrirlash" %}</a>
+                {% else %}
+                <button class="erp-btn-primary">{% trans "Bron qilish" %}</button>
+                <button class="erp-btn-secondary">{% trans "Bog'lanish" %}</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom: 80px;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+        <div>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 24px;">{% trans "Tajriba va Ko'nikmalar" %}</h2>
+            <div style="background: white; border: 1px solid #E2E8F0; border-radius: 24px; padding: 32px;">
+                <p style="color: #475569; line-height: 1.8; margin-bottom: 24px;">
+                    Professional mebel ustasi sifatida men barcha turdagi mebellarni (oshxona, yotoqxona, ofis) yig'ish va o'rnatish xizmatlarini taklif qilaman. 
+                    Ishimda faqat sifatli asbob-uskunalar va materiallardan foydalanaman.
+                </p>
+                <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; list-style: none; padding: 0;">
+                    <li style="display: flex; align-items: center; gap: 10px; font-weight: 600;">✅ Oshxona mebellari</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-weight: 600;">✅ Shkaf-kupe o'rnatish</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-weight: 600;">✅ Mebel restavratsiyasi</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-weight: 600;">✅ Yumshoq mebel ta'miri</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 24px;">{% trans "Bog'lanish" %}</h2>
+            <div style="background: white; border: 1px solid #E2E8F0; border-radius: 24px; padding: 32px;">
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 13px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Telefon" %}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: var(--secondary-brand);">{{ viewed_user.phone|default:"+998 90 123 45 67" }}</div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 13px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{% trans "Manzil" %}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: var(--secondary-brand);">{{ profile.address_text|default:"Toshkent shahar" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/profile_edit.html                         #}
+{#                                                                       #}
+{# Sotuvchining shaxsiy profilini tahrirlash sahifasi.                  #}
+{# View: SellerProfileEditView                                          #}
+{# URL: /dashboard/seller/profile/edit/                                 #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - form: SellerProfileForm (apps.users.forms)                       #}
+{#  - current_user: request.user                                        #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}
+{% load i18n %}
+
+{% block dashboard_content %}
+
+  {# Sahifa sarlavhasi + public profile linki #}
+  <div class="content-header">
+    <h1>{% trans "Profilni tahrirlash" %}</h1>
+    <div class="actions">
+      {# Hozirgi public profile sahifaga link (yangi tabda) #}
+      <a href="/u/{{ current_user.username }}/"
+         class="btn btn-outline"
+         target="_blank"
+         rel="noopener">
+        🔗 {% trans "Public sahifani ko'rish" %}
+      </a>
+    </div>
+  </div>
+
+  {# Joriy avatar ko'rinishi (agar mavjud bo'lsa) #}
+  {% with current_avatar=current_user.profile.avatars.first %}
+    {% if current_avatar %}
+      <div class="seller-card" style="margin-bottom:16px; display:flex; align-items:center; gap:16px;">
+        <img src="{{ current_avatar.image.url }}"
+             alt="{{ current_user.username }}"
+             style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
+        <div>
+          <div style="font-size:14px; font-weight:600;">{% trans "Hozirgi avatar" %}</div>
+          <div style="font-size:13px; color: var(--color-gray-500);">
+            {% trans "Yangi rasm yuklasangiz, bu o'rniga qo'yiladi." %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {# Asosiy forma — multipart kerak (avatar fayl upload uchun) #}
+  <div class="seller-card">
+    <form method="post"
+          enctype="multipart/form-data"
+          class="seller-form"
+          novalidate>
+      {% csrf_token %}
+
+      {# Forma-darajadagi xatolar #}
+      {% if form.non_field_errors %}
+        <div class="message-item error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {# === Maydon-darajadagi xatolar va inputlar === #}
+      {# Username — alohida bo'limda (URL'ga ta'sir qiladi, eslatma bilan) #}
+      <div class="form-row" style="border-bottom:1px solid var(--color-gray-200); padding-bottom:16px;">
+        <label for="{{ form.username.id_for_label }}">
+          {{ form.username.label }} <span style="color: var(--color-error);">*</span>
+        </label>
+        {{ form.username }}
+        {% if form.username.help_text %}
+          <div class="help-text">{{ form.username.help_text }}</div>
+        {% endif %}
+        {% if form.username.errors %}
+          <div class="errors">{{ form.username.errors }}</div>
+        {% endif %}
+        {# Hozirgi public URL ko'rinib tursin (vazifa talabi) #}
+        <div class="help-text" style="margin-top:4px;">
+          {% trans "Hozirgi URL:" %}
+          <code style="background:var(--color-gray-100); padding:2px 6px; border-radius:4px;">
+            /u/{{ current_user.username }}/
+          </code>
+        </div>
+      </div>
+
+      {# Qolgan maydonlar (display_name, bio, address, telegram, website, visibility, avatar) #}
+      {% for field in form %}
+        {% if field.name != 'username' %}
+          <div class="form-row">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+              {% if field.field.required %}
+                <span style="color: var(--color-error);">*</span>
+              {% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="help-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% if field.errors %}
+              <div class="errors">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {# Tugmalar #}
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% trans "Saqlash" %}
+        </button>
+        <a href="{% url 'seller:dashboard' %}" class="btn btn-outline">
+          {% trans "Bekor qilish" %}
+        </a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+"""
+Products views — mebel marketplace (Django Templates).
+"""
+from __future__ import annotations
+
+from decimal import Decimal
+from typing import Any
+
+from django.core.paginator import Paginator
+from django.db.models import Count, Max, Min, Q, Sum
+from django.shortcuts import get_object_or_404, render, redirect
+from django.template.response import TemplateResponse
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+from .models import Category, Color, Condition, Material, Product, ProductImage, ProductStatus, Style, ProductType
+from .forms import ProductForm
+from apps.orders.models import Order
+from apps.users.models import Role, User, Profile
+
+def _get_base_template(request):
+    if request.headers.get("HX-Request"):
+        return "base_htmx.html"
+    return "base_erp.html"
+
+def _apply_filters(queryset, request):
+    q = request.GET.get("q")
+    if q:
+        queryset = queryset.filter(Q(title_uz__icontains=q) | Q(description_uz__icontains=q))
+    return queryset
+
+def _apply_sort(queryset, sort: str):
+    sort_options = {
+        "newest": "-created_at",
+        "oldest": "created_at",
+        "price_low": "price",
+        "price_high": "-price",
+        "popular": "-view_count",
+        "name": "title_uz",
+    }
+    order_by = sort_options.get(sort, "-created_at")
+    return queryset.order_by(order_by)
+
+def home_view(request):
+    """Bosh sahifa — B2C/Retail mahsulotlar va Command Center."""
+    if request.user.is_authenticated and request.user.is_superuser:
+        from apps.orders.models import Order, OrderStatus
+        new_orders_count = Order.objects.filter(status=OrderStatus.INQUIRY).count() if Order.objects.exists() else 0
+        return TemplateResponse(request, "dashboard_erp.html", {
+            "base_template": _get_base_template(request),
+            "new_orders_count": new_orders_count,
+        })
+        
+    categories = Category.objects.filter(is_active=True, parent=None).prefetch_related("children")
+    
+    db_products = Product.objects.filter(
+        status=ProductStatus.PUBLISHED, 
+        product_type=ProductType.STANDARD
+    ).select_related("category")[:10]
+    
+    furniture_items = []
+    if db_products.exists():
+        for p in db_products:
+            furniture_items.append({
+                "id": p.id,
+                "title_uz": p.title_uz,
+                "price": p.price,
+                "stock": p.stock_qty,
+                "category": p.category.name_uz,
+                "img": p.images.first().image.url if p.images.exists() else f"https://picsum.photos/id/100/400/300"
+            })
+    
+    context = {
+        "base_template": _get_base_template(request),
+        "categories": categories,
+        "furniture_items": furniture_items,
+        "cms": {
+            "hero_title": _("O'zbekistonning Raqamli Mebel Bozori"),
+            "hero_btn": _("Katalogga o'tish"),
+            "furniture_title": _("Tayyor Mebellar (Retail)")
+        }
+    }
+    return TemplateResponse(request, "home_erp.html", context)

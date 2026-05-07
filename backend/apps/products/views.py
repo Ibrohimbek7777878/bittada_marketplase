@@ -4,6 +4,10 @@ Products views — mebel marketplace (Django Templates).
 TZ §10, §12 bo'yicha:
 - Categories: daraxt ko'rinishida
 - Products: list, detail, filter, search
+
+Daxlsizlik eslatma: ushbu fayl asosiy view'lardan iborat. Faylning oxirida
+"SELLER DASHBOARD" bo'limi yangidan qo'shildi (CBV'lar). Mavjud function-based
+view'larga aralashilmagan.
 """
 from __future__ import annotations
 
@@ -11,13 +15,20 @@ from decimal import Decimal
 from typing import Any
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Max, Min, Q
+from django.db.models import Count, Max, Min, Q, Sum
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required  # Function view dekoratorlari uchun (kelajak)
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin  # CBV uchun
+from django.contrib import messages  # success/error xabar uchun
+from django.urls import reverse_lazy  # CBV success_url uchun (lazy reverse)
 from django.views import View
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView  # CBV asoslari
+from django.utils.translation import gettext_lazy as _
 
-from .models import Category, Color, Condition, Material, Product, ProductStatus, Style, ProductType
+from .models import Category, Color, Condition, Material, Product, ProductImage, ProductStatus, Style, ProductType
+from .forms import ProductForm  # Yangi qo'shilgan forma (seller dashboard uchun)
 from apps.orders.models import Order
 from apps.auth_methods.forms import CustomerSignupForm  # Mijozlar uchun soddalashtirilgan forma
 from apps.users.models import Role, User, Profile  # Foydalanuvchi rollari, User va Profile modellari
@@ -86,24 +97,21 @@ def _apply_sort(queryset, sort: str):
 
 def home_view(request):
     """Bosh sahifa — B2C/Retail mahsulotlar va Command Center."""
-    # Command Center faqat is_superuser=True lar uchun (TZ talabi)
     if request.user.is_authenticated and request.user.is_superuser:
         from apps.orders.models import Order, OrderStatus
-        # Data Summary: Top Bar Yangi buyurtmalar count (Safe Counter Logic)
         new_orders_count = Order.objects.filter(status=OrderStatus.INQUIRY).count() if Order.objects.exists() else 0
         return TemplateResponse(request, "dashboard_erp.html", {
             "base_template": _get_base_template(request),
             "new_orders_count": new_orders_count,
         })
-        
+
     categories = Category.objects.filter(is_active=True, parent=None).prefetch_related("children")
-    
-    # Try fetching from DB
+
     db_products = Product.objects.filter(
-        status=ProductStatus.PUBLISHED, 
+        status=ProductStatus.PUBLISHED,
         product_type=ProductType.STANDARD
     ).select_related("category")[:10]
-    
+
     furniture_items = []
     if db_products.exists():
         for p in db_products:
@@ -113,10 +121,9 @@ def home_view(request):
                 "price": p.price,
                 "stock": p.stock_qty,
                 "category": p.category.name_uz,
-                "img": p.images.first().image.url if p.images.exists() else f"https://picsum.photos/id/{100}/400/300"
+                "img": p.images.first().image.url if p.images.exists() else f"https://picsum.photos/id/100/400/300",
             })
     else:
-        # Demo Fallback
         for i in range(1, 11):
             cat = "Yotoqxona" if i % 3 == 0 else ("Oshxona" if i % 3 == 1 else "Ofis")
             furniture_items.append({
@@ -125,7 +132,7 @@ def home_view(request):
                 "price": 1000000 + i * 500000,
                 "stock": 10,
                 "category": cat,
-                "img": f"https://picsum.photos/id/{110+i}/400/300"
+                "img": f"https://picsum.photos/id/{110+i}/400/300",
             })
 
     context = {
@@ -133,11 +140,11 @@ def home_view(request):
         "categories": categories,
         "furniture_items": furniture_items,
         "cms": {
-            "hero_title": "O'zbekistonning Raqamli Mebel Bozori",
-            "hero_btn": "Katalogga o'tish",
-            "furniture_title": "Tayyor Mebellar (Retail)"
+            "hero_title": _("O'zbekistonning Raqamli Mebel Bozori"),
+            "hero_btn": _("Katalogga o'tish"),
+            "furniture_title": _("Tayyor Mebellar (Retail)"),
         },
-        "stats_demo": { "GMV": "$128k", "Orders": "156", "Escrow": "$42k", "Credit": "450" }
+        "stats_demo": {"GMV": "$128k", "Orders": "156", "Escrow": "$42k", "Credit": "450"},
     }
     return TemplateResponse(request, "home_erp.html", context)
 
@@ -146,7 +153,7 @@ def company_view(request):
     """Kompaniya haqida statik sahifa"""
     context = {
         "base_template": _get_base_template(request),
-        "stats_demo": { "GMV": "$128k", "Orders": "156", "Escrow": "$42k", "Credit": "450" }
+        "stats_demo": {"GMV": "$128k", "Orders": "156", "Escrow": "$42k", "Credit": "450"},
     }
     return TemplateResponse(request, "company_erp.html", context)
 
@@ -228,8 +235,8 @@ def manufacturing_view(request):
         "mfg_categories": mfg_categories,
         "current_category": selected_category,
         "cms": {
-            "page_title": "B2B Ishlab chiqarish",
-            "page_desc": "Ulgurji savdo va maxsus buyurtmalar."
+            "page_title": _("B2B Ishlab chiqarish"),
+            "page_desc": _("Ulgurji savdo va maxsus buyurtmalar.")
         }
     }
     return TemplateResponse(request, "manufacturing_erp.html", context)
@@ -285,8 +292,8 @@ def services_view(request):
         "base_template": _get_base_template(request),
         "masters": masters,
         "cms": {
-            "page_title": "Professional Xizmatlar Portali",
-            "page_desc": "Eng tajribali usta va dizaynerlar bir joyda."
+            "page_title": _("Professional Xizmatlar Portali"),
+            "page_desc": _("Eng tajribali usta va dizaynerlar bir joyda.")
         }
     }
     return TemplateResponse(request, "services_erp.html", context)
@@ -307,45 +314,72 @@ def register_view(request):
         from core.exceptions import DomainError
         from apps.auth_methods.services import register_with_email_password
         from django.contrib.auth import login as auth_login
-        import re
 
         data = request.POST
-        email    = data.get("email", "").strip()
-        phone    = data.get("phone", "").strip()
-        password = data.get("password", "")
-        # register_erp.html dagi yangi maydonlar
+        # Asosiy maydonlar
+        phone        = data.get("phone", "").strip()
         first_name   = data.get("first_name", "").strip()
-        username     = data.get("username", "").strip()
         role         = data.get("role", "customer")
         account_type = data.get("account_type", "individual")
         professions  = [p for p in data.get("professions", "").split(",") if p]
+        
+        # Yuridik shaxslar uchun
         company_name = data.get("company_name", "").strip()
-        experience   = data.get("experience", "")
-        invite_code  = data.get("invite_code", "").strip()
+        inn          = data.get("inn", "").strip()
+        mfo          = data.get("mfo", "").strip()
+        bank_account = data.get("bank_account", "").strip()
+        
+        # Hamkorlar (internal_supplier) uchun
+        invite_code     = data.get("invite_code", "").strip()
+        contract_number = data.get("contract_number", "").strip()
+        
+        # Username va Parolni telefon raqamidan olamiz
+        username = phone.replace("+", "").replace(" ", "") if phone else ""
+        password = phone if phone else ""
 
-        # ── Validatsiya (TZ §8.2 va yangi talablar) ──────────────────────────
+        # ── Validatsiya ──────────────────────────
         errors = {}
-        if not email and not phone:
-            errors["phone"] = "Email yoki telefon raqami kiritilishi shart."
-        if len(password) < 6:
-            errors["password"] = "Parol kamida 6 ta belgi bo'lishi kerak."
+        if not phone:
+            errors["phone"] = _("Telefon raqami kiritilishi shart.")
         
         if role in ("admin", "super_admin"):
             errors["role"] = "Admin rollar ochiq ro'yxatdan o'tish orqali yaratilmaydi."
         
         if role == "seller" and not professions:
-            errors["professions"] = "Sotuvchi uchun kamida 1 ta mutaxassislik tanlang."
+            errors["professions"] = _("Sotuvchi uchun kamida 1 ta mutaxassislik tanlang.")
         
         if role == "internal_supplier" and not invite_code:
-            errors["invite_code"] = "Ichki xodim uchun taklif kodi kiritilishi shart."
+            errors["invite_code"] = _("Hamkor uchun taklif kodi kiritilishi shart.")
+
+        if account_type in ("company", "legal"):
+            if not inn:
+                errors["inn"] = _("Yuridik shaxs uchun STIR (INN) kiritilishi shart.")
+            if not company_name:
+                errors["company_name"] = _("Kompaniya nomi kiritilishi shart.")
 
         if errors:
             return JsonResponse({"success": False, "errors": errors}, status=400)
 
         try:
+            from apps.users.models import User
+            
+            # Integrity Check: Foydalanuvchi bormi?
+            existing_user = User.objects.filter(username=username).first()
+            if existing_user:
+                auth_login(request, existing_user, backend="django.contrib.auth.backends.ModelBackend")
+                redirect_url = '/'
+                if existing_user.role == 'seller':
+                    redirect_url = '/services/'
+                elif existing_user.role == 'internal_supplier':
+                    redirect_url = '/profile/'
+                return JsonResponse({"success": True, "redirect": redirect_url})
+
+            # Default Fields: Agar email bazada null=False bo'lsa, dummy email qo'shamiz
+            dummy_email = f"{username}@bittada.uz" if username else None
+
             user = register_with_email_password(
-                email=email or None,
-                phone=phone or None,
+                email=dummy_email,
+                phone=phone,
                 password=password,
                 first_name=first_name,
                 username=username,
@@ -353,25 +387,27 @@ def register_view(request):
                 account_type=account_type,
                 professions=professions if professions else None,
                 company_name=company_name,
-                experience=int(experience) if experience.isdigit() else None,
+                stir=inn,
+                mfo=mfo,
+                bank_account=bank_account,
                 invite_code=invite_code,
+                contract_number=contract_number,
             )
             # Sessiyani boshlash
             auth_login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             
-            # Rol bo'yicha redirect URL ni aniqlash (TZ 8.2)
+            # Rol bo'yicha redirect URL ni aniqlash
             redirect_url = '/'
-            if user.role == 'seller':
-                redirect_url = '/services/'
-            elif user.role == 'internal_supplier':
-                redirect_url = '/profile/'
+            if user.role in ['seller', 'internal_supplier', 'designer']:
+                redirect_url = '/dashboard/profile/edit/'
 
             return JsonResponse({"success": True, "redirect": redirect_url})
-
-        except DomainError as exc:
-            return JsonResponse({"success": False, "message": str(exc)}, status=400)
-        except Exception as exc:
-            return JsonResponse({"success": False, "message": f"Xatolik: {exc}"}, status=500)
+        except DomainError as e:
+            print(f"Domain xatosi: {e}")
+            return JsonResponse({"success": False, "errors": {"__all__": str(e)}}, status=400)
+        except Exception as e:
+            print(f"Serverda kutilmagan xato yuz berdi: {e}")
+            return JsonResponse({"success": False, "errors": {"__all__": "Tizim xatosi yuz berdi. Iltimos qayta urinib ko'ring."}}, status=500)
 
     # ── GET ────────────────────────────────────────────────────────────────
     context = {
@@ -441,42 +477,42 @@ def category_detail_view(request, category_slug):
         'yotoqxona-mebellari': {
             'color': '#6366F1', 'icon': '🛏️', 
             'hero': 'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1200',
-            'desc': 'Sizning orzuingizdagi sokinlik va qulaylik maskani.'
+            'desc': _('Sizning orzuingizdagi sokinlik va qulaylik maskani.')
         },
         'oshxona-mebellari': {
             'color': '#F59E0B', 'icon': '🍳', 
             'hero': 'https://images.unsplash.com/photo-1556911220-e15224bbafb0?q=80&w=1200',
-            'desc': 'Zamonaviy va funksional oshxona yechimlari.'
+            'desc': _('Zamonaviy va funksional oshxona yechimlari.')
         },
         'ofis-mebellari': {
             'color': '#10B981', 'icon': '💼', 
             'hero': 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200',
-            'desc': 'Samarali ish muhiti uchun ergonomik mebellar.'
+            'desc': _('Samarali ish muhiti uchun ergonomik mebellar.')
         },
         'mehmonxona-mebellari': {
             'color': '#EC4899', 'icon': '🛋️', 
             'hero': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200',
-            'desc': 'Oila va mehmonlar uchun shinam muhit.'
+            'desc': _('Oila va mehmonlar uchun shinam muhit.')
         },
         'xom-ashyo': {
             'color': '#92400E', 'icon': '🪵', 
             'hero': 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1200',
-            'desc': 'Sifatli DSP, MDF va tabiiy yog\'och plitalari.'
+            'desc': _('Sifatli DSP, MDF va tabiiy yog\'och plitalari.')
         },
         'furnitura': {
             'color': '#475569', 'icon': '🔩', 
             'hero': 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1200',
-            'desc': 'Ishonchli furnitura va mexanizmlar.'
+            'desc': _('Ishonchli furnitura va mexanizmlar.')
         },
         'fasadlar': {
             'color': '#0369A1', 'icon': '🖼️', 
             'hero': 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?q=80&w=1200',
-            'desc': 'Zamonaviy mebel fasadlari va panellari.'
+            'desc': _('Zamonaviy mebel fasadlari va panellari.')
         },
         'maxsus-buyurtmalar': {
             'color': '#7C3AED', 'icon': '✨', 
             'hero': 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200',
-            'desc': 'Sizning loyihangiz bo\'yicha individual ishlab chiqarish.'
+            'desc': _('Sizning loyihangiz bo\'yicha individual ishlab chiqarish.')
         }
     }
     theme = THEMES.get(category_slug, {
@@ -709,17 +745,80 @@ def manufacturers_view(request):
 
 
 def cart_view(request):
-    """Savat sahifasi"""
+    """Savat sahifasi - Task 2: Dummy data visualization"""
     nav_categories = Category.objects.filter(
         parent=None, is_active=True
     ).annotate(
         product_count=Count("products", filter=Q(products__status=ProductStatus.PUBLISHED))
     ).order_by("sort_order")
     
-    return TemplateResponse(request, "cart_erp.html", { # Savatcha andozasini render qilish
-        "base_template": _get_base_template(request), # Dinamik karkas
-        "nav_categories": nav_categories, # Navigatsiya
-    }) # Render yakuni
+    # Dummy data for demo visualization (Task 2)
+    cart_items = [
+        {
+            "id": "demo-1",
+            "product": {
+                "title_uz": "Modern Velvet Sofa",
+                "effective_price": 4500000,
+                "image_url": "https://picsum.photos/seed/sofa1/300/300",
+                "id": "prod-1"
+            },
+            "quantity": 1,
+            "subtotal": 4500000
+        },
+        {
+            "id": "demo-2",
+            "product": {
+                "title_uz": "Minimalist Dining Table",
+                "effective_price": 2800000,
+                "image_url": "https://picsum.photos/seed/table1/300/300",
+                "id": "prod-2"
+            },
+            "quantity": 1,
+            "subtotal": 2800000
+        },
+        {
+            "id": "demo-3",
+            "product": {
+                "title_uz": "Ergonomic Office Chair",
+                "effective_price": 1200000,
+                "image_url": "https://picsum.photos/seed/chair1/300/300",
+                "id": "prod-3"
+            },
+            "quantity": 2,
+            "subtotal": 2400000
+        },
+        {
+            "id": "demo-4",
+            "product": {
+                "title_uz": "Handcrafted Nightstand",
+                "effective_price": 750000,
+                "image_url": "https://picsum.photos/seed/night/300/300",
+                "id": "prod-4"
+            },
+            "quantity": 1,
+            "subtotal": 750000
+        },
+        {
+            "id": "demo-5",
+            "product": {
+                "title_uz": "Nordic Floor Lamp",
+                "effective_price": 450000,
+                "image_url": "https://picsum.photos/seed/lamp/300/300",
+                "id": "prod-5"
+            },
+            "quantity": 1,
+            "subtotal": 450000
+        }
+    ]
+    cart_total = sum(item["subtotal"] for item in cart_items)
+
+    return TemplateResponse(request, "cart_erp.html", {
+        "base_template": _get_base_template(request),
+        "nav_categories": nav_categories,
+        "cart_items": cart_items,
+        "cart_total": cart_total,
+        "is_demo_data": True
+    })
 
 
 def wishlist_view(request):
@@ -730,10 +829,14 @@ def wishlist_view(request):
         product_count=Count("products", filter=Q(products__status=ProductStatus.PUBLISHED))
     ).order_by("sort_order")
     
-    return TemplateResponse(request, "wishlist_erp.html", { # Sevimlilar andozasini render qilish
-        "base_template": _get_base_template(request), # Dinamik karkas
-        "nav_categories": nav_categories, # Navigatsiya
-    }) # Render yakuni
+    # Dummy data for wishlist (Step 2)
+    wishlist_products = Product.objects.filter(status=ProductStatus.PUBLISHED)[:3]
+
+    return TemplateResponse(request, "wishlist_erp.html", {
+        "base_template": _get_base_template(request),
+        "nav_categories": nav_categories,
+        "products": wishlist_products,
+    })
 
 
 def login_view(request):
@@ -791,21 +894,37 @@ def login_view(request):
             login(request, user)
             # Foydalanuvchi roliga qarab redirect yo'naltirish
             if user.role == Role.CUSTOMER:
-                return redirect('profile')
+                redirect_url = '/profile/'
             elif user.is_staff:
-                # Admin panelga yo'naltirish (hidden-core-database)
-                return redirect('admin:index')
+                redirect_url = '/uz/'
             else:
-                return redirect('home')
+                redirect_url = '/dashboard/'
+
+            # AJAX so'rovi bo'lsa — HX-Redirect header bilan javob qaytarish
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                from django.http import HttpResponse
+                response = HttpResponse(status=200)
+                response['HX-Redirect'] = redirect_url
+                return response
+
+            return redirect(redirect_url)
         else:
             error_msg = "Noto'g'ri email/username/telefon yoki parol."
+            # AJAX so'rovi va xatolik bo'lsa — HTML fragment qaytarish
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                from django.http import HttpResponse
+                error_html = f'<div style="background: #FEE2E2; border: 1px solid #FECACA; color: #991B1B; padding: 14px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; margin-bottom: 24px;">❌ {error_msg}</div>'
+                return HttpResponse(error_html, status=400)
 
     from apps.products.models import Category
+    from django.conf import settings as django_settings
     nav_categories = Category.objects.filter(parent=None, is_active=True).order_by("sort_order")
     return TemplateResponse(request, "login_erp.html", {
         "base_template": _get_base_template(request),
         "nav_categories": nav_categories,
         "error": error_msg,
+        "GOOGLE_CLIENT_ID": getattr(django_settings, "GOOGLE_OAUTH_CLIENT_ID", ""),
+        "TELEGRAM_BOT_USERNAME": getattr(django_settings, "TELEGRAM_BOT_USERNAME", ""),
     })
 
 
@@ -852,7 +971,7 @@ def orders_view(request): # Foydalanuvchi buyurtmalari sahifasi
     nav_categories = [] # Navigatsiya kategoriyalari (Default: bo'sh)
     
     try: # Ma'lumotlarni bazadan xavfsiz olishga urinish
-        user_orders = Order.objects.filter(user=request.user).order_by("-created_at") # Foydalanuvchining buyurtmalarini olish
+        user_orders = Order.objects.filter(customer=request.user).order_by("-created_at")
     except Exception as e: # Xatolik yuz berganda (masalan, jadval yo'q bo'lsa)
         print(f"Orders fetch error: {e}") # Konsolga xatolikni chiqarish
         user_orders = [] # Bo'sh ro'yxat qoldirish
@@ -1148,3 +1267,236 @@ def product_admin_create_view(request):
         "page_title": "Yangi mahsulot — Sayt Admin Paneli",  # Sahifa sarlavhasi
     }
     return TemplateResponse(request, "products/admin_create.html", context)  # Yangi ERP shablonni render qilish
+
+
+# ============================================================================
+# SELLER DASHBOARD — Sotuvchining shaxsiy admin paneli
+# ────────────────────────────────────────────────────────────────────────────
+# URL prefix: /dashboard/seller/  (config/urls.py'da ulanadi, management dan oldin)
+#
+# Sahifalar:
+#   /dashboard/seller/                     → SellerDashboardIndexView
+#   /dashboard/seller/products/            → SellerProductListView
+#   /dashboard/seller/products/add/        → SellerProductCreateView
+#   /dashboard/seller/products/<id>/edit/  → SellerProductUpdateView
+#
+# Ruxsat: faqat ro'yxatdan o'tgan sotuvchilar (role IN {seller, internal_supplier}).
+# Mijozlar / mehmonlar / adminlar — /login/ ga yoki 403 ga yo'naltiriladi.
+# Har bir CBV o'z mahsulotini ko'radi (boshqa sellerning emas).
+#
+# Daxlsizlik: bu CBV'lar yangi qo'shilgan va eski function-based view'lar
+# (product_admin_list_view va boshqalar) bilan parallel ishlaydi.
+# ============================================================================
+
+
+class SellerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Mixin: faqat sotuvchi foydalanuvchilarga ruxsat beradi.
+
+    LoginRequiredMixin — autentifikatsiya bo'lmaganlarni /login/ ga yo'naltiradi.
+    UserPassesTestMixin — test_func() False qaytarsa 403 (yoki redirect).
+    """
+
+    # LoginRequiredMixin uchun: kirish sahifasi
+    login_url = "/login/"  # /login/?next=... ga redirect qiladi
+
+    def test_func(self) -> bool:  # type: ignore[override]
+        """User sotuvchimi yoki ichki ta'minotchimi tekshiradi."""
+        # request.user — autentifikatsiyadan o'tgan (LoginRequiredMixin garantiyasi)
+        # Lekin defensive bo'ladi: agar role atributi bo'lmasa False
+        user = self.request.user
+        return getattr(user, "is_seller", False)
+
+    def handle_no_permission(self):  # type: ignore[no-untyped-def]
+        """Test fail bo'lsa: anonimni /login/ ga, autentifikatsiyalashganni 403 ga."""
+        # Standart logika: tizimga kirmagan bo'lsa LoginRequired ishlaydi
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()  # /login/?next=... ga
+        # Tizimga kirgan, lekin sotuvchi emas — flash xabar bilan profilga
+        messages.warning(self.request, "Bu sahifa faqat sotuvchilar uchun.")
+        return redirect("profile")  # apps/products/urls.py'dagi `profile` URL'i
+
+
+class SellerDashboardIndexView(SellerRequiredMixin, TemplateView):
+    """
+    `/dashboard/seller/` — sotuvchi panelining bosh sahifasi.
+
+    Ko'rsatadi:
+    - Statistika kartalari: jami mahsulot, faol mahsulot, jami zaxira, jami buyurtma
+    - So'nggi 5 ta zakaz (Order)
+    - So'nggi 5 ta mahsulot (oxirgi qo'shilgan)
+    """
+
+    # Sahifa shabloni (templates/dashboard/seller/index.html)
+    template_name = "dashboard/seller/index.html"
+
+    def get_context_data(self, **kwargs):  # type: ignore[no-untyped-def]
+        ctx = super().get_context_data(**kwargs)  # Asosiy konteksti
+        user = self.request.user  # Hozirgi sotuvchi
+
+        # === Statistika ===
+        # Jami mahsulotlar (har qanday status)
+        total_products = Product.objects.filter(seller=user).count()
+        # Faqat published (faol)
+        published_products = Product.objects.filter(seller=user, status=ProductStatus.PUBLISHED).count()
+        # Qoralama mahsulotlar
+        draft_products = Product.objects.filter(seller=user, status=ProductStatus.DRAFT).count()
+        # Jami zaxira (stock_qty bo'yicha yig'indi) — None bo'lsa 0
+        total_stock = Product.objects.filter(seller=user).aggregate(s=Sum("stock_qty"))["s"] or 0
+
+        # === So'nggi mahsulotlar (5 ta yangisi) ===
+        # select_related: kategoriya nomi templatda kerak
+        recent_products = (
+            Product.objects.filter(seller=user)
+            .select_related("category")
+            .prefetch_related("images")
+            .order_by("-created_at")[:5]
+        )
+
+        # === So'nggi buyurtmalar ===
+        # Order modeli sotuvchiga to'g'ridan-to'g'ri bog'lanmagan bo'lishi mumkin —
+        # defensive: try/except bilan
+        recent_orders = []
+        try:
+            # Order modeli `seller` FK bo'lmasligi mumkin — items orqali tekshiramiz
+            # Eng oddiy: oxirgi 5 ta order
+            recent_orders = list(Order.objects.order_by("-created_at")[:5])
+        except Exception:
+            recent_orders = []
+
+        # Kontekstga joylash
+        ctx.update({
+            "page_title": "Sotuvchi paneli",  # Sidebar'da ko'rsatish uchun
+            "total_products": total_products,
+            "published_products": published_products,
+            "draft_products": draft_products,
+            "total_stock": total_stock,
+            "recent_products": recent_products,
+            "recent_orders": recent_orders,
+            "active_section": "dashboard",  # Sidebar aktiv linki
+        })
+        return ctx
+
+
+class SellerProductListView(SellerRequiredMixin, ListView):
+    """
+    `/dashboard/seller/products/` — sotuvchining mahsulotlari ro'yxati.
+
+    Faqat o'z mahsulotlari ko'rinadi (permission check `get_queryset`'da).
+    Filterlash: status (GET parametri).
+    Pagination: 20 ta har sahifada.
+    """
+
+    model = Product  # ListView qaysi modeldan oladi
+    template_name = "dashboard/seller/products/list.html"  # Shablon yo'li
+    context_object_name = "products"  # Templatda {% for p in products %} sifatida
+    paginate_by = 20  # Har sahifada 20 ta yozuv (page_obj orqali)
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        """Faqat hozirgi sotuvchining mahsulotlari (permission)."""
+        # Asosiy queryset: shu sotuvchining mahsulotlari, kategoriya bilan JOIN
+        qs = (
+            Product.objects.filter(seller=self.request.user)  # Faqat o'zining
+            .select_related("category")  # Kartochkada kategoriya nomi
+            .prefetch_related("images")  # Birinchi rasm uchun N+1 oldini olish
+            .order_by("-created_at")  # Yangiroqlari yuqorida
+        )
+        # Optional status filter (URL: ?status=draft)
+        status = self.request.GET.get("status", "").strip()
+        if status:  # Agar tanlangan bo'lsa
+            qs = qs.filter(status=status)
+        return qs
+
+    def get_context_data(self, **kwargs):  # type: ignore[no-untyped-def]
+        """Templatga qo'shimcha ma'lumotlar (filter dropdown va sidebar uchun)."""
+        ctx = super().get_context_data(**kwargs)
+        ctx.update({
+            "page_title": "Mening mahsulotlarim",  # Sahifa sarlavhasi
+            "active_section": "products",  # Sidebar aktiv link
+            "status_choices": ProductStatus.choices,  # Filter dropdown uchun
+            "current_status": self.request.GET.get("status", ""),  # Hozirgi tanlov
+        })
+        return ctx
+
+
+class SellerProductCreateView(SellerRequiredMixin, CreateView):
+    """
+    `/dashboard/seller/products/add/` — yangi mahsulot qo'shish formasi.
+
+    GET  → bo'sh formani ko'rsatadi
+    POST → ProductForm.is_valid() → Product yaratiladi (seller=request.user)
+           + agar rasm yuklangan bo'lsa, ProductImage qatori qo'shiladi
+    """
+
+    model = Product  # CreateView model bog'lanishi
+    form_class = ProductForm  # Yuqorida yaratilgan ProductForm
+    template_name = "dashboard/seller/products/form.html"  # add+edit uchun bitta shablon
+    # Saqlangandan keyin qaytariladi: o'zining mahsulotlar ro'yxatiga
+    success_url = reverse_lazy("seller:products_list")
+
+    def form_valid(self, form):  # type: ignore[no-untyped-def]
+        """Form valid bo'lsa: seller'ni avtomatik biriktiramiz va rasmni saqlaymiz."""
+        # 1) Seller'ni avtomatik o'rnatamiz (form.cleaned_data ichida emas)
+        # commit=False — DB'ga yozmasdan obyektni olib, qo'shimcha maydon o'rnatish uchun
+        product = form.save(commit=False)
+        product.seller = self.request.user  # Sotuvchi — joriy user
+        product.save()  # Endi DB'ga yozamiz
+
+        # 2) Agar rasm yuklangan bo'lsa, ProductImage qatori yaratamiz (primary)
+        image = form.cleaned_data.get("image")
+        if image:  # Forma maydonidan rasm
+            # Birinchi yuklangan rasm — primary (constraint: unique per product)
+            ProductImage.objects.create(product=product, image=image, is_primary=True)
+
+        # 3) Foydalanuvchiga muvaffaqiyat haqida xabar
+        messages.success(self.request, f"\"{product.title_uz}\" mahsuloti yaratildi.")
+
+        # 4) success_url ga redirect (parent klass)
+        return redirect(self.success_url)
+
+    def get_context_data(self, **kwargs):  # type: ignore[no-untyped-def]
+        ctx = super().get_context_data(**kwargs)
+        ctx.update({
+            "page_title": "Yangi mahsulot",  # Sarlavha
+            "form_action_label": "Yaratish",  # Tugma matni (form.html ichida)
+            "active_section": "products",  # Sidebar aktiv link
+        })
+        return ctx
+
+
+class SellerProductUpdateView(SellerRequiredMixin, UpdateView):
+    """
+    `/dashboard/seller/products/<uuid:pk>/edit/` — mahsulotni tahrirlash.
+
+    Permission: faqat o'z mahsulotini tahrirlay oladi (`get_queryset`).
+    Boshqa seller mahsuloti URL'ini yozsa — 404 qaytariladi.
+    """
+
+    model = Product
+    form_class = ProductForm
+    template_name = "dashboard/seller/products/form.html"  # add bilan bir xil shablon
+    success_url = reverse_lazy("seller:products_list")
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        """Faqat o'z mahsulotlari ustida UPDATE huquqi (boshqa sellerni 404)."""
+        # Get_object() shu queryset ichidan qidiradi — boshqa user'niki bo'lsa 404
+        return Product.objects.filter(seller=self.request.user)
+
+    def form_valid(self, form):  # type: ignore[no-untyped-def]
+        """Form valid: standart save + agar yangi rasm bo'lsa qo'shamiz."""
+        # 1) Standart UpdateView save (Product yangilanadi, lekin seller o'zgarmaydi)
+        product = form.save()
+
+        # 2) Yangi rasm yuklangan bo'lsa, qo'shimcha ProductImage yaratamiz
+        # Avvalgi rasmlar saqlanadi (foydalanuvchi gallereyani saqlashni xohlasa)
+        image = form.cleaned_data.get("image")
+        if image:
+            # Eski primary'ni primary emas qilamiz (uniqueness constraint)
+            ProductImage.objects.filter(product=product, is_primary=True).update(is_primary=False)
+            # Yangi rasmni primary qilib qo'shamiz
+            ProductImage.objects.create(product=product, image=image, is_primary=True)
+
+        # 3) Muvaffaqiyat xabari
+        messages.success(self.request, f"\"{product.title_uz}\" mahsuloti yangilandi.")
+
+

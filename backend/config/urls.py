@@ -39,6 +39,7 @@ def api_root(_request):
         "endpoints": {
             "auth": "/api/v1/auth/",
             "users": "/api/v1/users/",
+            "profile": "/api/v1/profile/",
             "products": "/api/v1/products/",
             "orders": "/api/v1/orders/",
             "test": "/api/v1/api/test-connection/",
@@ -59,6 +60,7 @@ api_v1_patterns = [
     path('admin/', admin.site.urls),
     path("auth/", include("apps.auth_methods.urls")),
     path("users/", include("apps.users.urls")),
+    path("profile/", include("apps.users.api_urls")),
     path("categories/", include("apps.categories.urls")),
     path("products/", include("apps.products.api_urls")),
     path("services/", include("apps.services.urls")),
@@ -82,16 +84,55 @@ api_v1_patterns = [
 ]
 
 # Template URL patterns (HTML pages)
+# Daxlsizlik: mavjud 3 ta path o'zgartirilmagan. Faqat oxiriga splat orqali
+# `apps/users/urls.py`'dagi yangi `public_template_urlpatterns` qo'shildi —
+# u faqat bitta route beradi: `/u/<username>/` (SellerPublicProfileView).
+from apps.users.urls import public_template_urlpatterns as _user_public_urls  # noqa: E402
+# Seller dashboard URL'lari — apps/products/urls.py oxirida e'lon qilingan
+from apps.products.urls import seller_dashboard_urlpatterns as _seller_dashboard_urls  # noqa: E402
+# Yangi: Seller orders URL'lari (apps/orders/urls.py oxirida)
+from apps.orders.urls import seller_order_urlpatterns as _seller_order_urls  # noqa: E402
+# Yangi: Chat template URL'lari (apps/chat/urls.py oxirida)
+from apps.chat.urls import template_urlpatterns as _chat_template_urls  # noqa: E402
+# Yangi: Portfolio template URL'lari (apps/showroom/urls.py oxirida)
+from apps.showroom.urls import portfolio_urlpatterns as _portfolio_urls  # noqa: E402
+# Yangi: Auth template CBV'lar (apps/users/views.py oxirida) — RegisterView, LoginView
+from apps.users.views import RegisterView as _AuthRegisterView, LoginView as _AuthLoginView, ProfileEditView as _DashboardProfileEditView  # noqa: E402
+from apps.auth_methods.views import TelegramCallbackView as _TelegramCallbackView  # noqa: E402
+# Seller dashboard landing view
+from apps.dashboard.views import seller_dashboard as _seller_dashboard_home  # noqa: E402
+
+# Seller dashboard ichidagi barcha URL'lar (products + orders) bitta namespace ostida
+# Barchasi `seller:` prefiksi bilan reverse qilinadi (`{% url 'seller:orders_list' %}`).
+_seller_combined_urls = _seller_dashboard_urls + _seller_order_urls
+
 template_patterns = [
     path("", include("apps.products.urls")),  # Home, shop, product pages
     path("showroom/", include("apps.showroom.urls")), # 3D Showroom page
     path("services/", include("apps.services.urls", namespace="services")), # Services module
+    # === YANGI: Instagram-uslubdagi `/u/<username>/` public profile sahifasi ===
+    # Splat — har bir element alohida path() obyekti sifatida joylanadi.
+    # Bu yo'l i18n_patterns ichida bo'lgani uchun `/uz/u/...`, `/ru/u/...`, `/en/u/...` deb ham ochiladi.
+    *_user_public_urls,
+    # === YANGI: Chat URL'lari (HTMX polling) — namespace="chat" ===
+    # `{% url 'chat:room' room_id=... %}`, 'chat:messages', 'chat:send', 'chat:open_for_order'
+    # path() prefix bo'sh — chunki URL'lar ichida `chat/...` allaqachon yozilgan.
+    path("", include((_chat_template_urls, "chat"), namespace="chat")),
+    # === YANGI: /portfolio/ — namespace="portfolio" ===
+    # `{% url 'portfolio:detail' username=... %}`, `portfolio:edit`
+    path("portfolio/", include((_portfolio_urls, "portfolio"), namespace="portfolio")),
+    # === YANGI: /auth/ — Django Templates auth (mavjud /login/, /register/ saqlanadi) ===
+    # /auth/register/  →  RegisterView (RegisterForm — username+email+password1+password2)
+    # /auth/login/     →  LoginView (Telegram tugma bilan)
+    path("auth/register/", _AuthRegisterView.as_view(), name="auth_register"),
+    path("auth/login/", _AuthLoginView.as_view(), name="auth_login"),
 ]
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),  # Tilni o'zgartirish uchun
     path("healthz", healthz, name="healthz"),
-    path("telegram-callback/", include("apps.auth_methods.urls")), # Root level callback for Telegram
+    path("auth/", include("apps.auth_methods.urls")),  # Namespace 'auth_methods' global bo'lishi uchun
+    path("telegram-callback/", _TelegramCallbackView.as_view(), name="telegram-callback-root"),
     path("api/v1/", api_root, name="api-root"),
     path("api/v1/", include((api_v1_patterns, "api"), namespace="v1")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -105,6 +146,25 @@ urlpatterns += i18n_patterns(
     path("hidden-core-database/logout/", RedirectView.as_view(url="/logout/", query_string=False, permanent=False)),
     path("hidden-core-database/", admin.site.urls),
     path("dashboard/api/v1/", include("apps.management.api_urls")),
+    # === YANGI: /dashboard/seller/* — sotuvchining shaxsiy admin paneli ===
+    # MUHIM: bu management'dan OLDIN turishi kerak. Django URL resolutsiyasi
+    # top-down match qiladi: agar `dashboard/` birinchi mos kelsa va ichida
+    # `seller/` topilmasa — 404 qaytaradi (keyingi pattern'larga o'tmaydi).
+    # Shu sababli `dashboard/seller/` aniqroq prefix sifatida birinchi keladi.
+    # apps/products/urls.py ichida `seller_dashboard_urlpatterns` ro'yxati bor —
+    # uni tuple shaklida (patterns, app_namespace) sifatida include qilamiz.
+    path(
+        "dashboard/seller/",  # URL prefix
+        include(
+            # _seller_combined_urls = products dashboard + orders (yuqorida birlashtirildi)
+            (_seller_combined_urls, "seller_dashboard"),  # (patterns, app_namespace)
+            namespace="seller",  # `{% url 'seller:products_list' %}`, `seller:orders_list`, ...
+        ),
+    ),
+    path("dashboard/seller/home/", _seller_dashboard_home, name="seller_dashboard_home"),
+    # Generic profile editor for any authenticated user — must live BEFORE
+    # the management dashboard mount, otherwise `dashboard/` swallows the request.
+    path("dashboard/profile/edit/", _DashboardProfileEditView.as_view(), name="dashboard_profile_edit"),
     path("dashboard/", include(("apps.management.urls", "management"), namespace="mgmt")),
     path("", include(template_patterns)),
     prefix_default_language=True,

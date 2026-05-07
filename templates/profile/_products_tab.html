@@ -1,0 +1,36 @@
+{% load i18n %}
+<div class="products-grid">
+  {% for product in products %}
+    <div class="product-card">
+      <div class="product-image-wrapper">
+        {% with image=product.images.all|first %}
+          {% if image %}
+            <img src="{{ image.image.url }}" alt="{{ product.title_uz }}">
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">{{ product.title_uz }}</h3>
+        <div class="product-price-row">
+          <div class="price-block">
+            <span class="current-price">{{ product.price }} so'm</span>
+            {% if product.old_price %}
+              <span class="old-price">{{ product.old_price }} so'm</span>
+            {% endif %}
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          {% if user.is_authenticated %}
+            <a href="#" class="btn btn-primary" style="width:100%;font-size:13px;padding:8px 16px;">{% trans "Bron qilish" %}</a>
+          {% else %}
+            <a href="/{{ LANGUAGE_CODE }}/login/" class="btn btn-outline" style="width:100%;font-size:13px;padding:8px 16px;">{% trans "Bron qilish" %}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty-state">
+      <p class="text-muted">{% trans "Mahsulotlar topilmadi." %}</p>
+    </div>
+  {% endfor %}
+</div>

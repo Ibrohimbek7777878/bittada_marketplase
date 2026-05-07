@@ -102,6 +102,7 @@ urlpatterns += i18n_patterns(
     path("hidden-core-database/login/", RedirectView.as_view(url="/login/", query_string=True, permanent=False)),
     path("hidden-core-database/logout/", RedirectView.as_view(url="/logout/", query_string=False, permanent=False)),
     path("hidden-core-database/", admin.site.urls),
+    path("users/", include("apps.users.urls")),
     path("dashboard/api/v1/", include("apps.management.api_urls")),
     path("dashboard/", include(("apps.management.urls", "management"), namespace="mgmt")),
     path("", include(template_patterns)),

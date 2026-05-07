@@ -1,0 +1,73 @@
+{% extends "base_erp.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title }} — Bittada{% endblock %}
+
+{% block extra_css %}
+<style>
+  .rp-shell { max-width: 1080px; margin: 32px auto 80px; padding: 0 20px; }
+  .rp-head { text-align: center; margin-bottom: 40px; }
+  .rp-head h1 { font-size: 30px; font-weight: 800; color: var(--secondary-brand); margin: 0 0 8px; }
+  .rp-head p  { color: #64748B; font-size: 16px; margin: 0; }
+
+  .rp-grid {
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .rp-card {
+    background: white; border: 1.5px solid #E2E8F0; border-radius: 18px;
+    padding: 28px; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: all .2s ease; position: relative;
+  }
+  .rp-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-brand);
+    box-shadow: 0 18px 36px rgba(164, 212, 108, 0.20);
+  }
+  .rp-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: linear-gradient(135deg, rgba(164, 212, 108, .25), rgba(164, 212, 108, .55));
+    color: var(--secondary-brand); font-size: 26px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rp-card h3 { margin: 0; font-size: 19px; font-weight: 800; color: var(--secondary-brand); }
+  .rp-card p  { margin: 0; font-size: 14px; color: #475569; line-height: 1.55; }
+  .rp-card .rp-cta {
+    margin-top: auto; font-weight: 700; color: #2563EB; font-size: 14px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  .rp-bottom {
+    text-align: center; margin-top: 32px; padding-top: 24px;
+    border-top: 1px solid #E2E8F0; color: #64748B; font-size: 14px;
+  }
+  .rp-bottom a { color: #2563EB; text-decoration: none; font-weight: 700; }
+  .rp-bottom a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rp-shell">
+  <header class="rp-head">
+    <h1>{% trans "Akkaunt turi tanlang" %}</h1>
+    <p>{% trans "Kim sifatida ro'yxatdan o'tasiz? Har bir rol uchun maxsus forma tayyorlangan." %}</p>
+  </header>
+
+  <div class="rp-grid">
+    {% for r in roles %}
+      <a class="rp-card" href="{% url 'register_role' r.slug %}">
+        <div class="rp-icon"><i class="bi {{ r.icon }}"></i></div>
+        <h3>{{ r.title }}</h3>
+        <p>{{ r.tagline }}</p>
+        <span class="rp-cta">{% trans "Davom etish" %} →</span>
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="rp-bottom">
+    {% trans "Akkauntingiz bormi?" %}
+    <a href="{% url 'login' %}">{% trans "Kirish" %}</a>
+  </div>
+</div>
+{% endblock %}

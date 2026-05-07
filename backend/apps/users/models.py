@@ -1,11 +1,5 @@
 """
 Users domain.
-
-The TZ defines five roles (customer / seller / internal_supplier / admin /
-super_admin) orthogonal to two account types (individual / company).
-Sellers additionally choose one or more profession parents (supplier,
-manufacturer, master, designer) which unlocks profession-specific profile
-fields. Customers do NOT get a public profile page — see `has_public_profile`.
 """
 from __future__ import annotations
 
@@ -25,11 +19,28 @@ from core.utils import slugify
 # Enumerations
 # ---------------------------------------------------------------------------
 class Role(models.TextChoices):
-    CUSTOMER = "customer", "Customer"
-    SELLER = "seller", "Seller"
-    INTERNAL_SUPPLIER = "internal_supplier", "Internal supplier"
+    # Asosiy rollar
+    CUSTOMER = "customer", "Customer (Xaridor)"
+    SELLER = "seller", "Sotuvchi (Legacy)"
+    INTERNAL_SUPPLIER = "internal_supplier", "Ichki ta'minotchi (Legacy)"
     ADMIN = "admin", "Admin"
     SUPER_ADMIN = "super_admin", "Super admin"
+
+    # 1. Hamkorlar (Partners) - TZ §1
+    PARTNER_MATERIAL = "partner_material", "Xom-ashyo hamkori"
+    PARTNER_SERVICE = "partner_service", "Servis hamkori (Sug'urta/Kredit)"
+
+    # 2. Dizayner va Ustalar (Specialists) - TZ §2
+    DESIGNER_INTERIOR = "designer_interior", "Interyer dizayner"
+    DESIGNER_3D = "designer_3d", "3D Dizayner"
+    FIXER_MASTER = "fixer_master", "O'rnatuvchi usta (Sborka)"
+    FIXER_REPAIR = "fixer_repair", "Ta'mirlash ustasi"
+
+    # 3. Sotuvchilar (Sellers) - TZ §3
+    SELLER_RETAIL = "seller_retail", "Chakana sotuvchi (Retail)"
+    SELLER_MANUFACTURER = "seller_manufacturer", "Ishlab chiqaruvchi (Manufacturer)"
+    SELLER_LOGISTICS = "seller_logistics", "Logistika (Dostavka)"
+    SELLER_COMPONENT = "seller_component", "Furnitura va qismlar sotuvchisi"
 
 
 class AccountType(models.TextChoices):
@@ -81,7 +92,7 @@ class UserManager(BaseUserManager["User"]): # Foydalanuvchilarni boshqarish klas
     def _create( # Foydalanuvchi yaratishning ichki funksiyasi
         self, # Klass nusxasi
         email: str | None = None, # Email ixtiyoriy bo'lishi mumkin (agar telefon bilan kirilsa)
-        password: str | None = None, # Parol ixtiyoriy bo'lishi mumkin
+        password: str | None = None, # Parol ixtiyoriy bo'linger bo'lishi mumkin
         *, # Faqat nomlangan argumentlar
         username: str | None = None, # Username ixtiyoriy
         phone: str | None = None, # Telefon raqami ixtiyoriy
@@ -190,8 +201,22 @@ class User(AbstractBaseUser, PermissionsMixin, TimestampedModel): # Foydalanuvch
         return self.role == Role.CUSTOMER
 
     @property
+    def is_partner(self) -> bool:
+        return self.role in {Role.PARTNER_MATERIAL, Role.PARTNER_SERVICE, Role.INTERNAL_SUPPLIER}
+
+    @property
+    def is_specialist(self) -> bool:
+        return self.role in {Role.DESIGNER_INTERIOR, Role.DESIGNER_3D, Role.FIXER_MASTER, Role.FIXER_REPAIR}
+
+    @property
     def is_seller(self) -> bool:
-        return self.role in {Role.SELLER, Role.INTERNAL_SUPPLIER}
+        return self.role in {
+            Role.SELLER, 
+            Role.SELLER_RETAIL, 
+            Role.SELLER_MANUFACTURER, 
+            Role.SELLER_LOGISTICS, 
+            Role.SELLER_COMPONENT
+        }
 
     @property
     def is_admin_role(self) -> bool:
@@ -199,7 +224,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimestampedModel): # Foydalanuvch
 
     @property
     def has_public_profile(self) -> bool:
-        """Customers never get a public profile; sellers do (subject to visibility)."""
+        """Customers never get a public profile; others do (subject to visibility)."""
         if self.is_customer:
             return False
         profile = getattr(self, "profile", None)
@@ -217,11 +242,18 @@ class Profile(BaseModel):
     )
 
     # Display
-    display_name = models.CharField(max_length=120, blank=True)
-    company_name = models.CharField(max_length=200, blank=True)
-    stir = models.CharField(max_length=20, blank=True, help_text="STIR (INN) — seller only")
-    bio = models.TextField(blank=True)
+    display_name = models.CharField(max_length=120, blank=True, null=True)
+    company_name = models.CharField(max_length=200, blank=True, null=True)
+    stir = models.CharField(max_length=20, blank=True, null=True, help_text="STIR (INN)")
+    mfo = models.CharField(max_length=20, blank=True, null=True, help_text="MFO")
+    bank_account = models.CharField(max_length=50, blank=True, null=True, help_text="Hisob raqami")
+    contract_number = models.CharField(max_length=50, blank=True, null=True, help_text="Shartnoma raqami")
+    bio = models.TextField(blank=True, null=True)
+    
+    # Social/Multimedia (Step 3)
     cover_image = models.ImageField(upload_to="profiles/covers/", null=True, blank=True)
+    video_intro = models.FileField(upload_to="profiles/intros/", null=True, blank=True)
+    preferences = models.JSONField(default=dict, blank=True, help_text="UI/UX preferences (colors, layout, etc.)")
 
     # Profession parents (multi-select). Sellers only.
     professions = models.JSONField(

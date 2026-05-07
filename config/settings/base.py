@@ -73,7 +73,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.locale.LocaleMiddleware",  # MUHIM: CommonMiddleware dan OLDIN bo'lishi shart
+    "django.middleware.locale.LocaleMiddleware",  # MUHIM: SessionMiddleware dan KEYIN, CommonMiddleware dan OLDIN bo'lishi shart
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",  # request.user'ni o'rnatadi
@@ -139,6 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "uz"
 TIME_ZONE = "Asia/Tashkent"
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -147,9 +148,9 @@ USE_TZ = True
 from django.utils.translation import gettext_lazy as _
 
 LANGUAGES = [
-    ("uz", _("O'zbek")),
-    ("ru", _("Русский")),
-    ("en", _("English")),
+    ("uz", "Uzbek"),
+    ("ru", "Русский"),
+    ("en", "English"),
 ]
 
 LOCALE_PATHS = [
@@ -179,7 +180,7 @@ AUTH_USER_MODEL = "users.User"  # Foydalanuvchi modeli (apps.users.models.User) 
 # (custom view'larda staff_member_required(login_url=settings.LOGIN_URL) ishlatiladi).
 # ─────────────────────────────────────────────────────────────────────────────
 LOGIN_URL = "/login/"  # Tizimga kirish sahifasi yo'li (apps.products.views.login_view)
-LOGIN_REDIRECT_URL = "/"  # Muvaffaqiyatli kirishdan keyin yo'naltiriladigan default sahifa (Bosh sahifa)
+LOGIN_REDIRECT_URL = "/dashboard/"  # Muvaffaqiyatli kirishdan keyin yo'naltiriladigan default sahifa
 LOGOUT_REDIRECT_URL = "/"  # Tizimdan chiqqandan keyin Bosh sahifaga qaytarish
 
 REST_FRAMEWORK = {
@@ -189,3 +190,42 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+# Content Security Policy (CSP) settings for third-party auth
+# Required for Telegram OAuth and Google Sign-In
+CSP_FRAME_ANCESTORS = [
+    "'self'",
+    "http://127.0.0.1:8000",
+    "https://oauth.telegram.org",
+    "https://accounts.google.com",
+    "https://www.google.com",
+]
+CSP_FRAME_SRC = [
+    "'self'",
+    "http://127.0.0.1:8000",
+    "https://oauth.telegram.org",
+    "https://accounts.google.com",
+    "https://www.google.com",
+]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "'unsafe-inline'",
+    "https://telegram.org",
+    "https://accounts.google.com",
+    "https://www.google.com",
+]
+CSP_IMG_SRC = [
+    "'self'",
+    "data:",
+    "https:",
+]
+CSP_STYLE_SRC = [
+    "'self'",
+    "'unsafe-inline'",
+]
+CSP_CONNECT_SRC = [
+    "'self'",
+    "http://127.0.0.1:8000",
+]
+CSP_BASE_URI = ["'self'"]
+CSP_FORM_ACTION = ["'self'"]

@@ -1,0 +1,12 @@
+<div id="form-container">
+    <form hx-post="{{ request.path }}" hx-target="#form-container" hx-swap="outerHTML" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="background: #FEF2F2; border: 1px solid #FECACA; padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+            <p style="font-size: 13px; color: #991B1B; font-weight: 700; margin: 0;">{% trans "Xatolik yuz berdi. Iltimos, maydonlarni tekshiring." %}</p>
+        </div>
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn-submit">{% trans "Qayta urinish" %}</button>
+    </form>
+</div>

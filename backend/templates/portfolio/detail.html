@@ -1,0 +1,334 @@
+{# ===================================================================== #}
+{# templates/portfolio/detail.html                                      #}
+{#                                                                       #}
+{# Sotuvchining portfolio sahifasi (ochiq, anonim ham ko'radi).         #}
+{# View: PortfolioDetailView (apps/services/views.py)                   #}
+{# URL: /portfolio/<username>/                                          #}
+{#                                                                       #}
+{# Kontekst (view'dan):                                                 #}
+{#  - seller: User obyekti                                              #}
+{#  - profile: Profile (display_name, bio, address_text, rating)       #}
+{#  - items: PortfolioItem QuerySet                                    #}
+{#  - is_owner: bool — joriy user sahifa egasimi (Tahrirlash tugmasi)  #}
+{#                                                                       #}
+{# Mustaqil HTML hujjat (base.html'dan extend qilmaydi).                #}
+{# ===================================================================== #}
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title|default:seller.username }} — Bittada</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body {
+      background: #f9fafb;
+      color: #111827;
+      line-height: 1.5;
+    }
+    a { color: #2563eb; text-decoration: none; }
+
+    /* Top header */
+    .top-header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-header .brand { font-weight: 700; font-size: 18px; color: #111827; }
+
+    /* Container */
+    .portfolio-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    @media (max-width: 640px) { .portfolio-container { padding: 16px; } }
+
+    /* Profile header */
+    .profile-header {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 640px) {
+      .profile-header { flex-direction: column; align-items: center; text-align: center; gap: 16px; padding-bottom: 24px; margin-bottom: 24px; }
+    }
+
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #e5e7eb;
+      flex-shrink: 0;
+    }
+    .profile-avatar-placeholder {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      font-weight: 800;
+    }
+    @media (max-width: 640px) {
+      .profile-avatar, .profile-avatar-placeholder { width: 100px; height: 100px; font-size: 40px; }
+    }
+
+    .profile-info { flex: 1; }
+    .profile-name {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 4px;
+      letter-spacing: -0.02em;
+    }
+    .profile-username { color: #6b7280; font-size: 15px; margin-bottom: 12px; }
+    .profile-bio {
+      color: #374151;
+      margin-bottom: 16px;
+      line-height: 1.6;
+      max-width: 600px;
+      white-space: pre-line;
+    }
+    .profile-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    @media (max-width: 640px) { .profile-meta { justify-content: center; } }
+    .meta-item { display: inline-flex; align-items: center; gap: 6px; }
+
+    .profile-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: #111827; color: white; }
+    .btn-primary:hover { background: #1f2937; }
+    .btn-outline { background: transparent; border: 1px solid #d1d5db; color: #374151; }
+    .btn-outline:hover { background: #f9fafb; }
+
+    /* Section title */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Portfolio grid */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    }
+
+    .pf-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .pf-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border-color: #2563eb;
+    }
+    .pf-image {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: #f3f4f6;
+    }
+    .pf-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .pf-card:hover .pf-image img { transform: scale(1.04); }
+    .pf-body { padding: 14px 16px; }
+    .pf-title { font-weight: 700; font-size: 15px; margin: 0 0 6px; line-height: 1.3; }
+    .pf-desc { font-size: 13px; color: #6b7280; line-height: 1.5; }
+    .pf-meta {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    /* Empty */
+    .empty-state {
+      text-align: center;
+      padding: 64px 20px;
+      color: #6b7280;
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* Rating chip */
+    .rating-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  {# ===== Top header ===== #}
+  <header class="top-header">
+    <a href="/" class="brand">Bittada</a>
+    <a href="javascript:history.back()" style="color:#6b7280; font-size:14px;">← {% trans "Ortga" %}</a>
+  </header>
+
+  <div class="portfolio-container">
+
+    {# ===== Profile header (avatar + ism + bio) ===== #}
+    <div class="profile-header">
+      {# Avatar #}
+      {% with av=profile.avatars.first %}
+        {% if av %}
+          <img src="{{ av.image.url }}" alt="{{ seller.username }}" class="profile-avatar">
+        {% else %}
+          <div class="profile-avatar profile-avatar-placeholder">
+            {{ seller.username|slice:":1"|upper }}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {# Ism va meta #}
+      <div class="profile-info">
+        <h1 class="profile-name">{{ profile.display_name|default:seller.username }}</h1>
+        <div class="profile-username">@{{ seller.username }}</div>
+
+        {% if profile.bio %}
+          <div class="profile-bio">{{ profile.bio|linebreaksbr }}</div>
+        {% endif %}
+
+        {# Meta: reyting / joylashuv / website #}
+        <div class="profile-meta">
+          {# Reyting (Profile.rating) — har doim ko'rsatamiz (default 0) #}
+          <span class="rating-chip">
+            ★ {{ profile.rating|floatformat:1 }}
+            {% if profile.review_count %}
+              <span style="color:#9ca3af; font-weight:400;">({{ profile.review_count }})</span>
+            {% endif %}
+          </span>
+          {% if profile.address_text %}
+            <span class="meta-item">📍 {{ profile.address_text }}</span>
+          {% endif %}
+          {% if profile.website %}
+            <span class="meta-item">🔗
+              <a href="{{ profile.website }}" target="_blank" rel="noopener noreferrer">{{ profile.website }}</a>
+            </span>
+          {% endif %}
+        </div>
+
+        {# Owner uchun "Tahrirlash" tugmasi (vazifa talabi) #}
+        {% if is_owner %}
+          <div class="profile-actions">
+            <a href="{% url 'portfolio:edit' %}" class="btn btn-primary">
+              ✏️ {% trans "Tahrirlash" %}
+            </a>
+            <a href="/u/{{ seller.username }}/" class="btn btn-outline">
+              {% trans "Public profile" %}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ===== Portfolio ishlari (grid) ===== #}
+    <h2 class="section-title">
+      {% trans "Bajarilgan ishlar" %}
+      {% if items %}<span style="color:#9ca3af; font-weight:500; font-size:14px;">({{ items.count }})</span>{% endif %}
+    </h2>
+
+    {% if items %}
+      <div class="portfolio-grid">
+        {% for item in items %}
+          <article class="pf-card" title="{{ item.title }}">
+            <div class="pf-image">
+              <img src="{{ item.cover_image.url }}"
+                   alt="{{ item.title }}"
+                   loading="lazy">
+            </div>
+            <div class="pf-body">
+              <div class="pf-title">{{ item.title|truncatechars:60 }}</div>
+              {% if item.description %}
+                <div class="pf-desc">{{ item.description|truncatechars:120 }}</div>
+              {% endif %}
+              {% if item.location or item.completed_year %}
+                <div class="pf-meta">
+                  {% if item.location %}<span>📍 {{ item.location }}</span>{% endif %}
+                  {% if item.completed_year %}<span>📅 {{ item.completed_year }}</span>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🎨</div>
+        <div style="font-size:16px; font-weight:600; margin-bottom:4px;">
+          {% trans "Hali portfolio bo'sh." %}
+        </div>
+        {% if is_owner %}
+          <div style="font-size:14px; margin-bottom:12px;">
+            {% trans "Birinchi ishingizni qo'shing — mijozlar sizni tezroq topadi." %}
+          </div>
+          <a href="{% url 'portfolio:edit' %}" class="btn btn-primary">
+            + {% trans "Birinchi ishni qo'shish" %}
+          </a>
+        {% else %}
+          <div style="font-size:14px;">
+            {% trans "Bu sotuvchi hali ish namunalarini joylamagan." %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% load i18n humanize %}
+{# Service list card. Required context: service. #}
+<article class="bp-service">
+  <div class="bp-service-head">
+    <h3>{{ service.title }}</h3>
+    <span class="bp-badge">{{ service.get_category_display }}</span>
+  </div>
+  {% if service.description %}
+    <p class="bp-service-body">{{ service.description|truncatewords:30 }}</p>
+  {% endif %}
+  <div class="bp-service-meta">
+    <span><i class="bi bi-tag"></i>
+      {% trans "From" %} {{ service.starting_price|floatformat:0|intcomma }} so'm
+      {% if service.price_type == 'hourly' %}/{% trans "hour" %}{% endif %}
+    </span>
+    {% if service.rating %}
+      <span><i class="bi bi-star-fill"></i> {{ service.rating }} ({{ service.review_count }})</span>
+    {% endif %}
+    {% if service.is_open_for_booking %}
+      <span class="bp-badge bp-badge--ok">{% trans "Open for booking" %}</span>
+    {% endif %}
+  </div>
+</article>

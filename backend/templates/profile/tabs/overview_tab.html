@@ -1,0 +1,59 @@
+{% load i18n %}
+{# Overview = first row of products + first row of portfolio + service teaser. #}
+{# Required context: products, portfolio_items, services, viewed_user,          #}
+{#                   show_products, show_services, show_portfolio.              #}
+
+{% if not show_products and not show_services and not show_portfolio %}
+  {% include "profile/partials/empty_state.html" with icon="bi-stars" title=_("No content yet") body=_("This profile hasn't published anything yet. Check back later.") %}
+{% endif %}
+
+{% if show_products %}
+  <section class="bp-section">
+    <div class="bp-section-head">
+      <h2>{% trans "Products" %}</h2>
+      <a class="bp-link"
+         href="{% url 'user_profile_products' viewed_user.username %}">
+        {% trans "See all" %} →
+      </a>
+    </div>
+    <div class="bp-grid">
+      {% for product in products|slice:":6" %}
+        {% include "profile/partials/product_card.html" with product=product %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% if show_portfolio %}
+  <section class="bp-section">
+    <div class="bp-section-head">
+      <h2>{% trans "Portfolio" %}</h2>
+      <a class="bp-link"
+         href="{% url 'user_profile_portfolio' viewed_user.username %}">
+        {% trans "See all" %} →
+      </a>
+    </div>
+    <div class="bp-grid">
+      {% for item in portfolio_items|slice:":6" %}
+        {% include "profile/partials/portfolio_card.html" with item=item %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% if show_services %}
+  <section class="bp-section">
+    <div class="bp-section-head">
+      <h2>{% trans "Services" %}</h2>
+      <a class="bp-link"
+         href="{% url 'user_profile_services' viewed_user.username %}">
+        {% trans "See all" %} →
+      </a>
+    </div>
+    <div class="bp-service-list">
+      {% for service in services|slice:":3" %}
+        {% include "profile/partials/service_card.html" with service=service %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

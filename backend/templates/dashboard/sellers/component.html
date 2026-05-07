@@ -1,0 +1,46 @@
+{% extends "dashboard/base_role_dashboard.html" %}
+{% load i18n %}
+
+{% block dashboard_form %}
+<form hx-post="{{ request.path }}" hx-target="#form-container" hx-swap="outerHTML">
+    {% csrf_token %}
+    <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 700; color: #64748B;">{% trans "Omborga qabul (dona)" %}</label>
+        <input type="number" name="stock_qty" class="field-input">
+    </div>
+    <button type="submit" class="btn-submit">{% trans "Omborga qabul qilish" %}</button>
+</form>
+{% endblock %}
+
+{% block dashboard_stats %}
+    <div class="stat-box">
+        <div class="stat-label">{% trans "SKU (Turlar)" %}</div>
+        <div class="stat-value">1,250</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">{% trans "Ombor to'ldirilganligi" %}</div>
+        <div class="stat-value">92%</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">{% trans "Bron qilingan qismlar" %}</div>
+        <div class="stat-value">450 dona</div>
+    </div>
+{% endblock %}
+
+{% block main_title %}{% trans "Furnitura va Qismlar Ro'yxati" %}{% endblock %}
+
+{% block main_content %}
+    <div class="dummy-list">
+        {% for item in dummy_items %}
+        <div class="dummy-item">
+            <div>
+                <div style="font-weight: 700;">{{ item.name }}</div>
+                <div style="font-size: 12px; color: #64748B;">{% trans "Kategoriya" %}: {{ item.category }}</div>
+            </div>
+            <div style="font-weight: 700; color: #057A55;">
+                {{ item.qty }} dona
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

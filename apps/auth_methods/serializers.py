@@ -31,9 +31,10 @@ class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun seri
         max_length=128, # Maksimal uzunlik 128 ta belgi
         write_only=True, # Faqat yozish uchun (JSON qaytganda ko'rinmaydi)
         trim_whitespace=False, # Bo'shliqlarni kesib tashlamaslik
-        error_messages={ # Xato xabarlari
-            'required': 'Parol kiritilishi shart.', # Kiritilmasa
-            'min_length': 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.', # Qisqa bo'lsa
+        required=False, # Ixtiyoriy — jismoniy shaxs uchun telefon avtomatik parol bo'ladi
+        allow_blank=True,
+        error_messages={
+            'min_length': 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.',
         }
     )
     first_name = serializers.CharField( # Ism maydoni (barcha rollar uchun)
@@ -46,11 +47,10 @@ class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun seri
     )
     username = serializers.RegexField( # Username maydoni (regex bilan)
         regex=r"^[a-zA-Z0-9][a-zA-Z0-9_-]{2,29}$", # Regex qoidasi
-        required=True, # Majburiy
-        allow_blank=False, # Bo'sh bo'lishi mumkin emas
-        error_messages={ # Xato xabarlari
-            'required': 'Foydalanuvchi nomi (username) kiritilishi shart.', # Kiritilmasa
-            'invalid': 'Username 3-30 ta belgidan iborat bo\'lishi kerak va harf yoki raqam bilan boshlanishi lozim.', # Noto'g'ri bo'lsa
+        required=False, # Ixtiyoriy — bo'sh qoldirilsa, telefon raqamidan avtomatik yaratiladi
+        allow_blank=True,
+        error_messages={
+            'invalid': 'Username 3-30 ta belgidan iborat bo\'lishi kerak va harf yoki raqam bilan boshlanishi lozim.',
         }
     )
     role = serializers.ChoiceField( # Foydalanuvchi roli
@@ -84,11 +84,26 @@ class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun seri
         required=False, # Majburiy emas (faqat internal_supplier uchun talab qilinadi)
         allow_blank=True, # Bo'sh bo'lishi mumkin
     )
+    # Yuridik shaxs (Tashkilot) maydonlari — TZ 6.2
+    stir = serializers.CharField(max_length=20, required=False, allow_blank=True) # STIR / INN
+    mfo = serializers.CharField(max_length=10, required=False, allow_blank=True) # Bank MFO
+    bank_account = serializers.CharField(max_length=32, required=False, allow_blank=True) # Hisob raqami
+    # Hamkor ta'minotchi maydoni
+    contract_number = serializers.CharField(max_length=64, required=False, allow_blank=True) # Shartnoma raqami
 
     def validate(self, attrs): # Ma'lumotlarni tekshirish (cross-field validation)
         email = attrs.get('email') # Emailni olish
         phone = attrs.get('phone') # Telefonni olish
         role = attrs.get('role', Role.CUSTOMER) # Rolni olish (sukut bo'yicha customer)
+        account_type = attrs.get('account_type', AccountType.INDIVIDUAL)
+
+        # ── Jismoniy shaxslar uchun fallback: telefon → username & password ──
+        # Username kiritilmagan bo'lsa, telefon raqamidan tozalangan ko'rinish.
+        # Parol kiritilmagan bo'lsa, telefon raqami parol sifatida ishlatiladi.
+        if not attrs.get('username') and phone:
+            attrs['username'] = phone.replace('+', '').replace(' ', '')
+        if not attrs.get('password') and phone:
+            attrs['password'] = phone
 
         # --- XAVFSIZLIK: admin va super_admin rollari uchun ochiq register bloklash (TZ 8.2) ---
         if role in {Role.ADMIN, Role.SUPER_ADMIN}: # Agar rol admin yoki super_admin bo'lsa
@@ -100,6 +115,10 @@ class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun seri
         # --- Email yoki telefon bo'lishi shart ---
         if not email and not phone: # Agar ikkalasi ham yo'q bo'lsa
             raise serializers.ValidationError("Email yoki telefon raqami kiritilishi shart.") # Xato qaytarish
+
+        # --- Yuridik shaxs uchun STIR (INN) majburiy ---
+        if account_type == AccountType.COMPANY and not attrs.get('stir'):
+            raise serializers.ValidationError("Yuridik shaxs uchun STIR (INN) kiritilishi shart.")
 
         # --- Sotuvchi uchun qo'shimcha tekshiruvlar ---
         if role == Role.SELLER: # Agar rol sotuvchi bo'lsa

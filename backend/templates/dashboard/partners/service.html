@@ -1,0 +1,46 @@
+{% extends "dashboard/base_role_dashboard.html" %}
+{% load i18n %}
+
+{% block dashboard_form %}
+<form hx-post="{{ request.path }}" hx-target="#form-container" hx-swap="outerHTML">
+    {% csrf_token %}
+    <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 700; color: #64748B;">{% trans "Hisobot matni" %}</label>
+        <textarea name="contract_terms" class="field-input" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn-submit">{% trans "Hisobotni yuborish" %}</button>
+</form>
+{% endblock %}
+
+{% block dashboard_stats %}
+    <div class="stat-box">
+        <div class="stat-label">{% trans "Faol xizmatlar" %}</div>
+        <div class="stat-value">8</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">{% trans "Umumiy mijozlar" %}</div>
+        <div class="stat-value">254</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">{% trans "Komissiya daromadi" %}</div>
+        <div class="stat-value">12,500,000 UZS</div>
+    </div>
+{% endblock %}
+
+{% block main_title %}{% trans "Xizmat ko'rsatish tarixi" %}{% endblock %}
+
+{% block main_content %}
+    <div class="dummy-list">
+        {% for item in dummy_items %}
+        <div class="dummy-item">
+            <div>
+                <div style="font-weight: 700;">{{ item.name }}</div>
+                <div style="font-size: 12px; color: #64748B;">{% trans "Mijozlar" %}: {{ item.clients }}</div>
+            </div>
+            <span class="status-badge" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; background: #E1EFFE; color: #1E429F;">
+                {{ item.status }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

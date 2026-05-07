@@ -4,6 +4,25 @@
 
 {% block title %}{% trans "Sevimlilar" %} — Bittada Mebel Marketplace{% endblock %}
 
+{% block body_class %}btd-wishlist-page{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Scoped Isolation (Step 1) */
+    .btd-wishlist-page .btd-empty-state {
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        text-align: center;
+        padding: 64px 24px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Back Button -->
 <a href="{% url 'profile' %}" class="back-button animate-fade-in-up">
@@ -32,6 +51,11 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // Safety check (Step 2)
+        if (typeof getWishlist !== 'function') {
+            console.error('getWishlist is not defined.');
+            return;
+        }
         const wishlist = getWishlist();
         const gridContainer = document.getElementById('wishlist-grid');
         const emptyState = document.getElementById('wishlist-empty');

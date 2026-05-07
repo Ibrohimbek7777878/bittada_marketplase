@@ -1,0 +1,93 @@
+{% load static i18n %}
+{# Instagram-style header: avatar (left) + identity column (right). #}
+{# Required context: viewed_user, profile, primary_avatar, counts,     #}
+{#                   show_products, show_services, show_portfolio,     #}
+{#                   is_owner, display_name.                           #}
+
+<header class="bp-header">
+  <div class="bp-avatar-wrap">
+    {% if primary_avatar %}
+      <img src="{{ primary_avatar.image.url }}"
+           alt="{{ display_name }}" class="bp-avatar">
+    {% else %}
+      <div class="bp-avatar bp-avatar--placeholder" aria-label="{{ display_name }}">
+        {{ display_name|slice:":1"|upper }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="bp-identity">
+    <div class="bp-identity-top" style="align-items: flex-start; flex-direction: column; gap: 4px; margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <h1 class="bp-username" style="font-weight: 800; text-transform: uppercase; color: var(--secondary-brand); font-size: 26px; line-height: 1.1;">{{ display_name }}</h1>
+        
+        {# Status Badge #}
+        <div style="display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+          <i class="bi bi-patch-check-fill" style="font-size: 14px;"></i>
+          {% if viewed_user.role == 'seller_logistics' %}Dostavka
+          {% elif viewed_user.role == 'seller_retail' or viewed_user.role == 'seller' %}Sotuvchi
+          {% elif viewed_user.role == 'seller_manufacturer' %}Ishlab chiqaruvchi
+          {% elif viewed_user.role == 'seller_component' %}Qismlar sotuvchisi
+          {% elif viewed_user.role == 'designer_interior' or viewed_user.role == 'designer_3d' %}Dizayner
+          {% elif viewed_user.role == 'fixer_master' or viewed_user.role == 'fixer_repair' %}Usta
+          {% elif viewed_user.role == 'partner_material' or viewed_user.role == 'partner_service' %}Hamkor
+          {% else %}Tasdiqlangan{% endif %}
+        </div>
+      </div>
+      
+      <div style="font-size: 15px; color: #64748B; font-weight: 600;">@{{ viewed_user.username }}</div>
+    </div>
+
+    <div class="bp-actions" style="margin-bottom: 24px;">
+      {% if is_owner %}
+        <a class="bp-btn bp-btn--ghost" href="{% url 'dashboard_profile_edit' %}">{% trans "Profilni tahrirlash" %}</a>
+      {% else %}
+        {% if request.user.is_authenticated %}
+          <a class="bp-btn bp-btn--primary" href="{% url 'user_profile_contact' viewed_user.username %}">{% trans "Xabar yozish" %}</a>
+        {% endif %}
+        <a class="bp-btn bp-btn--ghost" href="{% url 'user_profile_contact' viewed_user.username %}">{% trans "Bog'lanish" %}</a>
+      {% endif %}
+    </div>
+
+    <ul class="bp-stats">
+      {% if show_products %}
+        <li><strong class="count-up" data-target="{{ counts.products }}">0</strong> {% trans "mahsulot" %}</li>
+      {% endif %}
+      {% if show_services %}
+        <li><strong class="count-up" data-target="{{ counts.services }}">0</strong> {% trans "xizmat" %}</li>
+      {% endif %}
+      {% if show_portfolio %}
+        <li><strong class="count-up" data-target="{{ counts.portfolio }}">0</strong> {% trans "portfolio" %}</li>
+      {% endif %}
+      <li class="bp-stats--muted">
+        {% trans "Qo'shilgan:" %} {{ viewed_user.created_at|date:"M Y" }}
+      </li>
+    </ul>
+
+    {% if profile.bio %}
+      <div style="background: rgba(248, 250, 252, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <p class="bp-bio" style="margin: 0;">{{ profile.bio|linebreaksbr }}</p>
+      </div>
+    {% endif %}
+
+    <div class="bp-meta">
+      {% if profile.address_text %}
+        <span class="bp-meta-item">
+          <i class="bi bi-geo-alt"></i> {{ profile.address_text }}
+        </span>
+      {% endif %}
+      {% if profile.website %}
+        <span class="bp-meta-item">
+          <i class="bi bi-link-45deg"></i>
+          <a href="{{ profile.website }}" target="_blank" rel="noopener">{{ profile.website }}</a>
+        </span>
+      {% endif %}
+      {% if profile.telegram %}
+        <span class="bp-meta-item">
+          <i class="bi bi-telegram"></i>
+          <a href="https://t.me/{{ profile.telegram|cut:'@' }}" target="_blank" rel="noopener">{{ profile.telegram }}</a>
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</header>

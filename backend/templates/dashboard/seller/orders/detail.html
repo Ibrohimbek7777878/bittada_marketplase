@@ -1,0 +1,155 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/orders/detail.html                        #}
+{#                                                                       #}
+{# Buyurtma detali sahifasi (sotuvchi yoki mijoz uchun).                #}
+{# View: SellerOrderDetailView                                          #}
+{# URL: /dashboard/seller/orders/<uuid:pk>/                             #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - order: Order obyekti (items prefetched)                           #}
+{#  - chat_room: ChatRoom obyekti (avtomatik yaratiladi)                #}
+{#  - other_party: User (sotuvchi yoki mijoz, qarama-qarshi tomon)     #}
+{#  - is_seller_view: bool (joriy user sotuvchimi)                     #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}
+{% load i18n %}
+
+{% block dashboard_content %}
+
+  {# Sarlavha + ortga qaytish #}
+  <div class="content-header">
+    <h1>
+      {% trans "Buyurtma" %} #{{ order.id|truncatechars:8 }}
+      <span class="status-badge {{ order.status }}" style="font-size:13px; margin-left:8px;">
+        {{ order.get_status_display }}
+      </span>
+    </h1>
+    <div class="actions">
+      <a href="{% url 'seller:orders_list' %}" class="btn btn-outline">
+        ← {% trans "Ro'yxatga qaytish" %}
+      </a>
+      {# Chat tugmasi — chat_room yaratilgan bo'lsa, room URL'ga olib boradi #}
+      {% if chat_room %}
+        <a href="{% url 'chat:room' room_id=chat_room.id %}" class="btn btn-primary">
+          💬 {% trans "Chat ochish" %}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {# === 1) Asosiy ma'lumot kartlari === #}
+  <div class="stats-grid">
+    {# Mijoz/Sotuvchi (qarama-qarshi tomon) #}
+    <div class="stat-card">
+      <div class="stat-card-label">
+        {% if is_seller_view %}{% trans "Mijoz" %}{% else %}{% trans "Sotuvchi" %}{% endif %}
+      </div>
+      <div style="font-size:18px; font-weight:600;">@{{ other_party.username }}</div>
+      {% if other_party.email %}
+        <div class="stat-card-hint">{{ other_party.email }}</div>
+      {% endif %}
+    </div>
+    {# Sana #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Yaratilgan" %}</div>
+      <div style="font-size:18px; font-weight:600;">{{ order.created_at|date:"d.m.Y" }}</div>
+      <div class="stat-card-hint">{{ order.created_at|date:"H:i" }}</div>
+    </div>
+    {# Umumiy summa #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Umumiy summa" %}</div>
+      <div class="stat-card-value">{{ order.total_price|floatformat:0 }}</div>
+      <div class="stat-card-hint">{% trans "so'm" %}</div>
+    </div>
+    {# Escrow (agar mavjud) #}
+    {% if order.escrow_amount and order.escrow_amount > 0 %}
+      <div class="stat-card">
+        <div class="stat-card-label">{% trans "Escrowda" %}</div>
+        <div class="stat-card-value">{{ order.escrow_amount|floatformat:0 }}</div>
+        <div class="stat-card-hint">{% trans "ushlab turilgan" %}</div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# === 2) Buyurtma elementlari (mahsulotlar) === #}
+  <div class="seller-card" style="margin-bottom: 16px;">
+    <h2 style="margin:0 0 12px; font-size:18px;">{% trans "Buyurtma elementlari" %}</h2>
+    {% if order.items.all %}
+      <table class="seller-table" style="border:none;">
+        <thead>
+          <tr>
+            <th style="width: 60px;">{% trans "Rasm" %}</th>
+            <th>{% trans "Mahsulot" %}</th>
+            <th>{% trans "Soni" %}</th>
+            <th>{% trans "Narx" %}</th>
+            <th>{% trans "Subtotal" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all %}
+            <tr>
+              <td>
+                {% with first_image=item.product.images.first %}
+                  {% if first_image %}
+                    <img src="{{ first_image.image.url }}"
+                         alt="{{ item.product.title_uz }}"
+                         style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                  {% else %}
+                    <div style="width:48px; height:48px; background:#f3f4f6; border-radius:8px; display:flex; align-items:center; justify-content:center;">📦</div>
+                  {% endif %}
+                {% endwith %}
+              </td>
+              <td style="font-weight:500;">{{ item.product.title_uz }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unit_price|floatformat:0 }}</td>
+              <td style="font-weight:600;">{{ item.subtotal|floatformat:0 }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="color:#6b7280; padding:16px;">{% trans "Buyurtma elementlari yo'q." %}</div>
+    {% endif %}
+  </div>
+
+  {# === 3) Yetkazib berish ma'lumoti === #}
+  <div class="seller-card" style="margin-bottom: 16px;">
+    <h2 style="margin:0 0 12px; font-size:18px;">{% trans "Yetkazib berish" %}</h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <div>
+        <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">{% trans "Manzil" %}</div>
+        <div>{{ order.shipping_address|default:"—" }}</div>
+      </div>
+      <div>
+        <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">{% trans "Aloqa telefoni" %}</div>
+        <div>{{ order.contact_phone|default:"—" }}</div>
+      </div>
+    </div>
+    {% if order.notes %}
+      <div style="margin-top:12px;">
+        <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">{% trans "Izohlar" %}</div>
+        <div style="white-space: pre-line;">{{ order.notes }}</div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# === 4) Chat preview/promo (agar chat_room mavjud) === #}
+  {% if chat_room %}
+    <div class="seller-card" style="background: #f0f9ff; border-color:#bfdbfe;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <div style="font-weight:600; font-size:16px; margin-bottom:4px;">
+            💬 {% trans "Mijoz bilan suhbat" %}
+          </div>
+          <div style="color:#475569; font-size:14px;">
+            {% trans "Buyurtma yuzasidan savollar va kelishuvlar uchun chat ochiq." %}
+          </div>
+        </div>
+        <a href="{% url 'chat:room' room_id=chat_room.id %}" class="btn btn-primary">
+          {% trans "Chat ochish" %} →
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}

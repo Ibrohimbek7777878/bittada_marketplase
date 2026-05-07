@@ -19,6 +19,7 @@ from .serializers import (
     RegisterSerializer,
 )
 from .services import confirm_otp, issue_otp, register_with_email_password
+from django.utils.translation import gettext_lazy as _
 
 
 class RegisterView(APIView):
@@ -34,7 +35,7 @@ class RegisterView(APIView):
                 {
                     'success': False,
                     'errors': ser.errors,
-                    'message': 'Validatsiya xatosi. Ma\'lumotlarni tekshiring.'
+                    'message': _('Validatsiya xatosi. Ma\'lumotlarni tekshiring.')
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -46,22 +47,17 @@ class RegisterView(APIView):
             from django.contrib.auth import login
             login(request, user)
 
-            # Rol bo'yicha redirect URL ni aniqlash
-            if user.role == Role.SELLER:
-                redirect_url = '/services/'  # Sotuvchi shaxsiy kabinetiga
-            elif user.role == Role.INTERNAL_SUPPLIER:
-                redirect_url = '/profile/'  # Ichki ta'minotchi profil sahifasi
-            elif user.role == Role.CUSTOMER:
-                redirect_url = '/profile/'  # Mijoz profil sahifasiga yo'naltirish
-            else:
-                redirect_url = '/'  # Boshqa rollar (admin, super_admin) — asosiy sahifa
+            # Yangi default: marketplace dashboard/home sahifasi
+            # Role-specific diversionlarni olib tashlaymiz, chunki user admin panelga emas,
+            # asosiy marketplace oqimiga tushishi kerak.
+            redirect_url = '/'
 
             return Response(
                 {
                     'success': True,
                     'user': UserSerializer(user).data,
                     'redirect': redirect_url,
-                    'message': 'Akkaunt muvaffaqiyatli yaratildi.'
+                    'message': _('Akkaunt muvaffaqiyatli yaratildi.')
                 },
                 status=status.HTTP_201_CREATED
             )
@@ -81,7 +77,7 @@ class RegisterView(APIView):
                 {
                     'success': False,
                     'errors': {'non_field_errors': [str(e)]},
-                    'message': 'Ro\'yxatdan o\'tishda kutilmagan xatolik yuz berdi.'
+                    'message': _('Ro\'yxatdan o\'tishda kutilmagan xatolik yuz berdi.')
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
@@ -139,13 +135,7 @@ class TokenView(TokenObtainPairView):
                     login(request, user)  # Django sessiyasini boshlash
 
                     # Foydalanuvchi roliga qarab redirect URL aniqlash
-                    if user.role == Role.CUSTOMER:
-                        redirect_url = '/profile/'
-                    elif user.is_staff:
-                        # Django admin panel (hidden-core-database) ga yo'naltirish
-                        redirect_url = '/hidden-core-database/'
-                    else:
-                        redirect_url = '/'
+                    redirect_url = '/'
 
                     response.data['redirect'] = redirect_url
             except Exception:
@@ -306,11 +296,8 @@ class SocialLoginView(APIView): # Ijtimoiy tarmoqlar orqali kirish (Google/Teleg
                 refresh['username'] = user.username
                 refresh['account_type'] = user.account_type
 
-                # Determine redirect
-                if new_user:
-                    redirect_url = '/profile/role-selection/' # TZ: Rol tanlash sahifasiga yubor
-                else:
-                    redirect_url = '/profile/' # TZ: Dashboardga o'tkaz
+                # Yangi Telegram foydalanuvchini marketplace home ga yuboramiz.
+                redirect_url = '/'
 
                 return Response({
                     "access": str(refresh.access_token),
@@ -424,10 +411,7 @@ class TelegramCallbackView(APIView):
         refresh['role'] = user.role
         
         # 4. Determine redirect
-        if new_user:
-            redirect_url = '/uz/select-role/'
-        else:
-            redirect_url = '/profile/'
+        redirect_url = '/'
             
         if is_redirect:
             # If it's a browser redirect, we just go to the URL
@@ -444,3 +428,11 @@ class TelegramCallbackView(APIView):
                 "role": user.role
             }
         })
+
+
+# === YANGI: TelegramAuthView ===
+# Vazifa shartiga ko'ra `TelegramAuthView.as_view()` ishlatiladi. Mavjud
+# `TelegramCallbackView` aynan shu funksiyani bajaradi (GET = redirect,
+# POST = JSON callback). Yangi nom alias sifatida qo'shamiz — daxlsizlik
+# qoidasiga ko'ra mavjud `TelegramCallbackView` o'zgartirilmagan.
+TelegramAuthView = TelegramCallbackView  # Backward-compatible alias

@@ -14,6 +14,7 @@ Strategiya:
 from __future__ import annotations  # Annotatsiya kelajak rejimi
 
 from django.template.response import TemplateResponse  # Render uchun
+from django.utils.translation import gettext_lazy as _
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Yordamchi: ERP karkasini tanlash (HTMX / oddiy)
@@ -60,7 +61,7 @@ def products_list_view(request):
 
     context = {  # Shablon konteksti
         "base_template": _erp_base(request),  # ERP karkas
-        "page_title": "Mahsulotlar — Bittada ERP",  # Tab nomi
+        "page_title": _("Mahsulotlar — Bittada ERP"),  # Tab nomi
         "section_key": "products",  # Sidebar'da qaysi tugma active bo'lishini bilish
         "kpis": kpis,  # KPI raqamlar
         "products": products,  # Birinchi sahifa (qolganlari API orqali yuklanadi)
@@ -83,7 +84,7 @@ def orders_list_view(request):
 
     context = {
         "base_template": _erp_base(request),
-        "page_title": "Savdo — Bittada ERP",
+        "page_title": _("Savdo — Bittada ERP"),
         "section_key": "orders",  # Sidebar active marker
         "kpis": kpis,
         "orders": orders,
@@ -105,7 +106,7 @@ def escrow_list_view(request):
 
     context = {
         "base_template": _erp_base(request),
-        "page_title": "Escrow Fund — Bittada ERP",
+        "page_title": _("Escrow Fund — Bittada ERP"),
         "section_key": "escrow",
         "kpis": kpis,
         "orders": escrow_orders,  # Order modeli ustida ishlaydi
@@ -126,7 +127,7 @@ def credit_list_view(request):
 
     context = {
         "base_template": _erp_base(request),
-        "page_title": "Credit Economy — Bittada ERP",
+        "page_title": _("Credit Economy — Bittada ERP"),
         "section_key": "credit",
         "kpis": kpis,
         "api_url": "/dashboard/api/v1/credit/",
@@ -152,8 +153,8 @@ def users_list_view(request):
     if not perm.has_permission(request, view=None):  # 403 javob
         from django.http import HttpResponseForbidden  # Lazy import
         return HttpResponseForbidden(
-            "<h1>403 — Foydalanuvchilar boshqaruvi faqat administratorlar uchun.</h1>"
-            "<p><a href='/dashboard/'>Bosh sahifaga qaytish</a></p>"
+            f"<h1>403 — {_('Foydalanuvchilar boshqaruvi faqat administratorlar uchun.')}</h1>"
+            f"<p><a href='/dashboard/'>{_('Bosh sahifaga qaytish')}</a></p>"
         )
 
     users = selectors.list_users_for_management()[:25]
@@ -161,7 +162,7 @@ def users_list_view(request):
 
     context = {
         "base_template": _erp_base(request),
-        "page_title": "Foydalanuvchilar — Bittada ERP",
+        "page_title": _("Foydalanuvchilar — Bittada ERP"),
         "section_key": "users",
         "kpis": kpis,
         "users": users,
@@ -181,17 +182,17 @@ def blacklist_view(request):
 
     perm = IsManagementAdmin()
     if not perm.has_permission(request, view=None):
-        from django.http import HttpResponseForbidden
+        from django.http import HttpResponseForbidden  # Lazy import
         return HttpResponseForbidden(
-            "<h1>403 — Qora ro'yxat faqat administratorlar uchun.</h1>"
-            "<p><a href='/dashboard/'>Bosh sahifaga qaytish</a></p>"
+            f"""<h1>403 — {_("Qora ro'yxat faqat administratorlar uchun.")}</h1>"""
+            f"""<p><a href='/dashboard/'>{_("Bosh sahifaga qaytish")}</a></p>"""
         )
 
     blacklisted = selectors.list_blacklist_users()[:25]
 
     context = {
         "base_template": _erp_base(request),
-        "page_title": "Qora ro'yxat — Bittada ERP",
+        "page_title": _("Qora ro'yxat — Bittada ERP"),
         "section_key": "blacklist",
         "users": blacklisted,
         "api_url": "/dashboard/api/v1/users/blacklist/",

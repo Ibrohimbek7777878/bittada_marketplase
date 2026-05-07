@@ -1,0 +1,18 @@
+{% load i18n humanize %}
+{# Product grid card. Required context: product. #}
+<a class="bp-card" href="{% url 'product_detail' uuid=product.uuid %}"
+   title="{{ product.title_uz }}">
+  {% with first_image=product.images.first %}
+    {% if first_image %}
+      <img src="{{ first_image.image.url }}" alt="{{ product.title_uz }}" loading="lazy">
+    {% else %}
+      <div class="bp-card-placeholder"><i class="bi bi-image"></i></div>
+    {% endif %}
+  {% endwith %}
+  <div class="bp-card-overlay">
+    <div class="bp-card-title">{{ product.title_uz|truncatechars:48 }}</div>
+    {% if product.price %}
+      <div class="bp-card-price">{{ product.price|floatformat:0|intcomma }} so'm</div>
+    {% endif %}
+  </div>
+</a>

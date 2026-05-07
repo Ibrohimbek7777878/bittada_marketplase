@@ -1,0 +1,449 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/base_seller.html                          #}
+{#                                                                       #}
+{# Sotuvchi shaxsiy admin paneli uchun MUSTAQIL layout shabloni.        #}
+{#                                                                       #}
+{# Vazifa cheklovi: "base_erp.html dan EMAS, alohida base_seller.html  #}
+{# yasat" — bu fayl boshqa hech qanday karkasdan extend qilmaydi.      #}
+{# Mustaqil to'liq HTML hujjat (header/footer/sidebar o'zining ichida).#}
+{#                                                                       #}
+{# Bolalar (extend qiluvchi) shablonlar:                                #}
+{#  - {% block dashboard_content %} ichida sahifa kontentini yozadi    #}
+{#  - {% block dashboard_extra_css %} qo'shimcha CSS uchun (opsional)  #}
+{#  - {% block dashboard_extra_js %} qo'shimcha JS uchun (opsional)    #}
+{#                                                                       #}
+{# Talab qilinadigan kontekst:                                          #}
+{#  - active_section: "dashboard" / "products" / "profile" (sidebar)   #}
+{#  - page_title: ko'rsatiladigan sarlavha (browser tab + sidebar)     #}
+{# ===================================================================== #}
+{% load static %}{# {% static %} fayllar uchun #}
+{% load i18n %}{# {% trans %} taglar #}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bittada — Sotuvchi paneli" />
+  <title>{% block title %}{{ page_title|default:"Sotuvchi paneli" }} — Bittada{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
+
+  <style>
+    /* === Reset & Base === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body {
+      background: #f9fafb;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+    a { color: #2563eb; text-decoration: none; }
+    a:hover { color: #1d4ed8; }
+
+    /* === Top header (mini, brand + logout) === */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .top-header .brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+      text-decoration: none;
+    }
+    .top-header .user-zone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .top-header .user-zone .username { color: #6b7280; }
+
+    /* === Buttons === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
+    .btn-outline:hover { background: #f9fafb; color: #111827; }
+    .btn-primary { background: #111827; color: white; }
+    .btn-primary:hover { background: #1f2937; color: white; }
+
+    /* === Form input (umumiy stillar) === */
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* === Layout (sidebar + content) === */
+    .seller-shell {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 60px);
+      background: #f9fafb;
+    }
+    @media (max-width: 768px) {
+      .seller-shell { grid-template-columns: 1fr; }
+    }
+
+    /* === Sidebar === */
+    .seller-sidebar {
+      background: white;
+      border-right: 1px solid #e5e7eb;
+      padding: 24px 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      .seller-sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 12px 0;
+      }
+    }
+
+    .sidebar-header {
+      padding: 0 20px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 16px;
+    }
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0;
+    }
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      .sidebar-header { padding: 0 16px 8px; margin-bottom: 8px; }
+    }
+
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+    @media (max-width: 768px) {
+      .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0 16px;
+        gap: 8px;
+      }
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      color: #374151;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      background: #f9fafb;
+      color: #111827;
+    }
+    .nav-link.active {
+      background: #f9fafb;
+      color: #2563eb;
+      border-left-color: #2563eb;
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .nav-link {
+        padding: 8px 14px;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 6px;
+      }
+      .nav-link.active { border-bottom-color: #2563eb; }
+    }
+    .nav-link-icon { font-size: 18px; }
+
+    /* === Content area === */
+    .seller-content { padding: 32px; min-width: 0; }
+    @media (max-width: 768px) { .seller-content { padding: 16px; } }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .content-header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .content-header .actions { display: flex; gap: 8px; }
+
+    /* === Card === */
+    .seller-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* === Stats grid === */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .stat-card-label {
+      font-size: 13px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .stat-card-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1;
+    }
+    .stat-card-hint {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+    /* === Messages === */
+    .message-list { list-style: none; padding: 0; margin: 0 0 20px; }
+    .message-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .message-item.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+    .message-item.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .message-item.warning {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    /* === Form === */
+    .seller-form { display: grid; gap: 16px; }
+    .seller-form .form-row { display: flex; flex-direction: column; gap: 6px; }
+    .seller-form label { font-size: 13px; font-weight: 600; color: #374151; }
+    .seller-form .help-text { font-size: 12px; color: #6b7280; }
+    .seller-form .errors { font-size: 13px; color: #dc2626; }
+    .seller-form .form-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+    /* === Table === */
+    .seller-table { width: 100%; border-collapse: collapse; background: white; }
+    .seller-table th, .seller-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .seller-table th {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f9fafb;
+    }
+    .seller-table tr:last-child td { border-bottom: none; }
+    .seller-table tr:hover td { background: #f9fafb; }
+
+    /* === Status badges === */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-badge.draft { background: #fef3c7; color: #92400e; }
+    .status-badge.published { background: #dcfce7; color: #166534; }
+    .status-badge.pending { background: #dbeafe; color: #1e40af; }
+    .status-badge.archived { background: #e5e7eb; color: #374151; }
+    .status-badge.rejected { background: #fee2e2; color: #991b1b; }
+
+    /* === Empty state === */
+    .seller-empty {
+      text-align: center;
+      padding: 64px 20px;
+      color: #6b7280;
+    }
+    .seller-empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* === Pagination === */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .pagination-btn {
+      padding: 8px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .pagination-btn:hover { border-color: #2563eb; }
+    .pagination-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+  </style>
+  {% block dashboard_extra_css %}{% endblock %}{# Bola sahifa CSS qo'shishi uchun #}
+</head>
+<body>
+
+  {# ===== Mini top header ===== #}
+  <header class="top-header">
+    {# Brand — bosh sahifaga link (Bittada katalog) #}
+    <a href="/" class="brand">Bittada</a>
+
+    <div class="user-zone">
+      {% if request.user.is_authenticated %}
+        <span class="username">@{{ request.user.username }}</span>
+        {# Logout — apps/products/urls.py'dagi 'logout' nom #}
+        <a href="{% url 'logout' %}" class="btn btn-outline">{% trans "Chiqish" %}</a>
+      {% endif %}
+    </div>
+  </header>
+
+  {# ===== Sidebar + content ===== #}
+  <div class="seller-shell">
+
+    {# Sidebar #}
+    <aside class="seller-sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">{% trans "Sotuvchi paneli" %}</h2>
+        <div class="sidebar-subtitle">@{{ request.user.username }}</div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Seller navigation">
+        {# Bosh sahifa (umumiy panel) #}
+        <a href="{% url 'seller:dashboard' %}"
+           class="nav-link {% if active_section == 'dashboard' %}active{% endif %}">
+          <span class="nav-link-icon">📊</span>
+          <span>{% trans "Umumiy" %}</span>
+        </a>
+        {# Mahsulotlar bo'limi #}
+        <a href="{% url 'seller:products_list' %}"
+           class="nav-link {% if active_section == 'products' %}active{% endif %}">
+          <span class="nav-link-icon">🛍</span>
+          <span>{% trans "Mahsulotlar" %}</span>
+        </a>
+        {# Buyurtmalar bo'limi (yangi) #}
+        <a href="{% url 'seller:orders_list' %}"
+           class="nav-link {% if active_section == 'orders' %}active{% endif %}">
+          <span class="nav-link-icon">📦</span>
+          <span>{% trans "Buyurtmalar" %}</span>
+        </a>
+        {# Profil #}
+        <a href="{% url 'seller:profile_edit' %}"
+           class="nav-link {% if active_section == 'profile' %}active{% endif %}">
+          <span class="nav-link-icon">⚙️</span>
+          <span>{% trans "Profil" %}</span>
+        </a>
+        {# Public profile (yangi tabda) #}
+        <a href="/u/{{ request.user.username }}/"
+           class="nav-link"
+           target="_blank"
+           rel="noopener">
+          <span class="nav-link-icon">🔗</span>
+          <span>{% trans "Public sahifam" %}</span>
+        </a>
+      </nav>
+    </aside>
+
+    {# Content #}
+    <section class="seller-content">
+
+      {# Django messages framework #}
+      {% if messages %}
+        <ul class="message-list" role="status">
+          {% for message in messages %}
+            <li class="message-item {{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# Sahifa kontenti — bola template shu yerga yozadi #}
+      {% block dashboard_content %}{% endblock %}
+
+    </section>
+  </div>
+
+  {# Bola template'ga xos JS #}
+  {% block dashboard_extra_js %}{% endblock %}
+</body>
+</html>

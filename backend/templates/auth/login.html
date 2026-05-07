@@ -1,0 +1,291 @@
+{# ===================================================================== #}
+{# templates/auth/login.html                                             #}
+{#                                                                       #}
+{# Standart Django Templates kirish sahifasi + Telegram tugma.          #}
+{# View: LoginView (apps/users/views.py)                               #}
+{# URL:  /auth/login/                                                   #}
+{#                                                                       #}
+{# Talablar (vazifa):                                                   #}
+{#  - Email/username + parol formasi                                    #}
+{#  - Telegram tugma: <a href="{% url 'auth_methods:telegram_login' %}"> #}
+{#  - i18n til switcher                                                 #}
+{#                                                                       #}
+{# Mustaqil HTML (base.html'dagi auth_logout URL bug'ini chetlab o'tish) #}
+{# ===================================================================== #}
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% trans "Kirish" %} — Bittada</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body {
+      background: #f3f4f6;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .auth-shell {
+      width: 100%;
+      max-width: 440px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    @media (max-width: 480px) { .auth-shell { padding: 20px; } }
+
+    .auth-brand { text-align: center; margin-bottom: 24px; }
+    .auth-brand a {
+      font-size: 22px;
+      font-weight: 800;
+      color: #111827;
+      text-decoration: none;
+    }
+
+    .auth-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .auth-subtitle { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+
+    /* Lang switcher */
+    .lang-switcher { text-align: right; margin-bottom: 16px; font-size: 13px; }
+    .lang-switcher button {
+      color: #6b7280;
+      padding: 4px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+    }
+    .lang-switcher .active {
+      color: #111827;
+      border-color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+    .form-input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    /* Error banner */
+    .alert-error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+
+    /* Telegram tugmasi (vazifa talabi) — Telegram brand rangida */
+    .btn-telegram {
+      background: #0088cc;  /* Telegram brand blue */
+      color: white;
+      margin-top: 8px;
+    }
+    .btn-telegram:hover { background: #006699; }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 16px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .auth-footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="auth-shell">
+
+  {# ===== Til o'zgartirish (i18n) ===== #}
+  <div class="lang-switcher">
+    {% get_current_language as CURRENT_LANG %}
+    {% get_available_languages as LANGS %}
+    {% for code, name in LANGS %}
+      <form action="{% url 'set_language' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <input type="hidden" name="language" value="{{ code }}">
+        <button type="submit" class="{% if CURRENT_LANG == code %}active{% endif %}">
+          {{ code|upper }}
+        </button>
+      </form>
+    {% endfor %}
+  </div>
+
+  {# ===== Brand ===== #}
+  <div class="auth-brand">
+    <a href="/">Bittada</a>
+  </div>
+
+  <h1 class="auth-title">{% trans "Kirish" %}</h1>
+  <p class="auth-subtitle">{% trans "Akkauntingizga kiring yoki Telegram orqali ulang." %}</p>
+
+  {# ===== Xatolik banneri ===== #}
+  {% if error %}
+    <div class="alert-error" role="alert">
+      {{ error }}
+    </div>
+  {% endif %}
+
+  {# Query string'dagi xato (Telegram callback'dan kelgan) #}
+  {% if request.GET.error %}
+    <div class="alert-error" role="alert">
+      {{ request.GET.error }}
+    </div>
+  {% endif %}
+
+  {# ===== Asosiy login formasi ===== #}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {# `next` query param'ni saqlab, login muvaffaqiyatli bo'lgach o'sha sahifaga qaytamiz #}
+    {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+    {% endif %}
+
+    <div class="form-group">
+      <label for="id_identifier">{% trans "Email yoki username" %}</label>
+      <input type="text"
+             id="id_identifier"
+             name="identifier"
+             value="{{ identifier|default:'' }}"
+             class="form-input"
+             autocomplete="username"
+             required>
+    </div>
+
+    <div class="form-group">
+      <label for="id_password">{% trans "Parol" %}</label>
+      <input type="password"
+             id="id_password"
+             name="password"
+             class="form-input"
+             autocomplete="current-password"
+             required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      {% trans "Kirish" %}
+    </button>
+  </form>
+
+  {# ===== Yoki — boshqa usul ===== #}
+  <div class="divider">{% trans "yoki" %}</div>
+
+  {# ===== Telegram tugma (vazifa talabi) ===== #}
+  {# ===== Ijtimoiy tarmoqlar (Google + Telegram) ===== #}
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+    {# Google tugmasi #}
+    {% if google_auth_enabled %}
+      <a href="#" 
+         class="btn-google"
+         style="display:flex;align-items:center;justify-content:center;
+                gap:12px;background:#fff;color:#374151;border:1px solid #d1d5db;
+                border-radius:10px;padding:12px 20px;text-decoration:none;
+                font-weight:700;font-size:15px;box-shadow:0 1px 2px rgba(0,0,0,0.05);
+                transition:all 0.2s;">
+        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" height="20" alt="Google">
+        {% trans "Google bilan kirish" %}
+      </a>
+    {% endif %}
+
+    {# Telegram tugmasi (MUHIM: Bold va ko'rinadigan qilingan) #}
+    <a href="{% url 'auth_methods:telegram_login' %}" 
+       class="btn-telegram"
+       style="display:flex;align-items:center;justify-content:center;
+              gap:12px;background:#0088cc;color:#fff;border-radius:10px;
+              padding:14px 20px;text-decoration:none;font-weight:800;
+              font-size:16px;box-shadow:0 4px 12px rgba(0,136,204,0.3);
+              transition:all 0.2s;border:none;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 
+                 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 
+                 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 
+                 1.394c-.16.16-.295.295-.605.295l.213-3.053 
+                 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 
+                 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953
+                 l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+      </svg>
+      {% trans "Telegram bilan kirish" %}
+    </a>
+  </div>
+
+  {# ===== Register linki ===== #}
+  <div class="auth-footer">
+    {% trans "Akkaunt yo'qmi?" %}
+    <a href="{% url 'auth_register' %}">{% trans "Ro'yxatdan o'tish" %}</a>
+  </div>
+
+</div>
+
+</body>
+</html>

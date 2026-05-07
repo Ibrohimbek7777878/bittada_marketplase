@@ -155,35 +155,83 @@
 
             {# Forma maydonlari grid'i — har bir label, placeholder tarjima qilinadi #}
             <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">{% trans "Ism va familiya" %} *</label>
+                {# Asosiy maydonlar — barcha rollar uchun ko'rinadi #}
+                <div class="form-group full" id="grp-name">
+                    <label class="form-label">{% trans "To'liq ism (F.I.O)" %} *</label>
                     <input type="text" name="first_name" id="inp-name" class="form-input" placeholder="{% trans 'To\'liq ismingiz' %}" required>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">{% trans "Username" %} *</label>
-                    <input type="text" name="username" id="inp-username" class="form-input" placeholder="{% trans 'foydalanuvchi_nomi' %}" required>
+                <div class="form-group full" id="grp-phone">
+                    <label class="form-label">{% trans "Telefon" %} *</label>
+                    <input type="tel" name="phone" id="inp-phone" class="form-input" placeholder="+998 90 000 00 00" required>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">{% trans "Email" %} *</label>
+
+                {# Yuridik shaxs maydonlari — faqat account_type=company bo'lsa ko'rinadi #}
+                <div class="form-group" id="grp-company-name" style="display:none;">
+                    <label class="form-label">{% trans "Kompaniya nomi" %}</label>
+                    <input type="text" name="company_name" id="inp-company" class="form-input" placeholder="{% trans 'Kompaniya LLC' %}">
+                </div>
+                <div class="form-group" id="grp-inn" style="display:none;">
+                    <label class="form-label">{% trans "STIR / INN" %}</label>
+                    <input type="text" name="inn" id="inp-inn" class="form-input" placeholder="000000000" maxlength="14">
+                </div>
+                <div class="form-group" id="grp-mfo" style="display:none;">
+                    <label class="form-label">{% trans "MFO" %}</label>
+                    <input type="text" name="mfo" id="inp-mfo" class="form-input" placeholder="00000" maxlength="10">
+                </div>
+                <div class="form-group" id="grp-bank-account" style="display:none;">
+                    <label class="form-label">{% trans "Hisob raqami (Bank)" %}</label>
+                    <input type="text" name="bank_account" id="inp-bank" class="form-input" placeholder="2020 8000 ...">
+                </div>
+
+                {# Hamkor ta'minotchi maydonlari — faqat role=internal_supplier bo'lsa ko'rinadi #}
+                <div class="form-group" id="grp-invite-code" style="display:none;">
+                    <label class="form-label">{% trans "Taklif kodi" %} *</label>
+                    <input type="text" name="invite_code" id="inp-invite" class="form-input" placeholder="BITTADA-INVITE-XXX">
+                </div>
+                <div class="form-group" id="grp-contract" style="display:none;">
+                    <label class="form-label">{% trans "Shartnoma raqami" %}</label>
+                    <input type="text" name="contract_number" id="inp-contract" class="form-input" placeholder="№ 0000/2026">
+                </div>
+
+                {# Qo'shimcha maydonlar (ixtiyoriy) — kengaytirib ko'rsatish #}
+                <div class="form-group full" id="grp-extra-toggle">
+                    <button type="button" onclick="toggleExtra()" style="background:none; border:none; color:var(--secondary); font-weight:700; font-size:13px; cursor:pointer; padding:0;">
+                        + {% trans "Email yoki maxsus parol qo'shish (ixtiyoriy)" %}
+                    </button>
+                </div>
+                <div class="form-group" id="grp-username" style="display:none;">
+                    <label class="form-label">{% trans "Username" %}</label>
+                    <input type="text" name="username" id="inp-username" class="form-input" placeholder="{% trans 'foydalanuvchi_nomi' %}">
+                </div>
+                <div class="form-group" id="grp-email" style="display:none;">
+                    <label class="form-label">{% trans "Email" %}</label>
                     <input type="email" name="email" id="inp-email" class="form-input" placeholder="{% trans 'misol@mail.com' %}">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">{% trans "Telefon" %}</label>
-                    <input type="tel" name="phone" id="inp-phone" class="form-input" placeholder="+998 90 000 00 00">
-                </div>
-                <div class="form-group" id="company-field" style="display:none;">
-                    <label class="form-label">{% trans "Kompaniya nomi" %}</label>
-                    <input type="text" name="company_name" class="form-input" placeholder="{% trans 'Kompaniya LLC' %}">
-                </div>
-                <div class="form-group full">
-                    <label class="form-label">{% trans "Parol" %} * <span style="font-weight:500;text-transform:none;font-size:11px;">{% trans "(10+ belgi, raqam, maxsus belgi)" %}</span></label>
-                    <input type="password" name="password" id="inp-pw" class="form-input" placeholder="••••••••••••" oninput="checkStrength(this.value)" required>
+                <div class="form-group full" id="grp-pw" style="position:relative; display:none;">
+                    <label class="form-label">{% trans "Parol" %} <span style="font-weight:500;text-transform:none;font-size:11px;">{% trans "(bo'sh qoldirilsa — telefon raqami parol bo'ladi)" %}</span></label>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input type="password" name="password" id="inp-pw" class="form-input" placeholder="••••••••••••" oninput="checkStrength(this.value); checkPasswordsMatch();" style="padding-right: 80px;">
+                        <div style="position:absolute; right:10px; display:flex; gap:8px;">
+                            <button type="button" onclick="copyPassword()" style="background:none; border:none; cursor:pointer; color:var(--muted); padding:4px;" title="{% trans 'Nusxalash' %}">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                            <button type="button" onclick="togglePassword('inp-pw', 'eye-pw1')" style="background:none; border:none; cursor:pointer; color:var(--muted); padding:4px;" title="{% trans 'Ko\'rsatish' %}">
+                                <svg id="eye-pw1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
                     <div class="pw-bar"><div class="pw-seg" id="pw-s1"></div><div class="pw-seg" id="pw-s2"></div><div class="pw-seg" id="pw-s3"></div><div class="pw-seg" id="pw-s4"></div></div>
                     <div class="pw-label" id="pw-label" style="color:var(--muted);">{% trans "Parol kuchini ko'rsatadi" %}</div>
                 </div>
-                <div class="form-group full">
-                    <label class="form-label">{% trans "Parolni tasdiqlang" %} *</label>
-                    <input type="password" name="password2" id="inp-pw2" class="form-input" placeholder="••••••••••••" required>
+                <div class="form-group full" id="grp-pw2" style="position:relative; display:none;">
+                    <label class="form-label">{% trans "Parolni tasdiqlang" %}</label>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input type="password" name="password2" id="inp-pw2" class="form-input" placeholder="••••••••••••" style="padding-right: 40px;" oninput="checkPasswordsMatch()">
+                        <button type="button" onclick="togglePassword('inp-pw2', 'eye-pw2')" style="position:absolute; right:10px; background:none; border:none; cursor:pointer; color:var(--muted); padding:4px;" title="{% trans 'Ko\'rsatish' %}">
+                            <svg id="eye-pw2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    <div id="pw-match-msg" style="color:#EF4444; font-size:12px; font-weight:700; margin-top:6px; display:none;">{% trans "Parollar mos kelmayapti" %}</div>
                 </div>
             </div>
 
@@ -222,30 +270,66 @@ let currentAcct = 'individual';
 let professions = new Set();
 let currentStep = 1;
 
-// Pre-select from URL ?role=seller
-if (currentRole && currentRole !== 'customer') {
-    document.addEventListener('DOMContentLoaded', () => selectRole(currentRole));
-}
+// Pre-select from URL ?role=seller, har holda toggleFields() chaqiriladi
+document.addEventListener('DOMContentLoaded', () => {
+    if (currentRole && currentRole !== 'customer') selectRole(currentRole);
+    else toggleFields();
+});
 
 function selectRole(role) {
     currentRole = role;
     document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
     const el = document.getElementById('role-' + role);
     if (el) el.classList.add('active');
-    // Show company field for seller with company account
-    toggleCompanyField();
+    toggleFields();
 }
 
 function selectAcct(acct) {
     currentAcct = acct;
-    document.getElementById('acct-individual').classList.toggle('active', acct === 'individual');
-    document.getElementById('acct-company').classList.toggle('active', acct === 'company');
-    toggleCompanyField();
+    const indiv = document.getElementById('acct-individual');
+    const comp = document.getElementById('acct-company');
+    if (indiv) indiv.classList.toggle('active', acct === 'individual');
+    if (comp) comp.classList.toggle('active', acct === 'company');
+    toggleFields();
 }
 
-function toggleCompanyField() {
-    const show = currentAcct === 'company';
-    document.getElementById('company-field').style.display = show ? 'block' : 'none';
+// Rol va hisob turi (account_type) ga qarab maydonlarni dinamik ko'rsatadi/yashiradi.
+// Mijoz / Usta / Sotuvchi (Jismoniy shaxs) → faqat full_name + phone
+// Yuridik shaxs (Tashkilot)                → + inn, mfo, bank_account, company_name
+// Hamkor ta'minotchi (internal_supplier)   → + invite_code, contract_number
+function toggleFields() {
+    const isCompany   = currentAcct === 'company';
+    const isSupplier  = currentRole === 'internal_supplier';
+
+    const setShow = (id, show) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = show ? 'block' : 'none';
+    };
+
+    // Yuridik shaxs maydonlari
+    setShow('grp-company-name', isCompany);
+    setShow('grp-inn',          isCompany);
+    setShow('grp-mfo',          isCompany);
+    setShow('grp-bank-account', isCompany);
+
+    // Hamkor ta'minotchi maydonlari
+    setShow('grp-invite-code',  isSupplier);
+    setShow('grp-contract',     isSupplier);
+
+    // Yuridik shaxs uchun INN — majburiy; jismoniy shaxs uchun emas
+    const inn = document.getElementById('inp-inn');
+    if (inn) inn.required = isCompany;
+    const invite = document.getElementById('inp-invite');
+    if (invite) invite.required = isSupplier;
+}
+
+// Email/Username/Parol bloklari ixtiyoriy — foydalanuvchi xohlasa kengaytiradi.
+function toggleExtra() {
+    ['grp-username','grp-email','grp-pw','grp-pw2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    });
 }
 
 function toggleProf(prof) {
@@ -284,13 +368,63 @@ function goStep3() {
 }
 
 function fillHiddenInputs() {
-    document.getElementById('inp-role').value = currentRole;
+    let submitRole = currentRole;
+    if (currentRole === 'designer') {
+        submitRole = 'seller';
+        professions.add('designer');
+    }
+    document.getElementById('inp-role').value = submitRole;
     document.getElementById('inp-acct').value = currentAcct;
     document.getElementById('inp-profs').value = Array.from(professions).join(',');
     document.getElementById('step3-sub').textContent =
         currentRole === 'seller' ? 'Sotuvchi akkauntini yaratish' :
         currentRole === 'designer' ? 'Dizayner / Usta akkauntini yaratish' :
         'Mijoz akkauntini yaratish';
+}
+
+function togglePassword(inputId, eyeId) {
+    const input = document.getElementById(inputId);
+    const eye = document.getElementById(eyeId);
+    if (input.type === "password") {
+        input.type = "text";
+        eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+    } else {
+        input.type = "password";
+        eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    }
+}
+
+function copyPassword() {
+    const pwEl = document.getElementById('inp-pw');
+    if (!pwEl || !pwEl.value) return;
+    navigator.clipboard.writeText(pwEl.value).then(() => {
+        const btn = document.querySelector('button[onclick="copyPassword()"]');
+        if (!btn) return;
+        const originalColor = btn.style.color;
+        btn.style.color = 'var(--primary)';
+        setTimeout(() => btn.style.color = originalColor, 1000);
+    });
+}
+
+function checkPasswordsMatch() {
+    const pwEl  = document.getElementById('inp-pw');
+    const pw2El = document.getElementById('inp-pw2');
+    const msg   = document.getElementById('pw-match-msg');
+    const btn   = document.getElementById('submit-btn');
+    if (!pwEl || !pw2El) return;
+
+    const pw  = pwEl.value;
+    const pw2 = pw2El.value;
+
+    if (pw2.length > 0 && pw !== pw2) {
+        if (msg) msg.style.display = 'block';
+        pw2El.classList.add('error');
+        if (btn) btn.disabled = true;
+    } else {
+        if (msg) msg.style.display = 'none';
+        pw2El.classList.remove('error');
+        if (btn) btn.disabled = false;
+    }
 }
 
 // Password strength (TZ §8.2: 10+ chars, 1 digit, 1 special)
@@ -324,16 +458,35 @@ async function handleSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
     const banner = document.getElementById('err-banner');
-    banner.style.display = 'none';
+    if (banner) banner.style.display = 'none';
 
-    // Client-side parol tekshiruvi
-    const pw = document.getElementById('inp-pw').value;
-    const pw2 = document.getElementById('inp-pw2').value;
-    if (pw !== pw2) { showError("Parollar mos kelmadi."); return; }
-    if (pw.length < 10) { showError("Parol kamida 10 ta belgi bo'lishi kerak."); return; }
+    // Klient tomonidagi tekshiruvlar — har bir element mavjudligini tekshiramiz
+    // (Uncaught TypeError oldini olish uchun, image_a13994.png bo'yicha tuzatma).
+    const pwEl  = document.getElementById('inp-pw');
+    const pw2El = document.getElementById('inp-pw2');
+    const pw  = pwEl  ? pwEl.value  : '';
+    const pw2 = pw2El ? pw2El.value : '';
 
-    btn.disabled = true;
-    btn.innerHTML = '<span style="display:inline-block;animation:spin .6s linear infinite">⏳</span> Yuklanmoqda...';
+    // Parol kiritilgan bo'lsa, tasdiqlash va minimal uzunlikni tekshirish
+    if (pw || pw2) {
+        if (pw !== pw2) { showError("Parollar mos kelmadi."); return; }
+        if (pw.length > 0 && pw.length < 6) {
+            showError("Parol kamida 6 ta belgi bo'lishi kerak.");
+            return;
+        }
+    }
+
+    // Telefon raqami har doim majburiy (jismoniy shaxslar uchun ham auth manbai)
+    const phoneEl = document.getElementById('inp-phone');
+    if (!phoneEl || !phoneEl.value.trim()) {
+        showError("Telefon raqami kiritilishi shart.");
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:inline-block;animation:spin .6s linear infinite">⏳</span> Yuklanmoqda...';
+    }
 
     const formData = new FormData(e.target);
 
@@ -345,17 +498,18 @@ async function handleSubmit(e) {
         });
         const data = await resp.json();
         if (data.success) {
-            btn.innerHTML = '✅ Muvaffaqiyat!';
+            if (btn) btn.innerHTML = '✅ Muvaffaqiyat!';
             window.location.href = data.redirect || '/';
         } else {
             const errs = data.errors || {};
-            const msg = errs.__all__ || Object.values(errs)[0] || 'Xatolik yuz berdi.';
+            const firstErr = Object.values(errs)[0];
+            const msg = errs.__all__ || (Array.isArray(firstErr) ? firstErr[0] : firstErr) || data.message || 'Xatolik yuz berdi.';
             showError(msg);
         }
     } catch {
         showError('Server bilan aloqa yo\'q. Iltimos, qayta urinib ko\'ring.');
     } finally {
-        if (btn.innerHTML.includes('Yuklanmoqda')) {
+        if (btn && btn.innerHTML.includes('Yuklanmoqda')) {
             btn.disabled = false;
             btn.innerHTML = 'Akkauntni yaratish';
         }

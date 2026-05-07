@@ -322,22 +322,40 @@ def register_view(request):
         company_name = data.get("company_name", "").strip()
         experience   = data.get("experience", "")
         invite_code  = data.get("invite_code", "").strip()
+        # Yuridik shaxs (Tashkilot) maydonlari — TZ 6.2
+        inn          = data.get("inn", "").strip()
+        mfo          = data.get("mfo", "").strip()
+        bank_account = data.get("bank_account", "").strip()
+        # Hamkor ta'minotchi maydoni — TZ 6.1
+        contract_number = data.get("contract_number", "").strip()
+
+        # ── Jismoniy shaxslar uchun fallback: telefon → username & password ──
+        # Foydalanuvchi username yoki parolni kiritmasa, telefon raqami ham
+        # username, ham parol sifatida ishlatiladi (TZ talabiga muvofiq).
+        if not username and phone:
+            username = phone.replace("+", "").replace(" ", "")
+        if not password and phone:
+            password = phone
 
         # ── Validatsiya (TZ §8.2 va yangi talablar) ──────────────────────────
         errors = {}
-        if not email and not phone:
-            errors["phone"] = "Email yoki telefon raqami kiritilishi shart."
+        if not phone and not email:
+            errors["phone"] = "Telefon raqami yoki email kiritilishi shart."
         if len(password) < 6:
             errors["password"] = "Parol kamida 6 ta belgi bo'lishi kerak."
-        
+
         if role in ("admin", "super_admin"):
             errors["role"] = "Admin rollar ochiq ro'yxatdan o'tish orqali yaratilmaydi."
-        
+
         if role == "seller" and not professions:
             errors["professions"] = "Sotuvchi uchun kamida 1 ta mutaxassislik tanlang."
-        
+
         if role == "internal_supplier" and not invite_code:
-            errors["invite_code"] = "Ichki xodim uchun taklif kodi kiritilishi shart."
+            errors["invite_code"] = "Hamkor ta'minotchi uchun taklif kodi kiritilishi shart."
+
+        # Yuridik shaxs uchun INN majburiy
+        if account_type == "company" and not inn:
+            errors["inn"] = "Yuridik shaxs uchun STIR (INN) kiritilishi shart."
 
         if errors:
             return JsonResponse({"success": False, "errors": errors}, status=400)
@@ -355,6 +373,10 @@ def register_view(request):
                 company_name=company_name,
                 experience=int(experience) if experience.isdigit() else None,
                 invite_code=invite_code,
+                stir=inn,
+                mfo=mfo,
+                bank_account=bank_account,
+                contract_number=contract_number,
             )
             # Sessiyani boshlash
             auth_login(request, user, backend="django.contrib.auth.backends.ModelBackend")
@@ -371,6 +393,8 @@ def register_view(request):
         except DomainError as exc:
             return JsonResponse({"success": False, "message": str(exc)}, status=400)
         except Exception as exc:
+            import logging
+            logging.getLogger(__name__).exception("Ro'yxatdan o'tishda kutilmagan xatolik:")
             return JsonResponse({"success": False, "message": f"Xatolik: {exc}"}, status=500)
 
     # ── GET ────────────────────────────────────────────────────────────────
@@ -793,8 +817,8 @@ def login_view(request):
             if user.role == Role.CUSTOMER:
                 return redirect('profile')
             elif user.is_staff:
-                # Admin panelga yo'naltirish (hidden-core-database)
-                return redirect('admin:index')
+                # Platforma admin panelga yo'naltirish
+                return redirect('mgmt:index')
             else:
                 return redirect('home')
         else:

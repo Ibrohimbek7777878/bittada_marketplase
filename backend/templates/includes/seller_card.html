@@ -1,0 +1,103 @@
+{# ====================================================================== #}
+{# templates/includes/seller_card.html                                   #}
+{#                                                                        #}
+{# Sotuvchi (seller) uchun qisqa kartochka komponent — boshqa joylarda  #}
+{# ishlatish uchun (mahsulot detalida "Sotuvchi haqida", katalogning    #}
+{# "Top sellers" qismi va h.k.).                                        #}
+{#                                                                        #}
+{# Foydalanish:                                                           #}
+{#   {% include "includes/seller_card.html" with seller=user_obj %}      #}
+{#                                                                        #}
+{# Talab qilinadigan kontekst:                                            #}
+{#   - seller: apps.users.models.User obyekti                            #}
+{#     (profile bilan select_related qilinishi tavsiya etiladi).         #}
+{#                                                                        #}
+{# Ixtiyoriy parametr:                                                    #}
+{#   - compact: True bo'lsa kichik variant (avatar 36px), aks holda 56px#}
+{#                                                                        #}
+{# Daxlsizlik: bu yangi fayl, mavjud `furniture_product_card.html` va   #}
+{# `product_card.html` bilan konflikt yo'q — alohida nomlangan.         #}
+{# ====================================================================== #}
+{% load i18n %}{# Ko'p tilli matnlar uchun #}
+
+{# Sotuvchi profili sahifasiga link beruvchi anchor (Instagram-uslub URL) #}
+{# Stillar inline — komponent har joyda mustaqil ishlay olishi uchun     #}
+<a href="/u/{{ seller.username }}/"
+   class="seller-card-component"
+   title="{{ seller.username }} profili"
+   style="
+     display: inline-flex;
+     align-items: center;
+     gap: {% if compact %}8px{% else %}12px{% endif %};
+     padding: {% if compact %}6px 10px{% else %}10px 14px{% endif %};
+     border: 1px solid #e5e7eb;
+     border-radius: 12px;
+     text-decoration: none;
+     color: inherit;
+     background: white;
+     transition: border-color 0.15s, transform 0.15s;
+   "
+   onmouseover="this.style.borderColor='#2563eb'"
+   onmouseout="this.style.borderColor='#e5e7eb'">
+
+  {# Avatar bloki — agar mavjud bo'lsa rasm, aks holda initialli placeholder #}
+  {# Profilning birinchi avatari (ProfileAvatar related set) #}
+  {% with av=seller.profile.avatars.first %}
+    {% if av %}
+      {# Yuklangan avatar mavjud — rasm tag ko'rsatiladi #}
+      <img src="{{ av.image.url }}"
+           alt="{{ seller.username }}"
+           style="
+             width: {% if compact %}36px{% else %}56px{% endif %};
+             height: {% if compact %}36px{% else %}56px{% endif %};
+             border-radius: 50%;
+             object-fit: cover;
+             flex-shrink: 0;
+           ">
+    {% else %}
+      {# Avatar yo'q — birinchi harfli placeholder (gradient fon) #}
+      <div style="
+             width: {% if compact %}36px{% else %}56px{% endif %};
+             height: {% if compact %}36px{% else %}56px{% endif %};
+             border-radius: 50%;
+             background: linear-gradient(135deg, #6366f1, #8b5cf6);
+             color: white;
+             font-weight: 700;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             font-size: {% if compact %}14px{% else %}20px{% endif %};
+             flex-shrink: 0;
+           ">
+        {# Birinchi harfini bosh harf bilan #}
+        {{ seller.username|slice:":1"|upper }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {# Matnli ma'lumot bloki — ism, display_name, rating #}
+  <div style="display: flex; flex-direction: column; min-width: 0;">
+    {# Username — har doim ko'rsatiladi #}
+    <span style="font-weight: 600; font-size: {% if compact %}13px{% else %}15px{% endif %}; color: #111827;">
+      @{{ seller.username }}
+    </span>
+
+    {# Display name (agar profile.display_name bo'lsa) yoki ratingni ko'rsatamiz #}
+    {% if seller.profile.display_name and not compact %}
+      {# Faqat full versiyada display_name'ni ko'rsatamiz (compact'da joy yo'q) #}
+      <span style="font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        {{ seller.profile.display_name }}
+      </span>
+    {% endif %}
+
+    {# Rating — agar 0 dan katta bo'lsa ko'rsatamiz #}
+    {% if seller.profile.rating and seller.profile.rating > 0 %}
+      <span style="font-size: 12px; color: #f59e0b;">
+        ★ {{ seller.profile.rating }}
+        {% if seller.profile.review_count %}
+          <span style="color: #9ca3af;">({{ seller.profile.review_count }})</span>
+        {% endif %}
+      </span>
+    {% endif %}
+  </div>
+</a>

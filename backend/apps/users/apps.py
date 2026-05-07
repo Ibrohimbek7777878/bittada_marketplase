@@ -10,5 +10,5 @@ class UsersConfig(AppConfig):
     verbose_name = "Users & profiles"
 
     def ready(self) -> None:  # pragma: no cover
-        # Import signals here if/when we add them.
-        return None
+        import apps.users.signals  # noqa: F401
+

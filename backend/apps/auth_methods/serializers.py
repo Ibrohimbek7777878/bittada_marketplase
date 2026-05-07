@@ -53,11 +53,6 @@ class RegisterSerializer(serializers.Serializer): # Ro'yxatdan o'tish uchun seri
             'invalid': 'Username 3-30 ta belgidan iborat bo\'lishi kerak va harf yoki raqam bilan boshlanishi lozim.', # Noto'g'ri bo'lsa
         }
     )
-    role = serializers.ChoiceField( # Foydalanuvchi roli
-        choices=[Role.CUSTOMER, Role.SELLER, Role.INTERNAL_SUPPLIER], # Faqat xaridor, sotuvchi yoki ichki ta'minotchi
-        default=Role.CUSTOMER, # Sukut bo'yicha xaridor
-        required=False, # Majburiy emas
-    )
     account_type = serializers.ChoiceField( # Hisob turi
         choices=AccountType.choices, # Individual yoki Kompaniya
         default=AccountType.INDIVIDUAL, # Sukut bo'yicha shaxsiy

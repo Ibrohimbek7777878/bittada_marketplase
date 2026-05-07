@@ -5,6 +5,31 @@
 
 {% block title %}{% trans "Savat" %} — Bittada Mebel Marketplace{% endblock %}
 
+{% block body_class %}btd-cart-page{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Scoped Isolation (Step 1) */
+    .btd-cart-page .btd-empty-state {
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        text-align: center;
+        padding: 64px 24px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btd-cart-page .btd-loading {
+        padding: 40px;
+        text-align: center;
+        color: var(--btd-text-muted);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Back Button -->
 <a href="{% url 'profile' %}" class="back-button animate-fade-in-up">
@@ -70,6 +95,12 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // Safety check for global function (Step 2)
+        if (typeof getCart !== 'function') {
+            console.error('getCart is not defined. Make sure cart_wishlist.js is loaded.');
+            return;
+        }
+
         const cart = getCart();
         const itemsContainer = document.getElementById('cart-items');
         const emptyState = document.getElementById('cart-empty');
@@ -138,6 +169,7 @@
     });
 
     function changeQty(uuid, delta) {
+        if (typeof getCart !== 'function') return;
         const cart = getCart();
         const item = cart.find(i => i.uuid === uuid);
         if (item) {
@@ -148,6 +180,7 @@
     }
 
     function removeFromCartUI(uuid) {
+        if (typeof getCart !== 'function') return;
         const cart = getCart().filter(i => i.uuid !== uuid);
         localStorage.setItem('bittada.cart', JSON.stringify(cart));
         window.location.reload();

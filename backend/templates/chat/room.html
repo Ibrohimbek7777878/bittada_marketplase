@@ -1,0 +1,380 @@
+{# ===================================================================== #}
+{# templates/chat/room.html                                              #}
+{#                                                                       #}
+{# Asosiy chat sahifa.                                                   #}
+{# View: ChatRoomView                                                    #}
+{# URL: /chat/room/<uuid:room_id>/                                       #}
+{#                                                                       #}
+{# Texnologiya: HTMX polling (har 3 sekundda yangilanadi).              #}
+{# WebSocket emas — vazifa fallback variantini tanladi.                 #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - room: ChatRoom obyekti                                            #}
+{#  - messages: initial xabarlar (server-side render)                  #}
+{#  - other_party: chat'dagi boshqa ishtirokchi (sarlavha uchun)       #}
+{#  - order: Order obyekti (agar chat buyurtmaga bog'langan bo'lsa)    #}
+{#                                                                       #}
+{# MUHIM: bu fayl base.html dan EMAS — to'liq mustaqil (chunki base.html#}
+{# da `auth_logout` reverse muammosi bor; daxlsizlik qoidasi bor).     #}
+{# ===================================================================== #}
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title|default:"Chat" }} — Bittada</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+
+  {# HTMX kutubxonasi — CDN orqali (loyihada hali HTMX o'rnatilmagan bo'lsa) #}
+  <script src="https://unpkg.com/htmx.org@2.0.4"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+          crossorigin="anonymous"></script>
+
+  <style>
+    /* === Reset & Base === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      line-height: 1.4;
+    }
+    a { color: #2563eb; text-decoration: none; }
+
+    /* === Chat shell layout === */
+    .chat-shell {
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      height: 100vh;
+      margin: 0 auto;
+      background: white;
+      border-left: 1px solid #e5e7eb;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    /* === Top bar === */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .chat-back {
+      font-size: 22px;
+      color: #374151;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .chat-back:hover { background: #f3f4f6; }
+
+    .chat-header-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .chat-header-avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .chat-header-info { flex: 1; min-width: 0; }
+    .chat-header-name { font-weight: 600; font-size: 15px; color: #111827; }
+    .chat-header-meta { font-size: 12px; color: #6b7280; }
+
+    .chat-order-badge {
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    /* === Xabarlar ro'yxati === */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #f9fafb;
+    }
+
+    /* Message row */
+    .msg-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      max-width: 85%;
+    }
+    .msg-row.msg-mine {
+      align-self: flex-end;
+      flex-direction: row-reverse; /* O'z xabarim — o'ng tomonda */
+    }
+    .msg-row.msg-other { align-self: flex-start; }
+
+    /* Avatar (chap tomonda — boshqa user) */
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .msg-avatar-placeholder {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* Xabar pufakchasi */
+    .msg-bubble {
+      padding: 8px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+    .msg-mine .msg-bubble {
+      background: #2563eb;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-other .msg-bubble {
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-meta {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 2px;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .msg-text { white-space: pre-wrap; }
+
+    .msg-time {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .msg-time-mine {
+      color: rgba(255, 255, 255, 0.7);
+      text-align: right;
+      margin-top: 2px;
+    }
+
+    /* Attachment */
+    .msg-attachment-img {
+      display: block;
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+    .msg-attachment-file {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: inherit;
+      font-size: 13px;
+    }
+
+    .chat-empty {
+      align-self: center;
+      text-align: center;
+      color: #6b7280;
+      padding: 48px 20px;
+    }
+
+    /* === Form (xabar yuborish) === */
+    .chat-form {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      background: white;
+      align-items: flex-end;
+    }
+    .chat-form textarea {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .chat-form textarea:focus { border-color: #2563eb; }
+
+    .chat-attach {
+      cursor: pointer;
+      padding: 8px;
+      color: #6b7280;
+      font-size: 22px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .chat-attach:hover { background: #f3f4f6; color: #2563eb; }
+    .chat-attach input[type="file"] { display: none; }
+    .chat-attach-name { display: none; font-size: 12px; color: #2563eb; }
+
+    .chat-send {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 14px;
+    }
+    .chat-send:hover { background: #1d4ed8; }
+    .chat-send:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    /* HTMX indicator (loading) */
+    .htmx-indicator { opacity: 0; transition: opacity 0.2s; }
+    .htmx-request .htmx-indicator { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="chat-shell">
+
+  {# ===== Top bar (sarlavha) ===== #}
+  <header class="chat-header">
+    {# Ortga qaytish — agar buyurtma bo'lsa, buyurtma sahifasiga; aks holda dashboard #}
+    {% if order %}
+      <a href="{% url 'seller:order_detail' pk=order.id %}" class="chat-back" title="{% trans 'Ortga' %}">←</a>
+    {% else %}
+      <a href="{% url 'seller:dashboard' %}" class="chat-back" title="{% trans 'Ortga' %}">←</a>
+    {% endif %}
+
+    {# Avatar (boshqa ishtirokchi) #}
+    {% if other_party %}
+      {% with av=other_party.profile.avatars.first %}
+        {% if av %}
+          <img src="{{ av.image.url }}" alt="{{ other_party.username }}" class="chat-header-avatar">
+        {% else %}
+          <div class="chat-header-avatar-placeholder">{{ other_party.username|slice:":1"|upper }}</div>
+        {% endif %}
+      {% endwith %}
+      <div class="chat-header-info">
+        <div class="chat-header-name">@{{ other_party.username }}</div>
+        {% if order %}
+          <div class="chat-header-meta">
+            {% trans "Buyurtma" %} #{{ order.id|truncatechars:8 }}
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="chat-header-info">
+        <div class="chat-header-name">{% trans "Suhbat" %}</div>
+      </div>
+    {% endif %}
+
+    {# Order badge (agar buyurtma bo'lsa) — link sifatida #}
+    {% if order %}
+      <a href="{% url 'seller:order_detail' pk=order.id %}" class="chat-order-badge">
+        {{ order.get_status_display }}
+      </a>
+    {% endif %}
+  </header>
+
+  {# ===== Xabarlar ro'yxati =====                                                  #}
+  {# Bu <ul> ikki ish bajaradi:                                                     #}
+  {# 1. Server-side render bilan boshlang'ich xabarlarni darhol ko'rsatadi         #}
+  {# 2. HTMX polling target — har 3s server'dan yangilangan list keladi va swap   #}
+  <ul class="chat-messages"
+      id="message-list"
+      hx-get="{% url 'chat:messages' room_id=room.id %}"
+      hx-trigger="every 3s"
+      hx-swap="innerHTML"
+      hx-on::after-swap="document.getElementById('message-list').scrollTop = document.getElementById('message-list').scrollHeight">
+    {# Server-side render (initial). Keyingi update'lar HTMX'dan keladi. #}
+    {% include "chat/message_partial.html" %}
+  </ul>
+
+  {# ===== Xabar yuborish formasi ===== #}
+  {# HTMX POST → /chat/room/<id>/send/ → javobi yangi message-list HTML'i #}
+  <form class="chat-form"
+        hx-post="{% url 'chat:send' room_id=room.id %}"
+        hx-target="#message-list"
+        hx-swap="innerHTML"
+        hx-encoding="multipart/form-data"
+        hx-on::after-request="if(event.detail.successful){this.reset();document.getElementById('attach-name').style.display='none';}">
+    {# CSRF token — POST uchun majburiy #}
+    {% csrf_token %}
+
+    {# Fayl biriktirish (ixtiyoriy) — kichik clip iconi #}
+    <label class="chat-attach" title="{% trans 'Fayl biriktirish' %}">
+      📎
+      <input type="file"
+             name="attachment"
+             accept="image/*,.pdf,.doc,.docx,.txt"
+             onchange="document.getElementById('attach-name').textContent = this.files[0]?.name || ''; document.getElementById('attach-name').style.display = this.files[0] ? 'inline' : 'none';">
+    </label>
+    {# Tanlangan fayl nomi (foydalanuvchi ko'rishi uchun) #}
+    <span id="attach-name" class="chat-attach-name"></span>
+
+    {# Xabar matni — Enter bosish bilan yuboriladi (Shift+Enter — yangi qator) #}
+    <textarea name="text"
+              placeholder="{% trans 'Xabar yozing...' %}"
+              rows="1"
+              onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); this.form.requestSubmit();}"
+              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight, 120)+'px';"></textarea>
+
+    <button type="submit" class="chat-send">
+      {% trans "Yuborish" %}
+    </button>
+  </form>
+
+</div>
+
+{# Sahifa yuklanganda xabarlar pastiga scroll qilamiz (eng yangisini ko'rish) #}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var list = document.getElementById('message-list');
+    if (list) { list.scrollTop = list.scrollHeight; }
+  });
+</script>
+
+</body>
+</html>

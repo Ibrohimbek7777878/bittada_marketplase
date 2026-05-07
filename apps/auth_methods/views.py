@@ -44,7 +44,7 @@ class RegisterView(APIView):
             
             # Yangi: Ro'yxatdan o'tgach avtomatik tizimga kirish (Session login)
             from django.contrib.auth import login
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
             # Rol bo'yicha redirect URL ni aniqlash
             if user.role == Role.SELLER:
@@ -136,14 +136,14 @@ class TokenView(TokenObtainPairView):
                 serializer.is_valid(raise_exception=True)
                 user = serializer.user
                 if user:
-                    login(request, user)  # Django sessiyasini boshlash
+                    login(request, user, backend="django.contrib.auth.backends.ModelBackend")  # Django sessiyasini boshlash
 
                     # Foydalanuvchi roliga qarab redirect URL aniqlash
                     if user.role == Role.CUSTOMER:
                         redirect_url = '/profile/'
                     elif user.is_staff:
-                        # Django admin panel (hidden-core-database) ga yo'naltirish
-                        redirect_url = '/hidden-core-database/'
+                        # Platforma admin panelga yo'naltirish
+                        redirect_url = '/dashboard/'
                     else:
                         redirect_url = '/'
 

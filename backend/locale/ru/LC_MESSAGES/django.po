@@ -1294,7 +1294,7 @@ msgstr "Выход"
 #: templates/pages/login.html:31 templates/pages/register.html:54
 #: templates/register_erp.html:229
 msgid "Kirish"
-msgstr ""
+msgstr "Войти"
 
 #: templates/base.html:315 templates/customer_register.html:4
 #: templates/customer_register.html:104 templates/customer_register.html:151
@@ -1786,7 +1786,7 @@ msgstr ""
 
 #: templates/includes/erp_navbar.html:18
 msgid "Katalog"
-msgstr ""
+msgstr "Каталог"
 
 #: templates/includes/erp_navbar.html:39
 msgid "Mebellar"
@@ -2114,7 +2114,7 @@ msgstr ""
 
 #: templates/login_erp.html:170
 msgid "Tizimga kirish"
-msgstr ""
+msgstr "Войти в систему"
 
 #: templates/login_erp.html:172
 #, fuzzy
@@ -2128,7 +2128,7 @@ msgstr ""
 
 #: templates/login_erp.html:178
 msgid "Ro'yxatdan o'ting"
-msgstr ""
+msgstr "Зарегистрируйтесь"
 
 #: templates/orders_erp.html:142 templates/orders_erp.html:153
 #, fuzzy

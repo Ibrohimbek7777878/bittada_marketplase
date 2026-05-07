@@ -1,0 +1,69 @@
+{% load i18n %}
+{# Contact tab. Required context: viewed_user, profile, is_owner. #}
+
+<div class="bp-contact">
+  <h2>{% trans "Get in touch" %}</h2>
+  <p class="bp-contact-lead">
+    {% blocktrans with name=viewed_user.username %}Reach @{{ name }} through any of the channels below.{% endblocktrans %}
+  </p>
+
+  <ul class="bp-contact-list">
+    {% if profile.address_text %}
+      <li>
+        <i class="bi bi-geo-alt"></i>
+        <div>
+          <span class="bp-contact-label">{% trans "Location" %}</span>
+          <span>{{ profile.address_text }}</span>
+        </div>
+      </li>
+    {% endif %}
+
+    {% if viewed_user.phone %}
+      <li>
+        <i class="bi bi-telephone"></i>
+        <div>
+          <span class="bp-contact-label">{% trans "Phone" %}</span>
+          <a href="tel:{{ viewed_user.phone }}">{{ viewed_user.phone }}</a>
+        </div>
+      </li>
+    {% endif %}
+
+    {% if profile.contact_email or viewed_user.email %}
+      <li>
+        <i class="bi bi-envelope"></i>
+        <div>
+          <span class="bp-contact-label">{% trans "Email" %}</span>
+          {% with email=profile.contact_email|default:viewed_user.email %}
+            <a href="mailto:{{ email }}">{{ email }}</a>
+          {% endwith %}
+        </div>
+      </li>
+    {% endif %}
+
+    {% if profile.telegram %}
+      <li>
+        <i class="bi bi-telegram"></i>
+        <div>
+          <span class="bp-contact-label">Telegram</span>
+          <a href="https://t.me/{{ profile.telegram|cut:'@' }}" target="_blank" rel="noopener">{{ profile.telegram }}</a>
+        </div>
+      </li>
+    {% endif %}
+
+    {% if profile.website %}
+      <li>
+        <i class="bi bi-link-45deg"></i>
+        <div>
+          <span class="bp-contact-label">{% trans "Website" %}</span>
+          <a href="{{ profile.website }}" target="_blank" rel="noopener">{{ profile.website }}</a>
+        </div>
+      </li>
+    {% endif %}
+  </ul>
+
+  {% if is_owner %}
+    <a class="bp-btn bp-btn--primary" href="{% url 'dashboard_profile_edit' %}">
+      <i class="bi bi-pencil"></i> {% trans "Update contact info" %}
+    </a>
+  {% endif %}
+</div>

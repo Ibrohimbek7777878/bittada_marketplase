@@ -1,0 +1,38 @@
+{% load i18n %}
+{# Tab navigation. Each tab is shown only if its section has content    #}
+{# (or the viewer is the profile owner). Required context:              #}
+{#   viewed_user, active_tab, show_products, show_services,             #}
+{#   show_portfolio.                                                    #}
+
+<nav class="bp-tabs" aria-label="{% trans 'Profile sections' %}">
+  <a href="{% url 'user_profile' viewed_user.username %}"
+     class="bp-tab {% if active_tab == 'overview' %}is-active{% endif %}">
+    <i class="bi bi-grid-3x3"></i><span>{% trans "Overview" %}</span>
+  </a>
+
+  {% if show_products %}
+    <a href="{% url 'user_profile_products' viewed_user.username %}"
+       class="bp-tab {% if active_tab == 'products' %}is-active{% endif %}">
+      <i class="bi bi-bag"></i><span>{% trans "Products" %}</span>
+    </a>
+  {% endif %}
+
+  {% if show_services %}
+    <a href="{% url 'user_profile_services' viewed_user.username %}"
+       class="bp-tab {% if active_tab == 'services' %}is-active{% endif %}">
+      <i class="bi bi-tools"></i><span>{% trans "Services" %}</span>
+    </a>
+  {% endif %}
+
+  {% if show_portfolio %}
+    <a href="{% url 'user_profile_portfolio' viewed_user.username %}"
+       class="bp-tab {% if active_tab == 'portfolio' %}is-active{% endif %}">
+      <i class="bi bi-images"></i><span>{% trans "Portfolio" %}</span>
+    </a>
+  {% endif %}
+
+  <a href="{% url 'user_profile_contact' viewed_user.username %}"
+     class="bp-tab {% if active_tab == 'contact' %}is-active{% endif %}">
+    <i class="bi bi-envelope"></i><span>{% trans "Contact" %}</span>
+  </a>
+</nav>

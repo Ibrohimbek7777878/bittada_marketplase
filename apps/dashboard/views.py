@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 
@@ -189,4 +191,32 @@ def pending_actions(request):
             "actions": actions,
             "total_pending": len(actions)
         }
+    })
+
+
+def seller_dashboard(request):
+    """Seller's personal dashboard: profile, products, services, orders."""
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    from apps.orders.models import Order
+    from apps.products.models import Product, ProductStatus
+    from apps.services.models import Service
+
+    products = Product.objects.filter(
+        seller=request.user,
+        status=ProductStatus.PUBLISHED,
+    ).select_related("category").prefetch_related("images")
+    services = Service.objects.filter(provider=request.user)
+    orders = Order.objects.filter(seller=request.user).select_related("customer").order_by("-created_at")[:20]
+
+    return TemplateResponse(request, "dashboard/seller/index.html", {
+        "seller": request.user,
+        "profile": getattr(request.user, "profile", None),
+        "products": products,
+        "services": services,
+        "orders": orders,
+        "products_count": products.count(),
+        "services_count": services.count(),
+        "orders_count": orders.count(),
     })

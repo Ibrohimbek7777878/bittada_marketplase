@@ -1,0 +1,267 @@
+{# ===================================================================== #}
+{# templates/services/card.html                                          #}
+{#                                                                       #}
+{# Standart xizmat (Service) kartochka fragment.                        #}
+{# Foydalanish:                                                          #}
+{#   {% include "services/card.html" with service=svc %}                #}
+{#                                                                       #}
+{# Talab qilinadigan kontekst:                                           #}
+{#   - service: apps.services.models.Service obyekti                    #}
+{#     (provider va profile select_related qilinishi tavsiya etiladi).  #}
+{#                                                                       #}
+{# Karta tuzilmasi (vazifa talabi):                                     #}
+{#   - Avatar (yuqori chap) + BAND badge (yuqori o'ng, agar band)       #}
+{#   - REYTING ★ / HOLAT 🟢 / ISHLAR (3 ustun)                         #}
+{#   - Joylashuv 📍                                                     #}
+{#   - XIZMAT NARXI (o'ng tomonda katta)                                #}
+{#   - 2 ta tugma: [Portfolio] [Bron qilish]                            #}
+{#                                                                       #}
+{# Stillar inline — komponent har joyda mustaqil ishlay olishi uchun.  #}
+{# ===================================================================== #}
+{% load i18n %}{# Tarjima taglari uchun #}
+
+<article class="srv-card" style="
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+" onmouseover="this.style.borderColor='#2563eb'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.06)';"
+   onmouseout="this.style.borderColor='#e5e7eb'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+
+  {# === BAND badge (yuqori o'ng, agar bron qabul qilmasa) === #}
+  {% if not service.is_open_for_booking %}
+    <span style="
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    ">
+      BAND
+    </span>
+  {% elif service.currently_working %}
+    {# Hozirda ishlayapti — yashil "JARAYONDA" badge #}
+    <span style="
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #dcfce7;
+      color: #166534;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    ">
+      🟢 JARAYONDA
+    </span>
+  {% endif %}
+
+  {# === Yuqori qism: avatar + ism + sarlavha === #}
+  <div style="display: flex; gap: 12px; align-items: flex-start;">
+    {# Avatar — provider'ning birinchi profile avatari #}
+    {% if service.provider %}
+      {% with av=service.provider.profile.avatars.first %}
+        {% if av %}
+          <img src="{{ av.image.url }}"
+               alt="{{ service.provider.username }}"
+               style="
+                 width: 56px;
+                 height: 56px;
+                 border-radius: 50%;
+                 object-fit: cover;
+                 flex-shrink: 0;
+               ">
+        {% else %}
+          {# Avatar yo'q — initialli placeholder #}
+          <div style="
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 22px;
+            flex-shrink: 0;
+          ">
+            {{ service.provider.username|slice:":1"|upper }}
+          </div>
+        {% endif %}
+      {% endwith %}
+    {% else %}
+      {# Provider yo'q (demo) — generic icon #}
+      <div style="
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+      ">👤</div>
+    {% endif %}
+
+    {# Ism + sarlavha bloki #}
+    <div style="flex: 1; min-width: 0;">
+      {# Provider username yoki demo nom #}
+      <div style="font-weight: 700; font-size: 16px; color: #111827; line-height: 1.3;">
+        {% if service.provider %}@{{ service.provider.username }}{% else %}{{ service.title|default:"Mutaxassis" }}{% endif %}
+      </div>
+      {# Xizmat sarlavhasi (kategoriya/specialty) #}
+      <div style="color: #6b7280; font-size: 13px; margin-top: 2px;">
+        {{ service.title|truncatechars:60 }}
+      </div>
+    </div>
+  </div>
+
+  {# === O'rta qism: 3 ta stat ustun (Reyting / Holat / Ishlar) === #}
+  <div style="
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6;
+  ">
+    {# 1. Reyting #}
+    <div style="text-align: center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">REYTING</div>
+      <div style="font-weight: 700; font-size: 14px;">
+        ★ {{ service.rating|floatformat:1 }}
+        <span style="color: #9ca3af; font-weight: 400; font-size: 12px;">
+          ({{ service.review_count|default:0 }})
+        </span>
+      </div>
+    </div>
+    {# 2. Holat (ish qabul qilyaptimi) #}
+    <div style="text-align: center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">HOLAT</div>
+      <div style="font-weight: 700; font-size: 14px;">
+        {% if service.is_open_for_booking %}
+          🟢 <span style="color: #16a34a;">{% trans "Ochiq" %}</span>
+        {% else %}
+          🔴 <span style="color: #dc2626;">{% trans "Yopiq" %}</span>
+        {% endif %}
+      </div>
+    </div>
+    {# 3. Ishlar (yakunlangan loyihalar) #}
+    <div style="text-align: center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">ISHLAR</div>
+      <div style="font-weight: 700; font-size: 14px;">
+        {{ service.projects_completed|default:0 }}
+      </div>
+    </div>
+  </div>
+
+  {# === Joylashuv (📍) + Narx (o'ng katta) === #}
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+    {# Joylashuv — currently_at_location yoki provider profile address_text #}
+    <div style="font-size: 13px; color: #6b7280; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+      📍
+      {% if service.currently_at_location %}
+        {{ service.currently_at_location|truncatechars:30 }}
+      {% elif service.provider.profile.address_text %}
+        {{ service.provider.profile.address_text|truncatechars:30 }}
+      {% else %}
+        <span style="color: #9ca3af;">{% trans "Joylashuv ko'rsatilmagan" %}</span>
+      {% endif %}
+    </div>
+    {# Xizmat narxi — o'ngda katta #}
+    <div style="text-align: right; flex-shrink: 0;">
+      <div style="font-size: 11px; color: #6b7280;">{% trans "boshlanadi" %}</div>
+      <div style="font-weight: 800; font-size: 18px; color: #2563eb;">
+        {{ service.starting_price|floatformat:0 }} so'm
+      </div>
+    </div>
+  </div>
+
+  {# === Pastki qism: 2 ta tugma === #}
+  <div style="display: flex; gap: 8px;">
+    {# 1. Portfolio — barcha userlar uchun ochiq (anonim ham ko'radi) #}
+    {% if service.provider %}
+      <a href="{% url 'portfolio:detail' username=service.provider.username %}"
+         style="
+           flex: 1;
+           padding: 10px 16px;
+           border: 1px solid #e5e7eb;
+           border-radius: 10px;
+           color: #374151;
+           text-decoration: none;
+           text-align: center;
+           font-weight: 600;
+           font-size: 14px;
+           transition: background 0.15s;
+         "
+         onmouseover="this.style.background='#f9fafb'"
+         onmouseout="this.style.background='transparent'">
+        🎨 {% trans "Portfolio" %}
+      </a>
+    {% else %}
+      {# Provider yo'q — disabled tugma #}
+      <button type="button" disabled style="
+        flex: 1; padding: 10px 16px; border: 1px solid #e5e7eb; border-radius: 10px;
+        background: #f9fafb; color: #9ca3af; font-weight: 600; font-size: 14px; cursor: not-allowed;
+      ">🎨 {% trans "Portfolio" %}</button>
+    {% endif %}
+
+    {# 2. Bron qilish — login bo'lmasa /login/ ga redirect, band bo'lsa disabled #}
+    {% if not service.is_open_for_booking %}
+      {# Disabled — band #}
+      <button type="button" disabled style="
+        flex: 1; padding: 10px 16px; border: none; border-radius: 10px;
+        background: #f3f4f6; color: #9ca3af; font-weight: 600; font-size: 14px; cursor: not-allowed;
+      ">{% trans "Band" %}</button>
+    {% elif user.is_authenticated %}
+      {# Login bo'lgan: bron qilish formasi (POST /services/book/<id>/) #}
+      <form action="/services/book/{{ service.id }}/" method="post" style="flex: 1;">
+        {% csrf_token %}
+        <button type="submit" style="
+          width: 100%;
+          padding: 10px 16px;
+          border: none;
+          border-radius: 10px;
+          background: #2563eb;
+          color: white;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.15s;
+        " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+          📅 {% trans "Bron qilish" %}
+        </button>
+      </form>
+    {% else %}
+      {# Login bo'lmagan: /login/ ga redirect (next= bilan) #}
+      <a href="/login/?next={{ request.path }}"
+         style="
+           flex: 1;
+           padding: 10px 16px;
+           border: none;
+           border-radius: 10px;
+           background: #2563eb;
+           color: white;
+           font-weight: 600;
+           font-size: 14px;
+           text-decoration: none;
+           text-align: center;
+         ">
+        📅 {% trans "Bron qilish" %}
+      </a>
+    {% endif %}
+  </div>
+</article>

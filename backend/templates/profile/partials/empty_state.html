@@ -1,0 +1,7 @@
+{% load i18n %}
+{# Reusable empty state. Required context: icon (bi class), title, body. #}
+<div class="bp-empty">
+  <div class="bp-empty-icon"><i class="bi {{ icon|default:'bi-inbox' }}"></i></div>
+  <div class="bp-empty-title">{{ title }}</div>
+  {% if body %}<p class="bp-empty-body">{{ body }}</p>{% endif %}
+</div>

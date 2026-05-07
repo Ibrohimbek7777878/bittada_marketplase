@@ -37,15 +37,19 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
     *, # Faqat nomlangan argumentlarni qabul qiladi
     email: str | None = None, # Email (ixtiyoriy)
     phone: str | None = None, # Telefon (ixtiyoriy)
-    password: str, # Parol (majburiy)
+    password: str, # Parol (majburiy — view fallback orqali telefon ham bo'lishi mumkin)
     first_name: str = "", # Ism (barcha rollar uchun)
     username: str | None = None, # Username (ixtiyoriy)
     role: str = "customer", # Rol (sukut bo'yicha xaridor)
     account_type: str = "individual", # Hisob turi (shaxsiy)
     professions: list[str] | None = None, # Kasblar (sotuvchilar uchun - TZ 6.3)
-    company_name: str = "", # Kompaniya nomi (sotuvchilar uchun)
+    company_name: str = "", # Kompaniya nomi (yuridik shaxslar uchun)
     experience: int | None = None, # Tajriba yillar soni (sotuvchilar uchun)
     invite_code: str = "", # Taklif kodi (ichki ta'minotchilar uchun)
+    stir: str = "", # STIR / INN (yuridik shaxslar uchun) — Profile.stir ga saqlanadi
+    mfo: str = "", # MFO (yuridik shaxslar uchun, hozircha bio ga ilova qilinadi)
+    bank_account: str = "", # Bank hisob raqami (yuridik shaxslar uchun)
+    contract_number: str = "", # Shartnoma raqami (hamkor ta'minotchi uchun)
 ) -> User: # User obyektini qaytaradi
     # Agar na email, na telefon berilgan bo'lsa, xato berish
     if not email and not phone:
@@ -91,11 +95,24 @@ def register_with_email_password( # Foydalanuvchini ro'yxatdan o'tkazish funksiy
     profile = user.profile # Foydalanuvchi profilini olish
     if first_name: # Agar ism berilgan bo'lsa
         profile.display_name = first_name # Profilga display_name sifatida yozish
-    if company_name: # Agar kompaniya nomi berilgan bo'lsa (sotuvchilar uchun)
+    if company_name: # Agar kompaniya nomi berilgan bo'lsa
         profile.company_name = company_name # Profilga kompaniya nomini yozish
-    if experience is not None: # Agar tajriba berilgan bo'lsa (sotuvchilar uchun)
-        # Tajriba ma'lumotini bio ga qo'shish (keyinchalik alohida field bo'ladi)
-        profile.bio = f"Tajriba: {experience} yil" # Profilga tajriba ma'lumotini yozish
+    if stir: # Yuridik shaxs uchun STIR (INN) — alohida maydonga
+        profile.stir = stir
+    # Qo'shimcha (mfo, bank_account, contract_number, experience) ma'lumotlari
+    # uchun hozircha alohida Profile maydonlari yo'q — bio ichida tarkiblangan
+    # matn sifatida saqlanadi. Keyinroq alohida fieldlarga ko'chirish mumkin.
+    extra_lines: list[str] = []
+    if experience is not None:
+        extra_lines.append(f"Tajriba: {experience} yil")
+    if mfo:
+        extra_lines.append(f"MFO: {mfo}")
+    if bank_account:
+        extra_lines.append(f"Hisob raqami: {bank_account}")
+    if contract_number:
+        extra_lines.append(f"Shartnoma №: {contract_number}")
+    if extra_lines:
+        profile.bio = "\n".join(extra_lines)
     profile.save() # Profilni saqlash
 
     return user # Yaratilgan foydalanuvchini qaytarish

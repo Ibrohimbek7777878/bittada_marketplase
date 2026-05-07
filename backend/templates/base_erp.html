@@ -224,12 +224,22 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
+        /* ── Layout Persistence "Lock" (Step 3) ── */
+        .erp-sidebar, .erp-nav {
+            position: sticky !important;
+            display: flex !important;
+            z-index: 1000 !important;
+        }
+        .erp-sidebar { width: 280px !important; }
+        .erp-nav { height: 72px !important; }
+
         /* Scoped UI Components */
         {% include 'includes/erp_styles.css' %}
     </style>
 
     {% block extra_css %}{% endblock %}
     <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="{% static 'js/cart_wishlist.js' %}" defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         window.GOOGLE_CLIENT_ID = '{{ GOOGLE_CLIENT_ID|default:"" }}';
@@ -243,7 +253,7 @@
         });
     </script>
 </head>
-<body style="min-height: 100vh; display: flex; flex-direction: column; background: var(--erp-bg); color: var(--secondary-brand); font-family: var(--erp-font);">
+<body class="{% block body_class %}{% endblock %}" style="min-height: 100vh; display: flex; flex-direction: column; background: var(--erp-bg); color: var(--secondary-brand); font-family: var(--erp-font);">
 
     <!-- Modular Navbar -->
     {% include 'includes/erp_navbar.html' %}
@@ -259,13 +269,58 @@
                 {% block content %}{% endblock %}
             </div>
             
-            {# Global footer (qisqa, har bir matn tarjima qilinadi) #}
-            <footer style="margin-top: auto; width: 100%; padding: 24px 0; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; font-size: 13px; color: #94A3B8; font-weight: 600;">
-                <div>&copy; 2026 Bittada Marketplace. {% trans "Barcha huquqlar himoyalangan." %}</div>
-                <div style="display: flex; gap: 32px; align-items: center;">
-                    <a href="{% url 'company' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Kompaniya haqida" %}</a>
-                    <a href="{% url 'services' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Xizmatlar" %}</a>
-                    <a href="{% url 'manufacturing' %}" style="color: #94A3B8; text-decoration: none; transition: 0.2s;">{% trans "Ishlab chiqarish" %}</a>
+            {# Global corporate footer (TZ §12) #}
+            <footer class="erp-footer-corporate" style="margin-top: 80px; padding: 60px 0 40px; background: white; border-top: 1px solid #E2E8F0; border-radius: 40px 40px 0 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 60px;">
+                    <!-- Brand Column -->
+                    <div style="grid-column: span 2;">
+                        <img src="{% static 'logo.svg' %}" alt="Bittada" style="height: 32px; margin-bottom: 20px;">
+                        <p style="font-size: 14px; color: #64748B; line-height: 1.6; max-width: 320px;">
+                            {% trans "O'zbekistonning mebel va xom-ashyo bo'yicha eng yirik raqamli bozori. Biz ishlab chiqaruvchilar va xaridorlarni bir joyga jamlaymiz." %}
+                        </p>
+                    </div>
+                    
+                    <!-- Company Links -->
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--secondary-brand); margin-bottom: 24px;">{% trans "Kompaniya" %}</h4>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
+                            <li><a href="{% url 'company' %}" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Biz haqimizda" %}</a></li>
+                            <li><a href="#" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Yangiliklar" %}</a></li>
+                            <li><a href="#" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Karyera" %}</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Catalog Links -->
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--secondary-brand); margin-bottom: 24px;">{% trans "Katalog" %}</h4>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
+                            <li><a href="{% url 'home' %}" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Tayyor mebellar" %}</a></li>
+                            <li><a href="{% url 'manufacturing' %}" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Ishlab chiqarish" %}</a></li>
+                            <li><a href="#" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;">{% trans "Xom-ashyo" %}</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact/Social -->
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--secondary-brand); margin-bottom: 24px;">{% trans "Bog'lanish" %}</h4>
+                        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+                            <a href="#" style="width: 40px; height: 40px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary-brand); transition: all 0.2s;"><i class="bi bi-telegram"></i></a>
+                            <a href="#" style="width: 40px; height: 40px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary-brand); transition: all 0.2s;"><i class="bi bi-instagram"></i></a>
+                            <a href="#" style="width: 40px; height: 40px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary-brand); transition: all 0.2s;"><i class="bi bi-facebook"></i></a>
+                        </div>
+                        <p style="font-size: 14px; color: #64748B;">+998 71 200 00 00</p>
+                    </div>
+                </div>
+
+                <!-- Bottom Footer -->
+                <div style="padding-top: 30px; border-top: 1px solid #F1F5F9; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <div style="font-size: 14px; color: #94A3B8;">
+                        &copy; 2026 Bittada Marketplace. {% trans "Barcha huquqlar himoyalangan." %}
+                    </div>
+                    <div style="display: flex; gap: 24px;">
+                        <a href="#" style="font-size: 13px; color: #94A3B8; text-decoration: none;">{% trans "Maxfiylik siyosati" %}</a>
+                        <a href="#" style="font-size: 13px; color: #94A3B8; text-decoration: none;">{% trans "Foydalanish shartlari" %}</a>
+                    </div>
                 </div>
             </footer>
         </main>

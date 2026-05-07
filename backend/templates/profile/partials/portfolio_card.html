@@ -1,0 +1,13 @@
+{% load i18n %}
+{# Portfolio grid card. Required context: item. #}
+<div class="bp-card" title="{{ item.title }}">
+  <img src="{{ item.cover_image.url }}" alt="{{ item.title }}" loading="lazy">
+  <div class="bp-card-overlay">
+    <div class="bp-card-title">{{ item.title|truncatechars:48 }}</div>
+    <div class="bp-card-price">
+      {% if item.completed_year %}{{ item.completed_year }}{% endif %}
+      {% if item.completed_year and item.location %} · {% endif %}
+      {% if item.location %}{{ item.location }}{% endif %}
+    </div>
+  </div>
+</div>

@@ -114,7 +114,8 @@ class Service(BaseModel):
         ordering = ["-rating", "-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.title} - {self.provider.username}"
+        provider_name = self.provider.username if self.provider else "No Provider"
+        return f"{self.title} - {provider_name}"
 
 
 class ServiceBookingStatus(models.TextChoices):

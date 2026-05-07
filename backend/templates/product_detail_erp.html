@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block title %}{{ product.title_uz }} — Bittada Mebel{% endblock %}
-{% block og_title %}{{ product.title_uz }}{% endblock %}
+{% block body_class %}btd-product-detail-page{% endblock %}
 
 {% block structured_data %}
 <script type="application/ld+json">
@@ -273,8 +273,7 @@
     
     <!-- Actions -->
     <div class="btd-product-detail__actions">
-      {% if product.product_type == 'standard' %}
-        <button onclick="addToCart('{{ product.id }}', document.getElementById('quantity')?.value || 1)" class="btd-btn btd-btn--primary btd-btn--lg" {% if not product.is_in_stock %}disabled style="opacity: 0.5;"{% endif %} style="flex: 1;">
+        <button onclick="if(typeof addToCart === 'function') addToCart('{{ product.uuid }}', document.getElementById('quantity')?.value || 1)" class="btd-btn btd-btn--primary btd-btn--lg" {% if not product.is_in_stock %}disabled style="opacity: 0.5;"{% endif %} style="flex: 1;">
           <span>🛒</span> {% if product.is_in_stock %}Savatga qo'shish{% else %}Sotuvda yo'q{% endif %}
         </button>
       {% else %}
@@ -283,13 +282,13 @@
         </button>
       {% endif %}
       
-      <button onclick="toggleWishlist('{{ product.uuid }}'); this.classList.toggle('btd-btn--secondary');" class="btd-btn btd-btn--secondary btd-btn--lg" id="wishlist-btn">
+      <button onclick="if(typeof toggleWishlist === 'function') toggleWishlist('{{ product.uuid }}'); this.classList.toggle('btd-btn--secondary');" class="btd-btn btd-btn--secondary btd-btn--lg" id="wishlist-btn">
         <span>❤️</span> Sevimlilar
       </button>
       
-      <button onclick="contactSeller()" class="btd-btn btd-btn--ghost btd-btn--lg">
+      <a href="{% url 'chat:direct' username=product.seller.username %}" class="btd-btn btd-btn--ghost btd-btn--lg" style="display:inline-flex; align-items:center; justify-content:center;">
         <span>💬</span> Sotuvchi
-      </button>
+      </a>
     </div>
     
     <!-- Seller Card -->
@@ -352,9 +351,11 @@
 <script>
   // Initialize wishlist state
   (function() {
-    const wishlist = getWishlist();
-    if (wishlist.includes('{{ product.uuid }}')) {
-      document.getElementById('wishlist-btn').classList.add('btd-btn--secondary');
+    if (typeof getWishlist === 'function') {
+      const wishlist = getWishlist();
+      if (wishlist.includes('{{ product.uuid }}')) {
+        document.getElementById('wishlist-btn').classList.add('btd-btn--secondary');
+      }
     }
   })();
   
@@ -425,8 +426,7 @@
   
   // Contact seller
   function contactSeller() {
-    // In real implementation, this would open a chat modal or navigate to chat page
-    showToast('Sotuvchi bilan bog\'lanish funksiyasi tez orada qo\'shiladi', 'info');
+    window.location.href = "{% url 'chat:direct' username=product.seller.username %}";
   }
 </script>
 {% endblock %}

@@ -1,0 +1,301 @@
+{# ===================================================================== #}
+{# templates/portfolio/edit.html                                        #}
+{#                                                                       #}
+{# Sotuvchining o'z portfoliosini boshqaruv sahifasi.                  #}
+{# View: PortfolioEditView (apps/showroom/views.py)                    #}
+{# URL: /portfolio/edit/                                                #}
+{#                                                                       #}
+{# Kontekst (view'dan):                                                 #}
+{#  - form: PortfolioForm (yangi qo'shish uchun)                       #}
+{#  - items: mavjud PortfolioItem'lar (foydalanuvchining)              #}
+{#  - public_url: /portfolio/<username>/ (preview uchun)               #}
+{#                                                                       #}
+{# Funksiyalar:                                                          #}
+{#  - Yangi element qo'shish (rasm + sarlavha + tavsif)                #}
+{#  - Mavjud elementlarni o'chirish (POST delete=<uuid>)               #}
+{#                                                                       #}
+{# Mustaqil HTML hujjat (base.html'dan extend qilmaydi).                #}
+{# ===================================================================== #}
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title|default:"Portfolio tahrirlash" }} — Bittada</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body {
+      background: #f9fafb;
+      color: #111827;
+      line-height: 1.5;
+    }
+    a { color: #2563eb; text-decoration: none; }
+
+    /* Top header */
+    .top-header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { font-weight: 700; font-size: 18px; color: #111827; }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    @media (max-width: 640px) { .container { padding: 16px; } }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+    .form-input, textarea.form-input, select.form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, textarea.form-input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .help-text { font-size: 12px; color: #6b7280; }
+    .errors { font-size: 13px; color: #dc2626; }
+    .form-checkbox { width: 18px; height: 18px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: transparent; border: 1px solid #d1d5db; color: #374151; }
+    .btn-outline:hover { background: #f9fafb; }
+    .btn-danger {
+      background: transparent;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .btn-danger:hover { background: #fef2f2; }
+
+    /* Items list (existing) */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .items-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .item-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-image {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: #f3f4f6;
+    }
+    .item-image img { width: 100%; height: 100%; object-fit: cover; }
+    .item-body { padding: 12px; flex: 1; }
+    .item-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; line-height: 1.3; }
+    .item-meta { font-size: 12px; color: #6b7280; }
+    .item-actions { padding: 8px 12px; border-top: 1px solid #f3f4f6; display: flex; justify-content: flex-end; }
+
+    /* Messages */
+    .message-list { list-style: none; padding: 0; margin: 0 0 16px; }
+    .message-item { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 6px; }
+    .message-item.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .message-item.warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .message-item.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 32px 20px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  {# ===== Top header ===== #}
+  <header class="top-header">
+    <a href="/" class="brand">Bittada</a>
+    <div>
+      <a href="{{ public_url }}" style="font-size:14px;">{% trans "Public sahifani ko'rish" %} →</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    {# ===== Sahifa sarlavhasi ===== #}
+    <div class="page-header">
+      <div>
+        <h1>{% trans "Portfolio" %}</h1>
+        <div style="color:#6b7280; font-size:14px; margin-top:4px;">
+          @{{ request.user.username }}
+        </div>
+      </div>
+      <div>
+        <a href="{{ public_url }}" class="btn btn-outline">
+          🔗 {% trans "Ko'rish" %}
+        </a>
+      </div>
+    </div>
+
+    {# Django messages (success / error) #}
+    {% if messages %}
+      <ul class="message-list" role="status">
+        {% for message in messages %}
+          <li class="message-item {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {# ===== Mavjud elementlar ===== #}
+    {% if items %}
+      <div class="card">
+        <h2 style="margin:0 0 12px; font-size:16px;">
+          {% trans "Mening ishlarim" %}
+          <span style="color:#9ca3af; font-weight:500; font-size:13px;">({{ items.count }})</span>
+        </h2>
+        <div class="items-grid">
+          {% for item in items %}
+            <div class="item-card">
+              <div class="item-image">
+                <img src="{{ item.cover_image.url }}" alt="{{ item.title }}" loading="lazy">
+              </div>
+              <div class="item-body">
+                <div class="item-title">{{ item.title|truncatechars:50 }}</div>
+                <div class="item-meta">
+                  {% if item.completed_year %}{{ item.completed_year }}{% endif %}
+                  {% if item.completed_year and item.location %} · {% endif %}
+                  {% if item.location %}{{ item.location|truncatechars:30 }}{% endif %}
+                  {% if not item.is_published %}
+                    <span style="color:#92400e; font-weight:600;">· {% trans "Yashirin" %}</span>
+                  {% endif %}
+                </div>
+              </div>
+              {# O'chirish tugmasi — POST `delete=<uuid>` #}
+              <div class="item-actions">
+                <form method="post"
+                      onsubmit="return confirm('{% trans "Ushbu elementni o''chirishga ishonchingiz komilmi?" %}');"
+                      style="margin:0;">
+                  {% csrf_token %}
+                  <input type="hidden" name="delete" value="{{ item.pk }}">
+                  <button type="submit" class="btn btn-danger">
+                    🗑 {% trans "O'chirish" %}
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="card empty-state">
+        <div style="font-size:42px; margin-bottom:8px;">🎨</div>
+        <div>{% trans "Hali portfolio bo'sh. Pastdagi formadan birinchi ishingizni qo'shing." %}</div>
+      </div>
+    {% endif %}
+
+    {# ===== Yangi qo'shish formasi ===== #}
+    <div class="card">
+      <h2 style="margin:0 0 12px; font-size:16px;">
+        + {% trans "Yangi ish qo'shish" %}
+      </h2>
+
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {# Form-darajadagi xatolar #}
+        {% if form.non_field_errors %}
+          <div class="message-item error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {# Har bir maydon uchun rendered row #}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+              {% if field.field.required %}
+                <span style="color:#dc2626;">*</span>
+              {% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="help-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% if field.errors %}
+              <div class="errors">
+                {% for err in field.errors %}<div>{{ err }}</div>{% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {# Tugmalar #}
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="submit" class="btn btn-primary">
+            {% trans "Qo'shish" %}
+          </button>
+          <a href="{{ public_url }}" class="btn btn-outline">
+            {% trans "Bekor qilish" %}
+          </a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+</body>
+</html>

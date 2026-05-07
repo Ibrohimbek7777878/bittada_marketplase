@@ -116,6 +116,9 @@
         </div>
         {% endif %}
 
+        {# HTMX error xabarlarini ko'rsatish uchun container #}
+        <div id="login-error-container"></div>
+
         <form id="login-form" method="POST" action="{% url 'login' %}">
             {% csrf_token %}
 
@@ -137,8 +140,7 @@
                 <div></div>
             </div>
 
-            <!-- Google Identity Services -->
-                <script src="https://accounts.google.com/gsi/client" async defer></script>
+            <!-- Google Identity Services (Script included in base_erp.html) -->
                 <div id="g_id_onload"
                      data-client_id="{{ GOOGLE_CLIENT_ID|default:"YOUR_GOOGLE_CLIENT_ID" }}"
                      data-context="signin"
@@ -187,23 +189,65 @@
 </style>
 
 <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const form = this;
         const btn = document.getElementById('submit-btn');
         const text = btn.querySelector('.btn-text');
         const loader = btn.querySelector('.btn-loader');
-        
+        const errorContainer = document.getElementById('login-error-container');
+
+        // Clear previous errors
+        errorContainer.innerHTML = '';
+
         // Show loading state
         btn.classList.add('loading');
         btn.disabled = true;
         text.style.display = 'none';
         loader.style.display = 'flex';
-        
-        // Wait 1 second then submit
-        setTimeout(() => {
-            HTMLFormElement.prototype.submit.call(form);
-        }, 1000);
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Check for HX-Redirect header
+            const redirectUrl = response.headers.get('HX-Redirect');
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+                return;
+            }
+
+            if (response.ok) {
+                // Successful login without HX-Redirect - reload to follow Django redirect
+                window.location.reload();
+            } else {
+                // Error - show error message
+                const errorHtml = await response.text();
+                if (errorHtml) {
+                    errorContainer.innerHTML = errorHtml;
+                } else {
+                    errorContainer.innerHTML = '<div style="background: #FEE2E2; border: 1px solid #FECACA; color: #991B1B; padding: 14px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; margin-bottom: 24px;">❌ Kirishda xatolik yuz berdi</div>';
+                }
+                // Reset button state
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                text.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        } catch (error) {
+            errorContainer.innerHTML = '<div style="background: #FEE2E2; border: 1px solid #FECACA; color: #991B1B; padding: 14px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; margin-bottom: 24px;">❌ Server bilan aloqa yo\'q. Iltimos qayta urinib ko\'ring.</div>';
+            // Reset button state
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            text.style.display = 'block';
+            loader.style.display = 'none';
+        }
     });
 
     // Google Identity Services handler

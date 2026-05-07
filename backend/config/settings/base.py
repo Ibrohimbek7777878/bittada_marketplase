@@ -70,7 +70,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -96,6 +95,10 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # i18n: shablonlarda {{ LANGUAGE_CODE }} va {{ LANGUAGE_BIDI }} ni
+                # avtomatik mavjud qiladi (request.LANGUAGE_CODE'dan keladi).
+                # i18n_patterns ostida til prefixi (/uz/, /ru/, /en/) bo'yicha o'zgaradi.
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -132,12 +135,18 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "uz"
 LANGUAGES = [
     ('uz', 'Uzbek'),
+    ('ru', 'Русский'),
     ('en', 'English'),
-    ('ru', 'Russian'),
 ]
 TIME_ZONE = "Asia/Tashkent"
 USE_I18N = True
 USE_TZ = True
+# YANGI: LOCALE_PATHS — Django'ga `locale/<lang>/LC_MESSAGES/` qaerdaligini bildiradi.
+# Bunsiz `compilemessages` chiqargan `.mo` fayllar topilmaydi va {% trans %} taglari
+# faqat default (LANGUAGE_CODE) tilida qaytadi (i18n switching ishlamaydi).
+LOCALE_PATHS = [
+    BASE_DIR / "locale",  # Loyiha root'idagi `locale/` (uz/, ru/, en/ ostida)
+]
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
@@ -151,8 +160,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 # Login URLs
+# i18n_patterns ostida /uz/login/, /ru/login/, /en/login/ shaklida ishlaydi
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
+# Kirish muvaffaqiyatli bo'lganda foydalanuvchi roliga qarab yo'naltirish:
+# - customer → /profile/
+# - seller/staff → /dashboard/
+LOGIN_REDIRECT_URL = "/ru/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 # REST Framework
@@ -164,31 +177,26 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-# Content Security Policy
-CSP_FRAME_ANCESTORS = (
-    "'self'",
-    "https://oauth.telegram.org",
-    "https://accounts.google.com",
-    "http://127.0.0.1",
-    "http://localhost",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-)
-
-# Development CSP settings - allow unsafe-inline for CSS and JS
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
-CSP_SCRIPT_SRC = (
-    "'self'", 
-    "'unsafe-inline'", 
-    "'unsafe-eval'", 
-    "https://ajax.googleapis.com", 
-    "https://cdn.jsdelivr.net",
-    "https://accounts.google.com", # Google tugmasi uchun skript
-)
-CSP_IMG_SRC = ("'self'", "data:", "https:")
-CSP_FONT_SRC = ("'self'", "https:")
-CSP_CONNECT_SRC = ("'self'", "https://api.telegram.org", "https://www.google.com")
-CSP_FRAME_SRC = ("'self'", "https://oauth.telegram.org", "https://accounts.google.com")
+# Content Security Policy (CSP) Settings
+# VAQTINCHA O'CHIRILGAN: django-csp o'rnatilmagan
+# CSP_FRAME_ANCESTORS = (
+#     "'self'", 
+#     "https://oauth.telegram.org", 
+#     "https://accounts.google.com", 
+#     "http://localhost:8000", 
+#     "http://127.0.0.1:8000",
+#     "http://localhost",
+#     "http://127.0.0.1"
+# )
+# CSP_REFERRER_POLICY = "strict-origin-when-cross-origin"
+# CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "https://telegram.org", "https://accounts.google.com")
+# CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
+# CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
+# CSP_IMG_SRC = ("'self'", "data:", "https://telegram.org")
 # Google Auth sozlamalari
 GOOGLE_OAUTH_CLIENT_ID = env("GOOGLE_OAUTH_CLIENT_ID", default="")
+
+# Telegram Auth sozlamalari
+TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
+TELEGRAM_BOT_USERNAME = env("TELEGRAM_BOT_USERNAME", default="")
+TELEGRAM_BOT_ID = env("TELEGRAM_BOT_ID", default="")

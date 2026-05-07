@@ -1,0 +1,161 @@
+{% extends 'base_erp.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Profilni tahrirlash" %} — Bittada{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-profile-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    .edit-card {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    .edit-header {
+        padding: 32px;
+        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        border-bottom: 1px solid #E2E8F0;
+    }
+    .edit-body {
+        padding: 32px;
+    }
+    .form-section {
+        margin-bottom: 32px;
+    }
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--secondary-brand);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    @media (max-width: 640px) {
+        .form-grid { grid-template-columns: 1fr; }
+    }
+    .field-wrapper {
+        margin-bottom: 16px;
+    }
+    .field-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+    .field-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.2s;
+    }
+    .field-input:focus {
+        border-color: var(--primary-brand);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(164, 212, 108, 0.1);
+    }
+    .help-text {
+        font-size: 12px;
+        color: #94A3B8;
+        margin-top: 4px;
+    }
+    .error-text {
+        color: #EF4444;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid #F1F5F9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="edit-card">
+        <div class="edit-header">
+            <h1 style="font-size: 24px; font-weight: 900; color: var(--secondary-brand);">{% trans "Profil sozlamalari" %}</h1>
+            <p style="color: #64748B; font-weight: 500;">{% trans "Shaxsiy ma'lumotlaringiz va ommaviy profilingizni boshqaring" %}</p>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data" class="edit-body">
+            {% csrf_token %}
+            
+            <!-- Account Info -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <span>👤</span> {% trans "Hisob ma'lumotlari" %}
+                </h2>
+                <div class="form-grid">
+                    {% for field in user_form %}
+                    <div class="field-wrapper">
+                        <label class="field-label">{{ field.label }}</label>
+                        {{ field.errors }}
+                        <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                               name="{{ field.name }}" 
+                               value="{{ field.value|default:'' }}" 
+                               class="field-input">
+                        {% if field.help_text %}
+                        <p class="help-text">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Profile Info -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <span>🏢</span> {% trans "Ommaviy profil" %}
+                </h2>
+                <div class="form-grid">
+                    {% for field in profile_form %}
+                    <div class="field-wrapper {% if field.name == 'bio' or field.name == 'address_text' %}style='grid-column: 1 / -1;'{% endif %}"
+                         style="{% if field.name == 'bio' or field.name == 'address_text' %}grid-column: 1 / -1;{% endif %}">
+                        <label class="field-label">{{ field.label }}</label>
+                        {{ field.errors }}
+                        
+                        {% if field.name == 'bio' %}
+                        <textarea name="{{ field.name }}" class="field-input" rows="4">{{ field.value|default:'' }}</textarea>
+                        {% else %}
+                        <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                               name="{{ field.name }}" 
+                               value="{{ field.value|default:'' }}" 
+                               class="field-input">
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                        <p class="help-text">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a href="{% url 'users:user_profile' request.user.username %}" class="erp-btn-secondary" style="text-decoration: none;">{% trans "Bekor qilish" %}</a>
+                <button type="submit" class="erp-btn-primary">{% trans "Saqlash" %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

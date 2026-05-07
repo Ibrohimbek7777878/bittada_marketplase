@@ -196,7 +196,13 @@
                     <p class="price-tag">{{ specialist.starting_price|floatformat:0|intcomma }} so'm</p>
                 </div>
                 <div style="display: flex; gap: 12px;">
-                    <button style="flex: 1; height: 48px; border-radius: 14px; background: white; color: var(--secondary-brand); border: 2px solid var(--secondary-brand); font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='rgba(0,31,63,0.05)'" onmouseout="this.style.background='white'">Portfolio</button>
+                    {% if specialist.provider %}
+                    <a href="{% url 'users:user_profile' specialist.provider.username %}" style="flex: 1; text-decoration: none;">
+                        <button style="width: 100%; height: 48px; border-radius: 14px; background: white; color: var(--secondary-brand); border: 2px solid var(--secondary-brand); font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--erp-transition);" onmouseover="this.style.background='rgba(0,31,63,0.05)'" onmouseout="this.style.background='white'">Portfolio</button>
+                    </a>
+                    {% else %}
+                    <button disabled style="flex: 1; height: 48px; border-radius: 14px; background: white; color: #94A3B8; border: 2px solid #E2E8F0; font-weight: 800; font-size: 14px; cursor: not-allowed;">Portfolio</button>
+                    {% endif %}
                     
                     {% if specialist.id %}
                         {% if specialist.is_open_for_booking %}

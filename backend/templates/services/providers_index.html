@@ -1,0 +1,218 @@
+{% extends base_template|default:"base_erp.html" %}
+{% load i18n humanize static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .pd-shell { max-width: 1180px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  .pd-hero {
+    background: linear-gradient(135deg, var(--primary-brand), #d6efb4);
+    border-radius: 24px; padding: 40px 32px; margin-bottom: 32px;
+    color: var(--secondary-brand); position: relative; overflow: hidden;
+  }
+  .pd-hero h1 { margin: 0 0 8px; font-size: 28px; font-weight: 800; }
+  .pd-hero p  { margin: 0; font-size: 15px; opacity: .85; max-width: 640px; }
+
+  .pd-toolbar {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 20px;
+  }
+  .pd-search {
+    flex: 1; min-width: 240px; display: flex; align-items: center; gap: 8px;
+    background: white; border: 1.5px solid #E2E8F0; border-radius: 12px;
+    padding: 0 14px; height: 44px;
+  }
+  .pd-search input {
+    flex: 1; border: 0; outline: none; font-size: 14px; color: #1E293B;
+    background: transparent;
+  }
+  .pd-search button {
+    background: var(--secondary-brand); color: white; border: 0;
+    border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer;
+  }
+  .pd-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+    border: 1.5px solid #E2E8F0; border-radius: 999px; background: white;
+    font-size: 13px; font-weight: 600; color: #475569; text-decoration: none;
+    transition: all .15s ease;
+  }
+  .pd-chip:hover { border-color: #CBD5E1; background: #F8FAFC; }
+  .pd-chip.is-active {
+    background: var(--secondary-brand); color: white; border-color: var(--secondary-brand);
+  }
+
+  .pd-meta { color: #64748B; font-size: 14px; margin-bottom: 16px; }
+
+  .pd-grid {
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .pd-card {
+    background: white; border: 1px solid #E2E8F0; border-radius: 18px;
+    padding: 22px; display: flex; flex-direction: column; gap: 14px;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .pd-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0, 31, 63, 0.08); }
+  .pd-card-top { display: flex; gap: 14px; align-items: center; }
+
+  .pd-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, #E2E8F0, #CBD5E1);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 22px; color: #64748B; flex-shrink: 0;
+    object-fit: cover; overflow: hidden;
+  }
+  .pd-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .pd-handle { min-width: 0; }
+  .pd-name {
+    margin: 0; font-size: 16px; font-weight: 800; color: var(--secondary-brand);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pd-username { font-size: 13px; color: #64748B; }
+  .pd-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .pd-tag {
+    padding: 2px 8px; border-radius: 999px;
+    background: rgba(164, 212, 108, .18); color: #3F7E1A;
+    font-size: 11px; font-weight: 700;
+  }
+
+  .pd-bio {
+    font-size: 13px; color: #475569; line-height: 1.5; margin: 0;
+    display: -webkit-box; -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; overflow: hidden;
+  }
+
+  .pd-stats {
+    display: flex; gap: 16px; font-size: 12px; color: #64748B;
+    border-top: 1px dashed #E2E8F0; padding-top: 12px;
+  }
+  .pd-stats strong { color: var(--secondary-brand); font-weight: 800; margin-right: 3px; }
+
+  .pd-card-actions { display: flex; gap: 8px; margin-top: auto; }
+  .pd-btn {
+    flex: 1; text-align: center; padding: 10px 14px; border-radius: 10px;
+    font-weight: 700; font-size: 14px; text-decoration: none;
+    transition: all .15s ease;
+  }
+  .pd-btn--primary {
+    background: var(--primary-brand); color: var(--secondary-brand);
+  }
+  .pd-btn--primary:hover { filter: brightness(0.95); }
+  .pd-btn--ghost {
+    background: white; border: 1.5px solid #E2E8F0; color: #475569;
+  }
+  .pd-btn--ghost:hover { background: #F8FAFC; }
+
+  .pd-empty {
+    text-align: center; padding: 64px 24px; border: 1px dashed #E2E8F0;
+    border-radius: 16px; color: #64748B; background: #FAFBFC;
+    grid-column: 1 / -1;
+  }
+  .pd-empty i { font-size: 36px; color: #CBD5E1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pd-shell">
+
+  <header class="pd-hero">
+    <h1><i class="bi bi-people-fill"></i> {% trans "Mutaxassislar va xizmat ko'rsatuvchilar" %}</h1>
+    <p>{% trans "Mebel ustalari, dizaynerlar, o'rnatuvchilar, ta'minotchilar — barchasi bir joyda. Profil tugmasini bosing va batafsil ma'lumotni ko'ring." %}</p>
+  </header>
+
+  <form method="get" class="pd-toolbar" role="search">
+    <div class="pd-search">
+      <i class="bi bi-search"></i>
+      <input type="search" name="q" value="{{ search }}"
+             placeholder="{% trans 'Ism, kompaniya, joy bo''yicha qidirish...' %}">
+      <button type="submit">{% trans "Qidirish" %}</button>
+    </div>
+    {% if selected_profession or search %}
+      <a class="pd-chip" href="{% url 'services:services' %}">
+        <i class="bi bi-x-lg"></i> {% trans "Filterni tozalash" %}
+      </a>
+    {% endif %}
+  </form>
+
+  <nav class="pd-toolbar" aria-label="{% trans 'Mutaxassislik' %}">
+    <a href="{% url 'services:services' %}{% if search %}?q={{ search|urlencode }}{% endif %}"
+       class="pd-chip {% if not selected_profession %}is-active{% endif %}">
+      {% trans "Hammasi" %}
+    </a>
+    {% for facet in profession_facets %}
+      <a href="?profession={{ facet.value }}{% if search %}&q={{ search|urlencode }}{% endif %}"
+         class="pd-chip {% if selected_profession == facet.value %}is-active{% endif %}">
+        {{ facet.label }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="pd-meta">
+    {% blocktrans count counter=providers|length %}
+      {{ counter }} ta mutaxassis topildi
+    {% plural %}
+      {{ counter }} ta mutaxassis topildi
+    {% endblocktrans %}
+  </div>
+
+  <div class="pd-grid">
+    {% for user in providers %}
+      {% with profile=user.profile %}
+      <article class="pd-card">
+        <div class="pd-card-top">
+          <div class="pd-avatar">
+            {% with av=profile.avatars.first %}
+              {% if av %}
+                <img src="{{ av.image.url }}" alt="{{ user.username }}">
+              {% else %}
+                {{ user.username|slice:":1"|upper }}
+              {% endif %}
+            {% endwith %}
+          </div>
+          <div class="pd-handle">
+            <h3 class="pd-name">{{ profile.display_name|default:user.username }}</h3>
+            <div class="pd-username">@{{ user.username }}</div>
+            <div class="pd-tags">
+              {% for prof in profile.professions %}
+                <span class="pd-tag">{{ prof|capfirst }}</span>
+              {% endfor %}
+              {% if not profile.professions %}
+                <span class="pd-tag">{{ user.get_role_display }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {% if profile.bio %}
+          <p class="pd-bio">{{ profile.bio }}</p>
+        {% endif %}
+
+        <div class="pd-stats">
+          <span><strong>{{ user.product_count }}</strong>{% trans "mahsulot" %}</span>
+          <span><strong>{{ user.service_count }}</strong>{% trans "xizmat" %}</span>
+          <span><strong>{{ user.portfolio_count }}</strong>{% trans "portfolio" %}</span>
+        </div>
+
+        <div class="pd-card-actions">
+          <a class="pd-btn pd-btn--primary" href="{% url 'user_profile' user.username %}">
+            <i class="bi bi-person-badge"></i> {% trans "Profilni ko'rish" %}
+          </a>
+          <a class="pd-btn pd-btn--ghost" href="{% url 'user_profile_contact' user.username %}">
+            <i class="bi bi-chat-dots"></i> {% trans "Bog'lanish" %}
+          </a>
+        </div>
+      </article>
+      {% endwith %}
+    {% empty %}
+      <div class="pd-empty">
+        <i class="bi bi-search"></i>
+        <h3 style="margin: 12px 0 6px; color: #334155;">{% trans "Mos mutaxassis topilmadi" %}</h3>
+        <p style="margin: 0;">{% trans "Filterni o'zgartirib qaytadan urinib ko'ring." %}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

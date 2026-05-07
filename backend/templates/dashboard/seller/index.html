@@ -1,0 +1,140 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/index.html                                #}
+{#                                                                       #}
+{# Sotuvchi panelining BOSH sahifasi (umumiy ko'rinish).                #}
+{# View: SellerDashboardIndexView                                       #}
+{# URL: /dashboard/seller/                                              #}
+{#                                                                       #}
+{# Kontekst (view'dan):                                                 #}
+{#  - total_products, published_products, draft_products, total_stock  #}
+{#  - recent_products: QuerySet[Product] (5 ta)                        #}
+{#  - recent_orders: list[Order] (5 ta)                                #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}{# Sotuvchi paneliga xos layout #}
+{% load i18n %}{# Tarjima taglari #}
+
+{% block dashboard_content %}
+
+  {# ===== Sahifa sarlavhasi ===== #}
+  <div class="content-header">
+    <h1>{% trans "Salom" %}, @{{ request.user.username }} 👋</h1>
+    <div class="actions">
+      {# Tezkor tugma: yangi mahsulot qo'shish #}
+      <a href="{% url 'seller:product_create' %}" class="btn btn-primary">
+        + {% trans "Yangi mahsulot" %}
+      </a>
+    </div>
+  </div>
+
+  {# ===== Statistika kartalari ===== #}
+  <div class="stats-grid">
+    {# 1. Jami mahsulotlar #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Jami mahsulot" %}</div>
+      <div class="stat-card-value">{{ total_products }}</div>
+      <div class="stat-card-hint">{% trans "Barcha statuslar" %}</div>
+    </div>
+    {# 2. Faol (published) #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Faol" %}</div>
+      <div class="stat-card-value" style="color: var(--color-success);">{{ published_products }}</div>
+      <div class="stat-card-hint">{% trans "Nashr etilgan" %}</div>
+    </div>
+    {# 3. Qoralama (draft) #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Qoralama" %}</div>
+      <div class="stat-card-value" style="color: #92400e;">{{ draft_products }}</div>
+      <div class="stat-card-hint">{% trans "Hali nashr emas" %}</div>
+    </div>
+    {# 4. Jami zaxira (stock_qty yig'indisi) #}
+    <div class="stat-card">
+      <div class="stat-card-label">{% trans "Jami zaxira" %}</div>
+      <div class="stat-card-value">{{ total_stock }}</div>
+      <div class="stat-card-hint">{% trans "Dona (barcha mahsulotlar)" %}</div>
+    </div>
+  </div>
+
+  {# ===== So'nggi mahsulotlar ===== #}
+  <div class="seller-card" style="margin-bottom: 24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0; font-size:18px;">{% trans "So'nggi mahsulotlar" %}</h2>
+      <a href="{% url 'seller:products_list' %}" style="font-size:13px;">
+        {% trans "Hammasini ko'rish" %} →
+      </a>
+    </div>
+
+    {% if recent_products %}
+      <table class="seller-table" style="border:none;">
+        <thead>
+          <tr>
+            <th>{% trans "Nomi" %}</th>
+            <th>{% trans "Kategoriya" %}</th>
+            <th>{% trans "Narx" %}</th>
+            <th>{% trans "Holat" %}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in recent_products %}
+            <tr>
+              <td style="font-weight:500;">{{ product.title_uz|truncatechars:50 }}</td>
+              <td>{{ product.category.name_uz }}</td>
+              <td>{{ product.price|floatformat:0 }} so'm</td>
+              <td>
+                {# Status badge — CSS klassi status nomidan keladi #}
+                <span class="status-badge {{ product.status }}">{{ product.get_status_display }}</span>
+              </td>
+              <td style="text-align:right;">
+                <a href="{% url 'seller:product_edit' pk=product.pk %}" style="font-size:13px;">
+                  {% trans "Tahrirlash" %} →
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="seller-empty">
+        <div class="seller-empty-icon">📦</div>
+        <div>{% trans "Hozircha mahsulot qo'shilmagan." %}</div>
+        <a href="{% url 'seller:product_create' %}" class="btn btn-primary" style="margin-top:12px;">
+          {% trans "Birinchi mahsulotni qo'shish" %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  {# ===== So'nggi buyurtmalar ===== #}
+  <div class="seller-card">
+    <h2 style="margin:0 0 12px; font-size:18px;">{% trans "So'nggi buyurtmalar" %}</h2>
+
+    {% if recent_orders %}
+      <table class="seller-table" style="border:none;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{% trans "Vaqt" %}</th>
+            <th>{% trans "Holat" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in recent_orders %}
+            <tr>
+              <td style="font-weight:500;">#{{ order.id|truncatechars:8 }}</td>
+              <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+              <td>
+                <span class="status-badge {{ order.status }}">{{ order.get_status_display|default:order.status }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="seller-empty" style="padding: 32px 20px;">
+        <div class="seller-empty-icon">🧾</div>
+        <div>{% trans "Hali buyurtmalar yo'q." %}</div>
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

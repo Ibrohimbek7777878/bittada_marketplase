@@ -1,0 +1,243 @@
+{# ===================================================================== #}
+{# templates/auth/register.html                                          #}
+{#                                                                       #}
+{# Standart Django Templates ro'yxatdan o'tish sahifasi.                #}
+{# View: RegisterView (apps/users/views.py)                            #}
+{# URL:  /auth/register/                                                #}
+{#                                                                       #}
+{# Talab: form to'liq chiqsin, xatolar ko'rinsin                        #}
+{#  - {{ form.errors }} ko'rinadi (form-darajadagi non_field_errors)   #}
+{#  - har field yonida o'z xatosi ({{ field.errors }})                 #}
+{#                                                                       #}
+{# Mustaqil HTML (base.html'dagi `auth_logout` URL bug'ini chetlab o'tish)#}
+{# ===================================================================== #}
+{% load i18n %}{# {% trans %} taglari uchun #}
+{% load static %}{# {% static %} fayllar uchun #}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% trans "Ro'yxatdan o'tish" %} — Bittada</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Inter, system-ui, -apple-system, sans-serif; }
+    body {
+      background: #f3f4f6;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .auth-shell {
+      width: 100%;
+      max-width: 440px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    @media (max-width: 480px) { .auth-shell { padding: 20px; } }
+
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-brand a {
+      font-size: 22px;
+      font-weight: 800;
+      color: #111827;
+      text-decoration: none;
+    }
+
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+    .auth-subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      text-align: right;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .lang-switcher a, .lang-switcher button {
+      color: #6b7280;
+      text-decoration: none;
+      padding: 4px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+    }
+    .lang-switcher .active {
+      color: #111827;
+      border-color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+    .form-input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .help-text { font-size: 12px; color: #6b7280; }
+    .errors {
+      font-size: 13px;
+      color: #dc2626;
+      margin-top: 2px;
+    }
+    .errors div + div { margin-top: 2px; }
+
+    /* Form-level errors banner */
+    .alert-error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .auth-footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+    .required-mark { color: #dc2626; }
+  </style>
+</head>
+<body>
+
+<div class="auth-shell">
+  {# ===== Til o'zgartirish (i18n) ===== #}
+  {# Django'ning standart `set_language` view'i orqali tilni almashtiramiz #}
+  {# /i18n/setlang/ — config/urls.py'da {% include "django.conf.urls.i18n" %} #}
+  <div class="lang-switcher">
+    {% get_current_language as CURRENT_LANG %}
+    {% get_available_languages as LANGS %}
+    {% for code, name in LANGS %}
+      <form action="{% url 'set_language' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <input type="hidden" name="language" value="{{ code }}">
+        <button type="submit" class="{% if CURRENT_LANG == code %}active{% endif %}">
+          {{ code|upper }}
+        </button>
+      </form>
+    {% endfor %}
+  </div>
+
+  {# ===== Brand ===== #}
+  <div class="auth-brand">
+    <a href="/">Bittada</a>
+  </div>
+
+  <h1 class="auth-title">{% trans "Ro'yxatdan o'tish" %}</h1>
+  <p class="auth-subtitle">{% trans "Yangi akkaunt yarating va Bittada marketplaceiga qo'shiling." %}</p>
+
+  {# ===== Form-darajadagi xatolar (non_field_errors) ===== #}
+  {% if form.non_field_errors %}
+    <div class="alert-error" role="alert">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  {# ===== Asosiy forma ===== #}
+  <form method="post" action="{% url 'auth_register' %}" novalidate>
+    {% csrf_token %}
+
+    {# Har bir form maydoni uchun row #}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">
+          {{ field.label }}
+          {% if field.field.required %}
+            <span class="required-mark">*</span>
+          {% endif %}
+        </label>
+        {# Maydon o'zi (input) — widget atributlari forms.py'da #}
+        {{ field }}
+        {# Help text (agar mavjud bo'lsa) #}
+        {% if field.help_text %}
+          <div class="help-text">{{ field.help_text }}</div>
+        {% endif %}
+        {# Maydon-darajadagi xatolar (vazifa talabi) #}
+        {% if field.errors %}
+          <div class="errors">
+            {% for err in field.errors %}<div>{{ err }}</div>{% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {# Submit tugma #}
+    <button type="submit" class="btn btn-primary">
+      {% trans "Ro'yxatdan o'tish" %}
+    </button>
+  </form>
+
+  {# ===== Login linki ===== #}
+  <div class="auth-footer">
+    {% trans "Akkauntingiz bormi?" %}
+    <a href="{% url 'auth_login' %}">{% trans "Kirish" %}</a>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="portfolio-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">
+  {% for item in portfolio %}
+    <div class="product-card">
+      <div class="product-image-wrapper">
+        <img src="{{ item.cover_image.url }}" alt="{{ item.title }}">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">{{ item.title }}</h3>
+        {% if item.description %}<p class="text-muted" style="font-size:13px;margin:0 0 8px;">{{ item.description|truncatewords:20 }}</p>{% endif %}
+        {% if item.location %}<span class="meta-item">{{ item.location }}</span>{% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty-state">
+      <p class="text-muted">{% trans "Portfolio topilmadi." %}</p>
+    </div>
+  {% endfor %}
+</div>

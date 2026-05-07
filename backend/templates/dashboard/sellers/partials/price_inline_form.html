@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div id="price-container-{{ product.id }}" hx-target="this" hx-swap="outerHTML">
+    <form hx-post="{% url 'dashboard:update_product_price' product.id %}" style="display: flex; align-items: center; gap: 8px;">
+        {% csrf_token %}
+        <input type="number" name="price" value="{{ product.price|stringformat:"d" }}" 
+               style="width: 120px; padding: 4px 8px; border: 2px solid var(--primary-brand); border-radius: 6px; font-weight: 800; font-size: 16px; outline: none;"
+               autofocus
+               onfocus="this.select()"
+               onkeydown="if(event.key === 'Escape') { htmx.ajax('GET', '{% url 'dashboard:update_product_price' product.id %}', {target: '#price-container-{{ product.id }}', swap: 'outerHTML'}) }">
+        <button type="submit" style="background: var(--primary-brand); color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer;">
+            <i class="bi bi-check-lg"></i>
+        </button>
+    </form>
+</div>

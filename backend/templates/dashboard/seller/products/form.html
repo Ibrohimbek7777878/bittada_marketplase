@@ -1,0 +1,113 @@
+{# ===================================================================== #}
+{# templates/dashboard/seller/products/form.html                        #}
+{#                                                                       #}
+{# Mahsulot qo'shish VA tahrirlash uchun BITTA shablon (vazifa talabi).#}
+{# View'lar:                                                             #}
+{#  - SellerProductCreateView → page_title="Yangi mahsulot"             #}
+{#  - SellerProductUpdateView → page_title="Mahsulotni tahrirlash"      #}
+{#                                                                       #}
+{# Kontekst:                                                             #}
+{#  - form: ProductForm (apps.products.forms)                           #}
+{#  - form_action_label: tugma matni ("Yaratish" / "Saqlash")           #}
+{#  - is_edit: bool — tahrirlash rejimida True (mavjud rasmlarni ko'r) #}
+{#  - object: Product (UpdateView'da mavjud)                            #}
+{# ===================================================================== #}
+{% extends "dashboard/seller/base_seller.html" %}
+{% load i18n %}
+
+{% block dashboard_content %}
+
+  {# Sahifa sarlavhasi + ortga qaytish #}
+  <div class="content-header">
+    <h1>{{ page_title }}</h1>
+    <div class="actions">
+      <a href="{% url 'seller:products_list' %}" class="btn btn-outline">
+        ← {% trans "Ro'yxatga qaytish" %}
+      </a>
+    </div>
+  </div>
+
+  {# Tahrirlash rejimida mavjud rasmlar (eski rasmlarni ko'rsatish) #}
+  {% if is_edit and object.images.all %}
+    <div class="seller-card" style="margin-bottom:16px;">
+      <div style="font-size:14px; font-weight:600; margin-bottom:8px;">
+        {% trans "Mavjud rasmlar" %}
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        {% for img in object.images.all %}
+          <div style="position:relative;">
+            <img src="{{ img.image.url }}"
+                 alt="{{ img.get_alt|default:object.title_uz }}"
+                 style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--color-gray-200);">
+            {% if img.is_primary %}
+              <span class="status-badge published" style="position:absolute; top:-6px; right:-6px; font-size:10px; padding:2px 6px;">
+                {% trans "Asosiy" %}
+              </span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div style="font-size:12px; color: var(--color-gray-500); margin-top:8px;">
+        {% trans "Yangi rasm yuklasangiz, eski rasmlar saqlanadi va yangisi 'asosiy' bo'ladi." %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Asosiy forma (multipart/form-data — fayl upload uchun majburiy) #}
+  <div class="seller-card">
+    <form method="post"
+          enctype="multipart/form-data"
+          class="seller-form"
+          novalidate>
+      {# CSRF token — Django'da har qanday POST uchun majburiy #}
+      {% csrf_token %}
+
+      {# Form-darajadagi xatolar (non-field errors) #}
+      {% if form.non_field_errors %}
+        <div class="message-item error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {# Har bir maydon uchun rendered row #}
+      {% for field in form %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}
+              <span style="color: var(--color-error);">*</span>
+            {% endif %}
+          </label>
+
+          {# Maydon o'zi (widget) #}
+          {{ field }}
+
+          {# Help text (agar mavjud bo'lsa) #}
+          {% if field.help_text %}
+            <div class="help-text">{{ field.help_text }}</div>
+          {% endif %}
+
+          {# Maydon-darajadagi xatolar #}
+          {% if field.errors %}
+            <div class="errors">
+              {% for err in field.errors %}
+                <div>{{ err }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {# Tugmalar #}
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {{ form_action_label|default:"Saqlash" }}
+        </button>
+        <a href="{% url 'seller:products_list' %}" class="btn btn-outline">
+          {% trans "Bekor qilish" %}
+        </a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

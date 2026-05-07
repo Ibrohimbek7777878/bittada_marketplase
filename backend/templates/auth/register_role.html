@@ -1,0 +1,146 @@
+{% extends "base_erp.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Ro'yxatdan o'tish" %} — {{ role_meta.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .rr-shell {
+    max-width: 880px; margin: 32px auto 80px; padding: 0 16px;
+    display: grid; grid-template-columns: 280px 1fr; gap: 28px;
+  }
+  @media (max-width: 720px) { .rr-shell { grid-template-columns: 1fr; } }
+
+  .rr-side {
+    background: white; border: 1px solid #E2E8F0; border-radius: 16px;
+    padding: 18px; height: fit-content;
+  }
+  .rr-side h4 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 700; }
+  .rr-side a {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 10px; color: #475569; text-decoration: none;
+    font-weight: 600; font-size: 14px; margin-bottom: 4px;
+  }
+  .rr-side a:hover { background: #F8FAFC; color: var(--secondary-brand); }
+  .rr-side a.is-active {
+    background: linear-gradient(135deg, rgba(164,212,108,.20), rgba(164,212,108,.40));
+    color: var(--secondary-brand);
+  }
+  .rr-side i { font-size: 18px; }
+
+  .rr-card {
+    background: white; border-radius: 18px; border: 1px solid #E2E8F0;
+    box-shadow: 0 6px 18px rgba(0, 31, 63, 0.05);
+  }
+  .rr-head {
+    padding: 24px 28px; border-bottom: 1px solid #E2E8F0;
+    background: linear-gradient(135deg, #F8FAFC, #F1F5F9);
+    border-radius: 18px 18px 0 0;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .rr-head-icon {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    background: var(--primary-brand); color: var(--secondary-brand);
+    font-size: 22px; display: flex; align-items: center; justify-content: center;
+  }
+  .rr-head h1 { margin: 0; font-size: 20px; font-weight: 800; color: var(--secondary-brand); }
+  .rr-head p { margin: 2px 0 0; font-size: 13px; color: #64748B; }
+
+  .rr-body { padding: 24px 28px 28px; }
+
+  .rr-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .rr-field label { font-size: 13px; font-weight: 700; color: #475569; }
+  .rr-field input,
+  .rr-field select,
+  .rr-field textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid #E2E8F0;
+    border-radius: 10px; font-size: 14px; font-family: inherit;
+    transition: all .15s ease;
+  }
+  .rr-field input:focus,
+  .rr-field select:focus,
+  .rr-field textarea:focus {
+    outline: none; border-color: var(--primary-brand);
+    box-shadow: 0 0 0 4px rgba(164, 212, 108, .15);
+  }
+  .rr-help { font-size: 12px; color: #94A3B8; }
+  .rr-error { color: #DC2626; font-size: 12px; font-weight: 600; }
+
+  .rr-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  .rr-btn {
+    padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 14px;
+    border: 1.5px solid transparent; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .rr-btn--primary { background: var(--primary-brand); color: var(--secondary-brand); }
+  .rr-btn--primary:hover { filter: brightness(0.95); }
+  .rr-btn--ghost { background: white; color: #475569; border-color: #E2E8F0; }
+  .rr-btn--ghost:hover { background: #F8FAFC; }
+
+  .rr-nonfield {
+    background: rgba(220, 38, 38, .08); color: #B91C1C;
+    border: 1px solid rgba(220, 38, 38, .25); padding: 10px 14px;
+    border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 14px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rr-shell">
+
+  <aside class="rr-side">
+    <h4>{% trans "Akkaunt turi" %}</h4>
+    {% for r in all_roles %}
+      <a href="{% url 'register_role' r.slug %}"
+         class="{% if r.slug == role_meta.slug %}is-active{% endif %}">
+        <i class="bi {{ r.icon }}"></i> {{ r.title }}
+      </a>
+    {% endfor %}
+  </aside>
+
+  <div class="rr-card">
+    <div class="rr-head">
+      <div class="rr-head-icon"><i class="bi {{ role_meta.icon }}"></i></div>
+      <div>
+        <h1>{% blocktrans with title=role_meta.title %}Ro'yxatdan o'tish — {{ title }}{% endblocktrans %}</h1>
+        <p>{{ role_meta.tagline }}</p>
+      </div>
+    </div>
+
+    <form method="post" class="rr-body" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="rr-nonfield">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="rr-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="rr-help">{{ field.help_text }}</div>{% endif %}
+          {% for err in field.errors %}<div class="rr-error">{{ err }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="rr-actions">
+        <a class="rr-btn rr-btn--ghost" href="{% url 'register_picker' %}">
+          <i class="bi bi-arrow-left"></i> {% trans "Boshqa rol tanlash" %}
+        </a>
+        <button type="submit" class="rr-btn rr-btn--primary">
+          {% trans "Akkaunt yaratish" %} <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Apply input classes to widget-rendered fields.
+  document.querySelectorAll('.rr-body input, .rr-body select, .rr-body textarea')
+    .forEach(function (el) {
+      if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') return;
+      // Already styled via .rr-field selectors — nothing to do.
+    });
+</script>
+{% endblock %}
