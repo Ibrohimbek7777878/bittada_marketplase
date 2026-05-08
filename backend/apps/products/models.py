@@ -19,7 +19,7 @@ import uuid
 from typing import Any
 
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -735,4 +735,214 @@ class ProductFileAccessRequest(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.requester} → {self.file.name} ({self.status})"
+
+
+# ---------------------------------------------------------------------------
+# ProductComment — mahsulotga foydalanuvchi izohi (sharhi/komment).
+# ---------------------------------------------------------------------------
+# DIQQAT (foydalanuvchi qoidasi):
+#   `image = ImageField(...)` to'g'ridan-to'g'ri Comment ichiga qo'shilmaydi —
+#   chunki Product allaqachon ProductImage modeli orqali ko'p rasmga ega.
+#   Sharhga rasm biriktirish uchun ALOHIDA `ProductCommentImage` modeli ishlatiladi
+#   (har bir comment'ga 0..N ta rasm). Shu bilan Product rasmlari va comment rasmlari
+#   chalkashmaydi va ProductImage'ga zarar yetmaydi.
+class ProductComment(BaseModel):
+    """
+    Foydalanuvchining mahsulotga sharhi (rating + matn + ko'p rasm).
+
+    Reply tizimi: `parent` ixtiyoriy bo'lib, agar mavjud bo'lsa — bu javob (1 daraja).
+    Moderation: tekshirilmagan/tasdiqlangan/rad etilgan holatlari `status` orqali.
+    """
+    # ----- Asosiy bog'lanishlar -----
+    # Qaysi mahsulotga taalluqli — Product o'chsa, sharhlar ham o'chadi.
+    product = models.ForeignKey(
+        Product,  # Yuqorida tanilgan klass — string reference shart emas.
+        on_delete=models.CASCADE,
+        related_name="comments",  # product.comments.all() orqali olish.
+        verbose_name=_("Mahsulot"),
+    )
+    # Sharh muallifi — kim yozgan.
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,  # Foydalanuvchi o'chsa, sharhlari ham o'chadi (GDPR-friendly).
+        related_name="product_comments",  # user.product_comments.all() orqali olish.
+        verbose_name=_("Muallif"),
+    )
+    # Ota-sharh — agar bu javob bo'lsa, qaysi sharhga javob ekanligini ko'rsatadi.
+    parent = models.ForeignKey(
+        "self",  # O'z-o'ziga ishora — daraxt strukturasi (parent/child).
+        on_delete=models.CASCADE,  # Asl sharh o'chsa, javoblari ham o'chadi.
+        null=True, blank=True,  # Top-level sharhlar uchun NULL.
+        related_name="replies",  # comment.replies.all() — javoblar ro'yxati.
+        verbose_name=_("Ota-sharh"),
+    )
+
+    # ----- Sharh mazmuni -----
+    # Reyting — 1 dan 5 gacha yulduzcha (0 — bermaslik).
+    rating = models.PositiveSmallIntegerField(
+        default=0,  # 0 — reyting qoldirilmagan (faqat matn izoh).
+        choices=[(0, "—"), (1, "1 ★"), (2, "2 ★"), (3, "3 ★"), (4, "4 ★"), (5, "5 ★")],
+        verbose_name=_("Reyting"),
+    )
+    # Sharh matni.
+    body = models.TextField(verbose_name=_("Sharh matni"))
+
+    # ----- Moderatsiya -----
+    class Status(models.TextChoices):
+        # Yangi sharhlar default tasdiqlangan — keyin moderation o'rnatilsa, default=PENDING qilinadi.
+        APPROVED = "approved", _("Tasdiqlangan")
+        # Modarator ko'zdan kechirishi kerak.
+        PENDING = "pending", _("Tekshirilmoqda")
+        # Spam yoki haqorat — admin rad etgan.
+        REJECTED = "rejected", _("Rad etilgan")
+    # Sharh holati — frontendda faqat APPROVED ko'rsatiladi.
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.APPROVED,  # MVP'da default tasdiqlangan; production'da PENDING ga o'zgartiriladi.
+        db_index=True,  # status bo'yicha tez filterlash uchun.
+        verbose_name=_("Holat"),
+    )
+    # Tasdiqlangan xaridorlik bayrog'i — agar muallif buyurtma qilgan bo'lsa, "Tasdiqlangan xaridor" badge.
+    is_verified_buyer = models.BooleanField(
+        default=False,
+        verbose_name=_("Tasdiqlangan xaridor"),
+        help_text=_("Bu foydalanuvchi mahsulotni haqiqatan sotib olganmi?"),
+    )
+    # Foydali tugmasi (likes count) — denormalized hisoblagich, performance uchun.
+    helpful_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Foydali deb belgilangan"),
+    )
+
+    class Meta:
+        db_table = "products_product_comment"
+        verbose_name = _("Mahsulot sharhi")
+        verbose_name_plural = _("Mahsulot sharhlari")
+        # Eng yangilari yuqorida.
+        ordering = ["-created_at"]
+        # Tez-tez ishlatiladigan filtrlar uchun composite indeks.
+        indexes = [
+            models.Index(fields=["product", "-created_at"], name="comment_product_recent_idx"),
+            models.Index(fields=["status", "-created_at"], name="comment_status_recent_idx"),
+        ]
+
+    def __str__(self) -> str:
+        # Debug uchun: muallif → mahsulot va matnning birinchi 30 belgisi.
+        snippet = (self.body or "")[:30].replace("\n", " ")
+        return f"{self.author.username} → {self.product.title_uz}: {snippet}"
+
+    @property
+    def is_reply(self) -> bool:
+        # Bu javob ekanligini tekshiradi — top-level emas.
+        return self.parent_id is not None
+
+
+# ---------------------------------------------------------------------------
+# ProductCommentImage — sharhga biriktirilgan rasm (alohida model).
+# ---------------------------------------------------------------------------
+# Foydalanuvchi qoidasi: comment ichiga `image` to'g'ridan-to'g'ri qo'yilmasin —
+# chunki Product'ning `ProductImage` modeli bor va chalkashish ehtimoli yuqori.
+# Shuning uchun har bir sharh uchun 0..N ta rasm bo'la oladi, har biri ALOHIDA yozuv.
+class ProductCommentImage(BaseModel):
+    """
+    Sharhga biriktirilgan bitta rasm.
+
+    Bir sharhga 0..N ta rasm — masalan, foydalanuvchi mahsulotni qo'lida ushlab fotosurat yuklaydi.
+    """
+    # Qaysi sharhga tegishli — sharh o'chsa, rasmlari ham o'chadi.
+    comment = models.ForeignKey(
+        ProductComment,
+        on_delete=models.CASCADE,
+        related_name="images",  # comment.images.all() — barcha rasmlar.
+        verbose_name=_("Sharh"),
+    )
+    # Asosiy rasm fayli — alohida papka qo'llaniladi (ProductImage'dan ajralib turadi).
+    image = models.ImageField(
+        upload_to="products/comments/%Y/%m/",  # ProductImage "products/images/..." dan farqli.
+        verbose_name=_("Rasm"),
+    )
+    # Multilingual alt matn — SEO va ekran o'qish uchun.
+    alt_uz = models.CharField(max_length=200, blank=True, verbose_name=_("Alt matn (uz)"))
+    alt_ru = models.CharField(max_length=200, blank=True, verbose_name=_("Alt matn (ru)"))
+    alt_en = models.CharField(max_length=200, blank=True, verbose_name=_("Alt matn (en)"))
+    # Tartib raqami — bir nechta rasm bo'lganda qaysi birinchi ko'rsatishni boshqaradi.
+    order = models.PositiveSmallIntegerField(default=0, verbose_name=_("Tartib"))
+
+    class Meta:
+        db_table = "products_product_comment_image"  # ProductImage'nikidan farqli — to'qnashuvni oldini oladi.
+        verbose_name = _("Sharh rasmi")
+        verbose_name_plural = _("Sharh rasmlari")
+        ordering = ["order", "created_at"]
+
+    def __str__(self) -> str:
+        # UUID qisqartirish — admin'da tushunarli ko'rinish.
+        short_id = str(self.id)[:8]
+        return f"CommentImage<{short_id}> for comment {self.comment_id}"
+
+    def get_alt(self, lang: str = "uz") -> str:
+        # Dinamik atribut o'qish — alt_uz/ru/en orasidan tilga mos olish.
+        value = getattr(self, f"alt_{lang}", "") or ""
+        # Fallback: bo'sh bo'lsa uz versiyasi.
+        return value or self.alt_uz or ""
+
+
+# ---------------------------------------------------------------------------
+# ProductReview — mahsulotga foydalanuvchi sharhi (rating + matn).
+# ---------------------------------------------------------------------------
+class ProductReview(BaseModel):
+    """
+    Foydalanuvchining mahsulotga sharhi.
+    Qoida: Bir foydalanuvchi bitta mahsulot uchun faqat bitta sharh qoldira oladi.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="product_reviews",
+        verbose_name=_("Foydalanuvchi")
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE, 
+        related_name="product_reviews",
+        verbose_name=_("Mahsulot")
+    )
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        verbose_name=_("Reyting")
+    )
+    text = models.TextField(verbose_name=_("Sharh matni"))
+
+    class Meta:
+        db_table = "products_product_review"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "product"], 
+                name="unique_user_product_review"
+            )
+        ]
+        verbose_name = _("Mahsulot sharhi")
+        verbose_name_plural = _("Mahsulot sharhlari")
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.product.title_uz} ({self.rating} ★)"
+
+class ProductReviewImage(BaseModel):
+    """Sharhga biriktirilgan rasmlar."""
+    review = models.ForeignKey(
+        ProductReview, 
+        on_delete=models.CASCADE, 
+        related_name="images",
+        verbose_name=_("Sharh")
+    )
+    image = models.ImageField(
+        upload_to="products/reviews/%Y/%m/",
+        verbose_name=_("Rasm")
+    )
+
+    class Meta:
+        db_table = "products_product_review_image"
+        verbose_name = _("Sharh rasmi")
+        verbose_name_plural = _("Sharh rasmlari")
 

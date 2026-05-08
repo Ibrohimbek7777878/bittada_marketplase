@@ -47,7 +47,7 @@
 
 <!-- Product Detail -->
 <div class="btd-product-detail">
-  
+
   <!-- Left: Gallery -->
   <div class="btd-product-detail__gallery">
     <!-- Main Image -->
@@ -59,14 +59,14 @@
         <span style="font-size: 96px;">🪑</span>
       </div>
       {% endif %}
-      
+
       <!-- Discount Badge -->
       {% if product.is_discount_active and product.discount_percent > 0 %}
       <div style="position: absolute; top: var(--space-md); left: var(--space-md); background: var(--btd-danger); color: white; padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600;">
         -{{ product.discount_percent }}%
       </div>
       {% endif %}
-      
+
       <!-- 3D Toggle -->
       {% if product.glb_model %}
       <button onclick="toggle3DView()" style="position: absolute; bottom: var(--space-md); right: var(--space-md); background: var(--secondary-brand); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: var(--erp-transition);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">
@@ -74,20 +74,20 @@
       </button>
       {% endif %}
     </div>
-    
+
     <!-- 3D Viewer (Uses Model-Viewer) -->
     <div class="btd-3d-viewer" id="3d-viewer" style="display: none; height: 500px; background: #eee; border-radius: 20px; overflow: hidden; position: relative;">
-      <model-viewer 
-        src="{{ product.glb_model.url }}" 
+      <model-viewer
+        src="{{ product.glb_model.url }}"
         poster="{{ product.images.first.image.url }}"
-        alt="{{ product.title_uz }} 3D modeli" 
-        shadow-intensity="1" 
-        camera-controls 
-        auto-rotate 
-        ar 
+        alt="{{ product.title_uz }} 3D modeli"
+        shadow-intensity="1"
+        camera-controls
+        auto-rotate
+        ar
         ar-modes="webxr scene-viewer quick-look"
         style="width: 100%; height: 100%; background-color: #F8FAFC;">
-        
+
         <button slot="ar-button" style="background-color: white; border-radius: 8px; border: 1px solid #DDD; position: absolute; top: 20px; right: 20px; padding: 10px; font-weight: 800; font-size: 12px; cursor: pointer; color: var(--secondary-brand); z-index: 10;">
            🏠 Xonaga joylash (AR)
         </button>
@@ -97,7 +97,7 @@
         Rasmga qaytish
       </button>
     </div>
-    
+
     <!-- Thumbnails -->
     {% if product.images.count > 1 %}
     <div class="btd-product-detail__thumbnails">
@@ -109,17 +109,17 @@
     </div>
     {% endif %}
   </div>
-  
+
   <!-- Right: Info -->
   <div class="btd-product-detail__info">
     <!-- Category -->
     <div style="font-size: 13px; color: var(--btd-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);">
       {{ product.category.name_uz }}
     </div>
-    
+
     <!-- Title -->
     <h1 class="btd-product-detail__title">{{ product.title_uz }}</h1>
-    
+
     <!-- Meta -->
     <div class="btd-product-detail__meta">
       <div style="display: flex; align-items: center; gap: 6px;">
@@ -129,7 +129,7 @@
       </div>
       <span style="color: var(--btd-border);">|</span>
       <span style="color: var(--btd-text-muted);">{{ product.view_count|intcomma }} ko'rish</span>
-      
+
       {% if product.product_type == 'manufacturing' %}
       <span class="btd-status btd-status--pending">
         <span></span> Buyurtma asosida
@@ -140,7 +140,7 @@
       </span>
       {% endif %}
     </div>
-    
+
     <!-- Price -->
     <div class="btd-product-detail__price-block">
       {% if product.product_type == 'manufacturing' and product.min_price %}
@@ -159,7 +159,7 @@
         {% endif %}
       {% endif %}
     </div>
-    
+
     <!-- Specs -->
     <div class="btd-product-detail__specs-grid">
       {% if product.primary_material %}
@@ -168,28 +168,28 @@
         <div class="btd-spec-item__value">{{ product.get_primary_material_display|default:product.primary_material }}</div>
       </div>
       {% endif %}
-      
+
       {% if product.primary_color %}
       <div class="btd-spec-item">
         <div class="btd-spec-item__label">Rang</div>
         <div class="btd-spec-item__value">{{ product.get_primary_color_display|default:product.primary_color }}</div>
       </div>
       {% endif %}
-      
+
       {% if product.style %}
       <div class="btd-spec-item">
         <div class="btd-spec-item__label">Uslub</div>
         <div class="btd-spec-item__value">{{ product.get_style_display|default:product.style }}</div>
       </div>
       {% endif %}
-      
+
       {% if product.condition %}
       <div class="btd-spec-item">
         <div class="btd-spec-item__label">Holat</div>
         <div class="btd-spec-item__value">{{ product.get_condition_display|default:product.condition }}</div>
       </div>
       {% endif %}
-      
+
       {% if product.width_cm or product.height_cm or product.depth_cm %}
       <div class="btd-spec-item">
         <div class="btd-spec-item__label">O'lchamlar</div>
@@ -200,7 +200,7 @@
         </div>
       </div>
       {% endif %}
-      
+
       {% if product.weight_kg %}
       <div class="btd-spec-item">
         <div class="btd-spec-item__label">Og'irlik</div>
@@ -208,16 +208,16 @@
       </div>
       {% endif %}
     </div>
-    
+
     <!-- Manufacturing Info & Timeline - TZ §10.2 -->
     {% if product.product_type == 'manufacturing' %}
     <div style="background: white; border: 1px solid var(--erp-glass-border); border-radius: 24px; padding: 32px; box-shadow: var(--erp-shadow); margin-top: 32px;">
       <h4 style="font-size: 18px; font-weight: 900; color: var(--secondary-brand); margin-bottom: 24px;">{{ cms.prod_stages_title|default:"Ishlab chiqarish bosqichlari" }}</h4>
-      
+
       <!-- Horizontal Timeline -->
       <div style="display: flex; justify-content: space-between; position: relative; margin-bottom: 40px; padding: 0 20px;">
         <div style="position: absolute; top: 15px; left: 40px; right: 40px; height: 2px; background: #E2E8F0; z-index: 1;"></div>
-        
+
         <div style="position: relative; z-index: 2; text-align: center; flex: 1;">
           <div style="width: 32px; height: 32px; background: var(--primary-brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; border: 4px solid white; box-shadow: 0 0 0 1px var(--primary-brand);">
             <i class="bi bi-check-lg" style="color: var(--secondary-brand); font-size: 14px;"></i>
@@ -257,7 +257,7 @@
       </div>
     </div>
     {% endif %}
-    
+
     <!-- Quantity (for standard products) -->
     {% if product.product_type == 'standard' and product.is_in_stock %}
     <div>
@@ -270,7 +270,7 @@
       </div>
     </div>
     {% endif %}
-    
+
     <!-- Actions -->
     <div class="btd-product-detail__actions">
       {% if product.product_type == 'standard' %}
@@ -282,16 +282,16 @@
           <span>📋</span> Buyurtma berish
         </button>
       {% endif %}
-      
+
       <button onclick="toggleWishlist('{{ product.uuid }}'); this.classList.toggle('btd-btn--secondary');" class="btd-btn btd-btn--secondary btd-btn--lg" id="wishlist-btn">
         <span>❤️</span> Sevimlilar
       </button>
-      
+
       <button onclick="contactSeller()" class="btd-btn btd-btn--ghost btd-btn--lg">
         <span>💬</span> Sotuvchi
       </button>
     </div>
-    
+
     <!-- Seller Card -->
     <div class="btd-card">
       <div class="btd-card__body" style="display: flex; align-items: center; gap: var(--space-md);">
@@ -315,7 +315,7 @@
         </a>
       </div>
     </div>
-    
+
     <!-- Description -->
     <div>
       <h3 style="font-size: 18px; font-weight: 600; color: var(--btd-text); margin-bottom: var(--space-md);">Tavsif</h3>
@@ -323,7 +323,7 @@
         {{ product.description_uz|linebreaks|default:"<p>Tavsif mavjud emas</p>" }}
       </div>
     </div>
-    
+
     <!-- Hashtags -->
     {% if product.hashtags %}
     <div>
@@ -336,6 +336,65 @@
     {% endif %}
   </div>
 </div>
+
+<!-- Reviews Section -->
+<section style="margin-top: var(--space-2xl); padding-top: var(--space-2xl); border-top: 1px solid var(--btd-border);">
+  <h2 style="font-size: 20px; font-weight: 600; color: var(--btd-text); margin-bottom: var(--space-lg);">Foydalanuvchi sharhlari</h2>
+
+  <!-- Reviews Summary -->
+  <div style="display: grid; grid-template-columns: auto 1fr; gap: var(--space-lg); margin-bottom: var(--space-xl); align-items: start;">
+    <div style="text-align: center;">
+      <div id="avg-rating" style="font-size: 48px; font-weight: 900; color: var(--secondary-brand);">—</div>
+      <div style="font-size: 14px; color: var(--btd-text-muted); margin-top: 8px;">
+        <span id="rating-count">0</span> sharh
+      </div>
+    </div>
+    <div>
+      <div id="rating-bars" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+  </div>
+
+  <!-- Add Review Button (for authenticated users) -->
+  <div id="add-review-section" style="display: none; background: var(--btd-bg-soft); padding: var(--space-lg); border-radius: var(--radius-lg); margin-bottom: var(--space-xl);">
+    <button id="toggle-review-form" class="btd-btn btd-btn--primary" onclick="toggleReviewForm()">
+      + Sharh qo'shish
+    </button>
+
+    <div id="review-form" style="display: none; margin-top: var(--space-lg);">
+      <form onsubmit="submitReview(event)">
+        <div style="margin-bottom: var(--space-md);">
+          <label style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Reyting</label>
+          <div id="rating-input" style="display: flex; gap: 8px; font-size: 24px;">
+            {% for i in "12345" %}
+            <button type="button" class="rating-star" data-value="{{ i }}" onclick="setRating({{ i }})" style="background: none; border: none; cursor: pointer; opacity: 0.3; transition: opacity 200ms;">★</button>
+            {% endfor %}
+          </div>
+        </div>
+        <div style="margin-bottom: var(--space-md);">
+          <label style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Sharh</label>
+          <textarea id="review-text" name="text" required placeholder="Ushbu mahsulot haqida fikringiz..." style="width: 100%; padding: 12px; border: 1px solid var(--btd-border); border-radius: var(--radius-md); font-family: var(--erp-font); resize: vertical; min-height: 100px;"></textarea>
+        </div>
+        <div style="display: flex; gap: var(--space-sm);">
+          <button type="submit" class="btd-btn btd-btn--primary">Yuborish</button>
+          <button type="button" class="btd-btn btd-btn--ghost" onclick="toggleReviewForm()">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Prompt (for anonymous users) -->
+  <div id="login-prompt" style="display: none; background: var(--btd-bg-soft); padding: var(--space-lg); border-radius: var(--radius-lg); margin-bottom: var(--space-xl); text-align: center;">
+    <p style="margin-bottom: var(--space-md); color: var(--btd-text);">Sharh qo'shish uchun tizimga kiring</p>
+    <a href="{% url 'users:login' %}?next={{ request.path }}" class="btd-btn btd-btn--primary">Kirish</a>
+  </div>
+
+  <!-- Reviews List -->
+  <div id="reviews-container" style="display: flex; flex-direction: column; gap: var(--space-lg);">
+    <div style="text-align: center; padding: var(--space-lg); color: var(--btd-text-muted);">
+      Sharhlaryuklash...
+    </div>
+  </div>
+</section>
 
 <!-- Similar Products -->
 {% if similar_products %}
@@ -357,14 +416,14 @@
       document.getElementById('wishlist-btn').classList.add('btd-btn--secondary');
     }
   })();
-  
+
   // Change main image
   function changeMainImage(url, thumb) {
     const mainImg = document.getElementById('main-image');
     if (mainImg) {
       mainImg.src = url;
     }
-    
+
     // Update active thumbnail
     document.querySelectorAll('.btd-product-detail__thumb').forEach(t => t.classList.remove('btd-product-detail__thumb--active'));
     thumb.classList.add('btd-product-detail__thumb--active');
@@ -396,12 +455,12 @@
       showToast(data.message || 'Xatolik yuz berdi', 'error');
     }
   }
-  
+
   // Toggle 3D view
   function toggle3DView() {
     const mainContainer = document.getElementById('main-image-container');
     const viewer3D = document.getElementById('3d-viewer');
-    
+
     if (mainContainer.style.display !== 'none') {
       mainContainer.style.display = 'none';
       viewer3D.style.display = 'flex';
@@ -410,23 +469,215 @@
       viewer3D.style.display = 'none';
     }
   }
-  
+
   // Update quantity
   function updateQty(delta) {
     const input = document.getElementById('quantity');
     let val = parseInt(input.value) + delta;
     const max = parseInt(input.max);
-    
+
     if (val < 1) val = 1;
     if (val > max) val = max;
-    
+
     input.value = val;
   }
-  
+
   // Contact seller
   function contactSeller() {
     // In real implementation, this would open a chat modal or navigate to chat page
     showToast('Sotuvchi bilan bog\'lanish funksiyasi tez orada qo\'shiladi', 'info');
+  }
+
+  // Review management
+  let currentRating = 0;
+  const isAuthenticated = "{{ user.is_authenticated|lower }}" === "true";
+  const productUUID = "{{ product.uuid }}";
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    initializeReviews();
+  });
+
+  async function initializeReviews() {
+    // Show appropriate section based on auth status
+    if (isAuthenticated) {
+      document.getElementById('add-review-section').style.display = 'block';
+    } else {
+      document.getElementById('login-prompt').style.display = 'block';
+    }
+
+    // Load reviews from API
+    await loadReviews();
+  }
+
+  async function loadReviews() {
+    try {
+      const response = await fetch(`/api/v1/products/${productUUID}/reviews/`);
+      if (!response.ok) throw new Error('Failed to load reviews');
+
+      const reviews = await response.json();
+      renderReviews(reviews);
+    } catch (error) {
+      console.error('Review load error:', error);
+      document.getElementById('reviews-container').innerHTML = '<div style="text-align: center; color: var(--btd-text-muted);">Sharhlaryuklashda xatolik yuz berdi.</div>';
+    }
+  }
+
+  function renderReviews(reviews) {
+    const container = document.getElementById('reviews-container');
+
+    if (!reviews.length) {
+      container.innerHTML = '<div style="text-align: center; padding: var(--space-lg); color: var(--btd-text-muted);">Hali hech qanday sharh yo\'q</div>';
+      updateRatingSummary([]);
+      return;
+    }
+
+    updateRatingSummary(reviews);
+    container.innerHTML = reviews.map(review => `
+      <div class="btd-card" style="padding: var(--space-md);">
+        <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--btd-wood) 0%, var(--btd-wood-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: 600;">
+            ${(review.user.first_name || review.user.username).charAt(0).toUpperCase()}
+          </div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+              <div>
+                <div style="font-weight: 600; color: var(--btd-text);">${escapeHtml(review.user.first_name || review.user.username)}</div>
+                <div style="font-size: 12px; color: var(--btd-text-muted);">${formatDate(review.created_at)}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 16px; color: #F59E0B;">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="color: var(--btd-text-secondary); line-height: 1.6; margin-bottom: var(--space-sm);">
+          ${escapeHtml(review.text)}
+        </div>
+        ${review.images && review.images.length ? `
+          <div style="display: flex; gap: 8px; margin-top: var(--space-sm); flex-wrap: wrap;">
+            ${review.images.map(img => `
+              <img src="${img.image}" alt="Review image" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); cursor: pointer;" onclick="openLightbox('${img.image}')">
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
+  }
+
+  function updateRatingSummary(reviews) {
+    if (reviews.length === 0) {
+      document.getElementById('avg-rating').textContent = '—';
+      document.getElementById('rating-count').textContent = '0';
+      document.getElementById('rating-bars').innerHTML = '';
+      return;
+    }
+
+    const ratings = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(r => ratings[r.rating]++);
+
+    const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+    document.getElementById('avg-rating').textContent = avgRating;
+    document.getElementById('rating-count').textContent = reviews.length;
+
+    const barsHTML = [5, 4, 3, 2, 1].map(star => {
+      const count = ratings[star];
+      const percent = (count / reviews.length) * 100;
+      return `
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+          <span style="width: 30px; text-align: right;">${star}★</span>
+          <div style="width: 120px; height: 6px; background: var(--btd-border); border-radius: 3px; overflow: hidden;">
+            <div style="width: ${percent}%; height: 100%; background: #F59E0B; border-radius: 3px;"></div>
+          </div>
+          <span style="width: 30px; color: var(--btd-text-muted);">${count}</span>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('rating-bars').innerHTML = barsHTML;
+  }
+
+  function setRating(rating) {
+    currentRating = rating;
+    document.querySelectorAll('.rating-star').forEach(btn => {
+      const val = parseInt(btn.dataset.value);
+      btn.style.opacity = val <= rating ? '1' : '0.3';
+    });
+  }
+
+  function toggleReviewForm() {
+    const form = document.getElementById('review-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function submitReview(e) {
+    e.preventDefault();
+
+    if (!currentRating) {
+      showToast('Reyting tanlang', 'error');
+      return;
+    }
+
+    const text = document.getElementById('review-text').value;
+    if (!text.trim()) {
+      showToast('Sharh matni kiriting', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/v1/products/${productUUID}/reviews/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+          rating: currentRating,
+          text: text
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || error.text || 'Failed to submit review');
+      }
+
+      showToast('Sharh muvaffaqiyatli qo\'shildi', 'success');
+      document.getElementById('review-text').value = '';
+      currentRating = 0;
+      document.querySelectorAll('.rating-star').forEach(btn => btn.style.opacity = '0.3');
+      toggleReviewForm();
+      await loadReviews();
+    } catch (error) {
+      console.error('Review submit error:', error);
+      showToast(error.message || 'Sharh qo\'shishda xatolik', 'error');
+    }
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return 'Hozir';
+    if (diffMins < 60) return `${diffMins} daqiqa oldin`;
+    const diffHours = Math.floor(diffMs / 3600000);
+    if (diffHours < 24) return `${diffHours} soat oldin`;
+    const diffDays = Math.floor(diffMs / 86400000);
+    if (diffDays < 30) return `${diffDays} kun oldin`;
+
+    return date.toLocaleDateString('uz-UZ');
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function openLightbox(imageUrl) {
+    // Simple lightbox implementation (can be enhanced later)
+    const win = window.open(imageUrl, '_blank');
   }
 </script>
 {% endblock %}

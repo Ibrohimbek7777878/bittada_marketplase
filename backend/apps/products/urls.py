@@ -9,6 +9,7 @@ from .views import (
     home_view,
     category_detail_view,
     product_detail_view,
+    products_list_view,  # 2026-05-06: yangi /products/ sahifa (yangi yon menyu Mahsulotlar tugmasi shu URL ga boradi).
     services_view,
     manufacturers_view,
     company_view,
@@ -39,6 +40,8 @@ urlpatterns: list = [
     path("", home_view, name="home"),
     path("select-role/", login_view, name="select-role"),  # Role selection page before register
     path("category/<slug:category_slug>/", category_detail_view, name="category_detail"),
+    # 2026-05-06: yangi URL — Mahsulotlar ro'yxati sahifasi (yon menyu havola qiladi).
+    path("products/", products_list_view, name="products_list"),
     path("product/<str:uuid>/", product_detail_view, name="product_detail"),
     path("services/", services_view, name="services"),
     path("manufacturers/", manufacturers_view, name="manufacturers"),

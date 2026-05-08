@@ -38,26 +38,26 @@
         <div class="btd-card" style="position: sticky; top: 88px;">
             <div class="btd-card__body">
                 <h3 class="btd-card__title" style="margin-bottom: var(--space-lg);">{% trans "Buyurtma xulosasi" %}</h3>
-                
+
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
                     <span class="btd-text-muted">{% trans "Mahsulotlar" %} (<span id="summary-count">0</span>):</span>
                     <span id="summary-subtotal">0 so'm</span>
                 </div>
-                
+
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
                     <span class="btd-text-muted">{% trans "Yetkazib berish:" %}</span>
                     <span class="btd-text-success">{% trans "Bepul" %}</span>
                 </div>
-                
+
                 <div style="border-top: 1px solid var(--btd-border); margin: 16px 0; padding-top: 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 18px;">
                     <span>{% trans "Jami:" %}</span>
                     <span id="summary-total" class="btd-text-primary">0 so'm</span>
                 </div>
-                
+
                 <button class="btd-btn btd-btn--primary btd-btn--full btd-btn--lg" id="checkout-btn" disabled>
                     {% trans "Rasmiylashtirish" %}
                 </button>
-                
+
                 <p style="font-size: 12px; color: var(--btd-text-muted); text-align: center; margin-top: 16px;">
                     * {% trans "Buyurtmani tasdiqlash orqali siz ommaviy ofertaga rozilik bildirasiz." %}
                 </p>
@@ -69,8 +69,32 @@
 
 {% block extra_js %}
 <script>
+    const API_BASE_URL = "/api/v1/marketplace";
+
+    function getCSRFToken() {
+        const name = "csrftoken";
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            document.cookie.split(';').forEach(cookie => {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-        const cart = getCart();
+        if ("{{ user.is_authenticated|lower }}" !== "true") {
+            {% url 'users:login' as login_url %}
+            window.location.href = "{{ login_url|escapejs }}?next=" + encodeURIComponent(window.location.pathname);
+            return;
+        }
+        await loadCart();
+    });
+
+    async function loadCart() {
         const itemsContainer = document.getElementById('cart-items');
         const emptyState = document.getElementById('cart-empty');
         const summaryCount = document.getElementById('summary-count');
@@ -78,79 +102,165 @@
         const summaryTotal = document.getElementById('summary-total');
         const checkoutBtn = document.getElementById('checkout-btn');
 
-        if (cart.length === 0) {
-            itemsContainer.style.display = 'none';
-            emptyState.style.display = 'block';
-            return;
-        }
-
-        // Fetch product details for items in cart
         try {
-            let total = 0;
-            let count = 0;
-            itemsContainer.innerHTML = '';
+            const response = await fetch(`${API_BASE_URL}/cart/`);
+            if (!response.ok) throw new Error('Failed to load cart');
+            const data = await response.json();
 
-            for (const item of cart) {
-                // In a real app, you'd fetch this from the API
-                // For demo, we'll try to use a mock or fetch if endpoint exists
-                const response = await fetch(`/api/v1/products/product/${item.uuid}/`);
-                if (response.ok) {
-                    const product = await response.json();
-                    const itemTotal = product.price * item.quantity;
-                    total += itemTotal;
-                    count += item.quantity;
-
-                    const itemHtml = `
-                        <div class="btd-card btd-card--horizontal mb-4" data-uuid="${item.uuid}">
-                            <div class="btd-card__image" style="width: 120px; height: 120px;">
-                                <img src="${product.images?.[0]?.image || '/static/img/placeholder.png'}" alt="${product.title_uz}" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            <div class="btd-card__body" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <div>
-                                    <h4 class="btd-card__title" style="margin-bottom: 4px;">${product.title_uz}</h4>
-                                    <p class="btd-text-muted" style="font-size: 13px;">Sotuvchi: ${product.seller_name || 'Bittada Vendor'}</p>
-                                    <div class="btd-text-primary" style="font-weight: 700; margin-top: 8px;">${Number(product.price).toLocaleString()} so'm</div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div class="btd-quantity-selector" style="display: flex; align-items: center; border: 1px solid var(--btd-border); border-radius: var(--radius-md); overflow: hidden;">
-                                        <button class="btd-btn btd-btn--ghost btd-btn--sm" onclick="changeQty('${item.uuid}', -1)">-</button>
-                                        <span style="padding: 0 12px; font-weight: 600;">${item.quantity}</span>
-                                        <button class="btd-btn btd-btn--ghost btd-btn--sm" onclick="changeQty('${item.uuid}', 1)">+</button>
-                                    </div>
-                                    <button class="btd-btn btd-btn--ghost btd-btn--sm btd-text-danger" onclick="removeFromCartUI('${item.uuid}')">🗑️</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
-                }
+            if (!data.items || data.items.length === 0) {
+                itemsContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+                summaryCount.textContent = '0';
+                summarySubtotal.textContent = "0 so'm";
+                summaryTotal.textContent = "0 so'm";
+                checkoutBtn.disabled = true;
+                return;
             }
 
-            summaryCount.textContent = count;
-            summarySubtotal.textContent = total.toLocaleString() + " so'm";
-            summaryTotal.textContent = total.toLocaleString() + " so'm";
+            itemsContainer.style.display = 'block';
+            emptyState.style.display = 'none';
+            itemsContainer.innerHTML = '';
+
+            data.items.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.id = `cart-item-${item.id}`;
+                itemEl.className = 'btd-card btd-card--horizontal mb-4 animate-fade-in';
+                itemEl.innerHTML = `
+                    <div class="btd-card__image" style="width: 120px; height: 120px;">
+                        <img src="${item.image || '/static/img/placeholder.png'}" alt="${item.product_title}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="btd-card__body" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div>
+                            <h4 class="btd-card__title" style="margin-bottom: 4px;">${escapeHtml(item.product_title)}</h4>
+                            <div class="btd-text-primary" style="font-weight: 700; margin-top: 8px;">${Number(item.price).toLocaleString()} so'm</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="btd-quantity-selector" style="display: flex; align-items: center; border: 1px solid var(--btd-border); border-radius: var(--radius-md); overflow: hidden;">
+                                <button class="btd-btn btd-btn--ghost btd-btn--sm qty-minus" data-item-id="${item.id}">−</button>
+                                <span id="qty-${item.id}" style="padding: 0 12px; font-weight: 600; min-width: 30px; text-align: center;">${item.quantity}</span>
+                                <button class="btd-btn btd-btn--ghost btd-btn--sm qty-plus" data-item-id="${item.id}">+</button>
+                            </div>
+                            <div id="subtotal-${item.id}" style="min-width: 100px; text-align: right; font-weight: 600;">
+                                ${Number(item.subtotal).toLocaleString()} so'm
+                            </div>
+                            <button class="btd-btn btd-btn--ghost btd-btn--sm btd-text-danger delete-item" data-item-id="${item.id}" title="O'chirish">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                itemsContainer.appendChild(itemEl);
+            });
+
+            attachEventListeners();
+            updateSummaryFromData(data);
             checkoutBtn.disabled = false;
 
         } catch (error) {
-            console.error('Error loading cart:', error);
-            itemsContainer.innerHTML = '<div class="btd-alert btd-alert--error">Savatni yuklashda xatolik yuz berdi.</div>';
-        }
-    });
-
-    function changeQty(uuid, delta) {
-        const cart = getCart();
-        const item = cart.find(i => i.uuid === uuid);
-        if (item) {
-            item.quantity = Math.max(1, item.quantity + delta);
-            localStorage.setItem('bittada.cart', JSON.stringify(cart));
-            window.location.reload();
+            console.error('Cart load error:', error);
+            itemsContainer.innerHTML = '<div style="padding: 20px; color: #EF4444;">Savatni yuklashda xatolik yuz berdi.</div>';
         }
     }
 
-    function removeFromCartUI(uuid) {
-        const cart = getCart().filter(i => i.uuid !== uuid);
-        localStorage.setItem('bittada.cart', JSON.stringify(cart));
-        window.location.reload();
+    function attachEventListeners() {
+        document.querySelectorAll('.qty-plus').forEach(btn => {
+            btn.addEventListener('click', handleQtyChange);
+        });
+        document.querySelectorAll('.qty-minus').forEach(btn => {
+            btn.addEventListener('click', handleQtyChange);
+        });
+        document.querySelectorAll('.delete-item').forEach(btn => {
+            btn.addEventListener('click', handleDeleteItem);
+        });
+    }
+
+    async function handleQtyChange(e) {
+        const itemId = e.target.dataset.itemId;
+        const isPlus = e.target.classList.contains('qty-plus');
+        const qtyEl = document.getElementById(`qty-${itemId}`);
+        const newQty = parseInt(qtyEl.textContent) + (isPlus ? 1 : -1);
+
+        if (newQty < 1) return;
+        await updateQty(itemId, newQty);
+    }
+
+    async function updateQty(itemId, newQty) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cart/item/${itemId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ quantity: newQty })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.message || "Xatolik yuz berdi");
+                return;
+            }
+
+            const data = await response.json();
+            document.getElementById(`qty-${itemId}`).textContent = data.quantity;
+            document.getElementById(`subtotal-${itemId}`).textContent = Number(data.subtotal).toLocaleString() + " so'm";
+            updateSummaryFromData(data);
+        } catch (error) {
+            console.error('Quantity update error:', error);
+        }
+    }
+
+    async function handleDeleteItem(e) {
+        const itemId = e.currentTarget.dataset.itemId;
+        {% trans "Haqiqatan ham ushbu mahsulotni savatdan o'chirmoqchimisiz?" as confirm_msg %}
+        if (!confirm("{{ confirm_msg|escapejs }}")) return;
+        await deleteItem(itemId);
+    }
+
+    async function deleteItem(itemId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cart/item/${itemId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            });
+
+            if (!response.ok) throw new Error('Delete failed');
+            const data = await response.json();
+
+            const element = document.getElementById(`cart-item-${itemId}`);
+            element.classList.add('animate-fade-out');
+            setTimeout(() => {
+                element.remove();
+                if (document.querySelectorAll('.btd-card--horizontal').length === 0) {
+                    loadCart();
+                }
+            }, 300);
+            updateSummaryFromData(data);
+        } catch (error) {
+            console.error('Delete error:', error);
+        }
+    }
+
+    function updateSummaryFromData(data) {
+        let count = 0;
+        if (data.items && Array.isArray(data.items)) {
+            count = data.items.reduce((acc, i) => acc + i.quantity, 0);
+        } else {
+            document.querySelectorAll('[id^="qty-"]').forEach(el => {
+                count += parseInt(el.textContent) || 0;
+            });
+        }
+        document.getElementById('summary-count').textContent = count;
+        document.getElementById('summary-subtotal').textContent = Number(data.total_price).toLocaleString() + " so'm";
+        document.getElementById('summary-total').textContent = Number(data.total_price).toLocaleString() + " so'm";
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 </script>
 {% endblock %}

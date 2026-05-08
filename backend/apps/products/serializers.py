@@ -16,6 +16,8 @@ from .models import (
     Product,
     ProductFile,
     ProductImage,
+    ProductReview,
+    ProductReviewImage,
     ProductStatus,
     ProductType,
     ProductVariant,
@@ -494,4 +496,27 @@ class ProductSearchSerializer(serializers.Serializer):
     results = ProductListSerializer(many=True)
     total = serializers.IntegerField()
     filters = ProductFilterOptionsSerializer()
+
+
+# ---------------------------------------------------------------------------
+# Review Serializers
+# ---------------------------------------------------------------------------
+class ProductReviewImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductReviewImage
+        fields = ["id", "image"]
+
+class ProductReviewSerializer(serializers.ModelSerializer):
+    user = UserPublicSerializer(read_only=True)
+    images = ProductReviewImageSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = ProductReview
+        fields = ["id", "user", "product", "rating", "text", "images", "created_at"]
+        read_only_fields = ["id", "user", "product", "created_at"]
+
+    def validate_rating(self, value):
+        if not (1 <= value <= 5):
+            raise serializers.ValidationError("Reyting 1 dan 5 gacha bo'lishi kerak.")
+        return value
 

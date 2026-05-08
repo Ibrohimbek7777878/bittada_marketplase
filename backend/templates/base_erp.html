@@ -245,12 +245,16 @@
 </head>
 <body style="min-height: 100vh; display: flex; flex-direction: column; background: var(--erp-bg); color: var(--secondary-brand); font-family: var(--erp-font);">
 
-    <!-- Modular Navbar -->
+    <!-- Modular Navbar (yangi minimal: logo + qidiruv + theme + saved + cart) -->
     {% include 'includes/erp_navbar.html' %}
 
-    <div class="erp-layout" style="display: flex; flex: 1;">
-        <!-- Modular Sidebar (Auth only) -->
-        {% if user.is_authenticated %}
+    {# 2026-05-06 — Yangi public hover sidebar har doim ko'rsatiladi (fixed position, 8px chiziq + hover bilan kengayadi). #}
+    {# Mavjud kodga zarar yetkazmaslik uchun: eski erp_sidebar.html (ERP) faqat /dashboard/* sahifalarida ko'rsatiladi. #}
+    {% include 'includes/erp_public_sidebar.html' %}
+
+    <div class="erp-layout" style="display: flex; flex: 1; padding-left: 8px;">
+        <!-- ERP boshqaruv sidebar — faqat /dashboard/ sahifalarida (eski xulq saqlanadi) -->
+        {% if user.is_authenticated and '/dashboard' in request.path %}
             {% include 'includes/erp_sidebar.html' %}
         {% endif %}
 

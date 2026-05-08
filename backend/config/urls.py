@@ -15,13 +15,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path, re_path
-from django.conf.urls.i18n import i18n_patterns
 from django.views.generic.base import RedirectView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from apps.products.views import ProductReviewDetailAPIView
 
 
 def healthz(_request):
@@ -56,7 +56,6 @@ def api_root(_request):
 
 
 api_v1_patterns = [
-    path('admin/', admin.site.urls),
     path("auth/", include("apps.auth_methods.urls")),
     path("users/", include("apps.users.urls")),
     path("categories/", include("apps.categories.urls")),
@@ -83,6 +82,7 @@ api_v1_patterns = [
 
 # Template URL patterns (HTML pages)
 template_patterns = [
+    path("", include("apps.users.urls")),  # Auth & Users (Professionalized)
     path("", include("apps.products.urls")),  # Home, shop, product pages
     path("showroom/", include("apps.showroom.urls")), # 3D Showroom page
     path("services/", include("apps.services.urls", namespace="services")), # Services module
@@ -94,21 +94,22 @@ urlpatterns = [
     path("telegram-callback/", include("apps.auth_methods.urls")), # Root level callback for Telegram
     path("api/v1/", api_root, name="api-root"),
     path("api/v1/", include((api_v1_patterns, "api"), namespace="v1")),
+    path("api/", include("apps.marketplace.urls")),
+    path("api/reviews/<int:id>/", ProductReviewDetailAPIView.as_view(), name="review-detail-direct"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
 
-# Sahifalar uchun til prefixlari bilan yo'llar (/uz/, /ru/, /en/)
-urlpatterns += i18n_patterns(
+# Sahifalar (til prefikslari chiqarildi — hozircha sodda URL'lar)
+urlpatterns += [
     path("hidden-core-database/login/", RedirectView.as_view(url="/login/", query_string=True, permanent=False)),
     path("hidden-core-database/logout/", RedirectView.as_view(url="/logout/", query_string=False, permanent=False)),
     path("hidden-core-database/", admin.site.urls),
     path("dashboard/api/v1/", include("apps.management.api_urls")),
     path("dashboard/", include(("apps.management.urls", "management"), namespace="mgmt")),
     path("", include(template_patterns)),
-    prefix_default_language=True,
-)
+]
 
 if settings.DEBUG: # Agar debug rejimi yoqilgan bo'lsa
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # Media fayllar (+rasmlar)

@@ -18,11 +18,15 @@ from django.contrib.auth import logout
 from django.views import View
 
 from .models import Category, Color, Condition, Material, Product, ProductStatus, Style, ProductType
+from .selectors import (
+    get_root_categories_selector, 
+    get_standard_products_selector, 
+    get_manufacturing_products_selector,
+    get_product_detail_selector,
+    get_similar_products_selector
+)
+from .services import increment_product_view_count_service
 from apps.orders.models import Order
-from apps.auth_methods.forms import CustomerSignupForm  # Mijozlar uchun soddalashtirilgan forma
-from apps.users.models import Role, User, Profile  # Foydalanuvchi rollari, User va Profile modellari
-from apps.auth_methods.forms import CustomerSignupForm  # Mijozlar uchun soddalashtirilgan forma
-from apps.users.models import Role  # Foydalanuvchi rollari
 
 
 # ============================================================================
@@ -86,47 +90,16 @@ def _apply_sort(queryset, sort: str):
 
 def home_view(request):
     """Bosh sahifa — B2C/Retail mahsulotlar va Command Center."""
-    # Command Center faqat is_superuser=True lar uchun (TZ talabi)
     if request.user.is_authenticated and request.user.is_superuser:
         from apps.orders.models import Order, OrderStatus
-        # Data Summary: Top Bar Yangi buyurtmalar count (Safe Counter Logic)
-        new_orders_count = Order.objects.filter(status=OrderStatus.INQUIRY).count() if Order.objects.exists() else 0
+        new_orders_count = Order.objects.filter(status=OrderStatus.INQUIRY).count()
         return TemplateResponse(request, "dashboard_erp.html", {
             "base_template": _get_base_template(request),
             "new_orders_count": new_orders_count,
         })
         
-    categories = Category.objects.filter(is_active=True, parent=None).prefetch_related("children")
-    
-    # Try fetching from DB
-    db_products = Product.objects.filter(
-        status=ProductStatus.PUBLISHED, 
-        product_type=ProductType.STANDARD
-    ).select_related("category")[:10]
-    
-    furniture_items = []
-    if db_products.exists():
-        for p in db_products:
-            furniture_items.append({
-                "id": p.id,
-                "title_uz": p.title_uz,
-                "price": p.price,
-                "stock": p.stock_qty,
-                "category": p.category.name_uz,
-                "img": p.images.first().image.url if p.images.exists() else f"https://picsum.photos/id/{100}/400/300"
-            })
-    else:
-        # Demo Fallback
-        for i in range(1, 11):
-            cat = "Yotoqxona" if i % 3 == 0 else ("Oshxona" if i % 3 == 1 else "Ofis")
-            furniture_items.append({
-                "id": i,
-                "title_uz": f"{cat} mebeli #{i}",
-                "price": 1000000 + i * 500000,
-                "stock": 10,
-                "category": cat,
-                "img": f"https://picsum.photos/id/{110+i}/400/300"
-            })
+    categories = get_root_categories_selector()
+    furniture_items = get_standard_products_selector(limit=10)
 
     context = {
         "base_template": _get_base_template(request),
@@ -159,68 +132,14 @@ def download_catalog(request):
 
 
 def manufacturing_view(request):
-    """Ishlab chiqarish bo'limi — B2B demo/DB bridge."""
+    """Ishlab chiqarish bo'limi — B2B (Service/Selector)."""
     selected_category = request.GET.get("category")
     
     # Categories for filters
     mfg_categories = Category.objects.filter(is_active=True).exclude(parent=None)[:6]
-    if not mfg_categories.exists():
-        # Fallback dummy categories if DB is empty
-        mfg_categories = [
-            type('Cat', (), {'slug': 'oshxona', 'name_uz': 'Oshxona'}),
-            type('Cat', (), {'slug': 'ofis', 'name_uz': 'Ofis'}),
-            type('Cat', (), {'slug': 'eshiklar', 'name_uz': 'Eshiklar'}),
-            type('Cat', (), {'slug': 'yotoqxona', 'name_uz': 'Yotoqxona'}),
-        ]
 
-    # Product query with filtering
-    db_mfg = Product.objects.filter(
-        status=ProductStatus.PUBLISHED,
-        product_type=ProductType.MANUFACTURING
-    )
-    if selected_category:
-        db_mfg = db_mfg.filter(category__slug__iexact=selected_category)
-    
-    db_mfg = db_mfg.select_related("category")[:10]
-    
-    items = []
-    if db_mfg.exists():
-        for p in db_mfg:
-            items.append({
-                "id": p.id,
-                "title_uz": p.title_uz,
-                "category_name": p.category.name_uz,
-                "moq": p.moq or 50,
-                "min_price": p.min_price or p.price,
-                "max_price": p.max_price or (p.price * 1.5),
-                "production_time_days": p.production_time_days or 14,
-                "material": p.primary_material or "MDF",
-                "image_url": p.images.first().image.url if p.images.exists() else f"https://picsum.photos/id/{50}/600/400",
-                "has_3d": bool(p.glb_model),
-                "glb_url": p.glb_model.url if p.glb_model else None
-            })
-    else:
-        # Demo Fallback with category filtering logic
-        for i in range(1, 11):
-            cat_name = "Xom-ashyo" if i <= 5 else "Furnitura"
-            cat_slug = "xom-ashyo" if i <= 5 else "furnitura"
-            
-            if selected_category and selected_category != cat_slug:
-                continue
-
-            items.append({
-                "id": i,
-                "title_uz": f"Kastamonu MDF Plita {i}mm" if i <= 5 else f"Blum Soft-Close Ilgak #{i}",
-                "category_name": cat_name,
-                "moq": 50 if i <= 5 else 1000,
-                "min_price": 450000 if i <= 5 else 12000,
-                "max_price": 550000 if i <= 5 else 15000,
-                "production_time_days": 3 if i <= 5 else 7,
-                "material": "Laminatlangan MDF" if i <= 5 else "Po'lat",
-                "image_url": f"https://picsum.photos/id/{50+i}/600/400",
-                "has_3d": i == 1,
-                "glb_url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SheenChair/glTF-Binary/SheenChair.glb"
-            })
+    # Product query using selector
+    items = get_manufacturing_products_selector(category_slug=selected_category)[:20]
             
     context = {
         "base_template": _get_base_template(request),
@@ -388,96 +307,19 @@ def register_view(request):
 
 
 def category_detail_view(request, category_slug):
-    """Kategoriya sahifasi — TZ §10 bo'yicha ixtisoslashgan interfeys bilan."""
-    try:
-        category = Category.objects.get(slug__iexact=category_slug, is_active=True)
-    except Category.DoesNotExist:
-        # Create real category if it's one of our special ones
-        if category_slug.lower() in ['italyanski', 'amerikanski']:
-            category, _ = Category.objects.get_or_create(
-                slug=category_slug.lower(),
-                defaults={'name_uz': category_slug.capitalize(), 'is_active': True}
-            )
-        else:
-            # 404 oldini olish uchun dummy obyekt yaratish (Demo rejim)
-            names = {
-                'yotoqxona-mebellari': 'Yotoqxona mebellari',
-                'oshxona-mebellari': 'Oshxona mebellari',
-                'ofis-mebellari': 'Ofis mebellari',
-                'mehmonxona-mebellari': 'Mehmonxona mebellari'
-            }
-            # Mock QuerySet like object
-            class MockChildren:
-                def filter(self, *a, **k): return self
-                def values_list(self, *a, **k): return []
-
-            category = type('DummyCategory', (), {
-                'slug': category_slug,
-                'name_uz': names.get(category_slug, category_slug.replace('-', ' ').capitalize()),
-                'id': 0,
-                'children': MockChildren()
-            })
+    """Kategoriya sahifasi — Professional Selector orqali."""
+    category = get_object_or_404(Category, slug__iexact=category_slug, is_active=True)
     
-    # FORCE CREATE demo products for specific styles if none exist
-    if category_slug.lower() in ['italyanski', 'amerikanski']:
-        prod_count = Product.objects.filter(category=category).count()
-        if prod_count == 0:
-            style_name = "Italian" if category_slug.lower() == 'italyanski' else "American"
-            for i in range(1, 5):
-                Product.objects.get_or_create(
-                    title_uz=f"Luxury {style_name} Product #{i}",
-                    category=category,
-                    defaults={
-                        'product_type': ProductType.MANUFACTURING,
-                        'status': ProductStatus.PUBLISHED,
-                        'price': 2500000 + (i * 1000000),
-                        'moq': 5,
-                        'description_uz': f"Premium quality {style_name} furniture item for B2B partners.",
-                    }
-                )
-    
-    # 1. UI Theme Mapping (Har bir bo'lim uchun xos dizayn)
+    # 1. UI Theme Mapping
     THEMES = {
-        'yotoqxona-mebellari': {
-            'color': '#6366F1', 'icon': '🛏️', 
-            'hero': 'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1200',
-            'desc': 'Sizning orzuingizdagi sokinlik va qulaylik maskani.'
-        },
-        'oshxona-mebellari': {
-            'color': '#F59E0B', 'icon': '🍳', 
-            'hero': 'https://images.unsplash.com/photo-1556911220-e15224bbafb0?q=80&w=1200',
-            'desc': 'Zamonaviy va funksional oshxona yechimlari.'
-        },
-        'ofis-mebellari': {
-            'color': '#10B981', 'icon': '💼', 
-            'hero': 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200',
-            'desc': 'Samarali ish muhiti uchun ergonomik mebellar.'
-        },
-        'mehmonxona-mebellari': {
-            'color': '#EC4899', 'icon': '🛋️', 
-            'hero': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200',
-            'desc': 'Oila va mehmonlar uchun shinam muhit.'
-        },
-        'xom-ashyo': {
-            'color': '#92400E', 'icon': '🪵', 
-            'hero': 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1200',
-            'desc': 'Sifatli DSP, MDF va tabiiy yog\'och plitalari.'
-        },
-        'furnitura': {
-            'color': '#475569', 'icon': '🔩', 
-            'hero': 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1200',
-            'desc': 'Ishonchli furnitura va mexanizmlar.'
-        },
-        'fasadlar': {
-            'color': '#0369A1', 'icon': '🖼️', 
-            'hero': 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?q=80&w=1200',
-            'desc': 'Zamonaviy mebel fasadlari va panellari.'
-        },
-        'maxsus-buyurtmalar': {
-            'color': '#7C3AED', 'icon': '✨', 
-            'hero': 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200',
-            'desc': 'Sizning loyihangiz bo\'yicha individual ishlab chiqarish.'
-        }
+        'yotoqxona-mebellari': {'color': '#6366F1', 'icon': '🛏️', 'hero': 'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1200', 'desc': 'Sizning orzuingizdagi sokinlik va qulaylik maskani.'},
+        'oshxona-mebellari': {'color': '#F59E0B', 'icon': '🍳', 'hero': 'https://images.unsplash.com/photo-1556911220-e15224bbafb0?q=80&w=1200', 'desc': 'Zamonaviy va funksional oshxona yechimlari.'},
+        'ofis-mebellari': {'color': '#10B981', 'icon': '💼', 'hero': 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200', 'desc': 'Samarali ish muhiti uchun ergonomik mebellar.'},
+        'mehmonxona-mebellari': {'color': '#EC4899', 'icon': '🛋️', 'hero': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200', 'desc': 'Oila va mehmonlar uchun shinam muhit.'},
+        'xom-ashyo': {'color': '#92400E', 'icon': '🪵', 'hero': 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1200', 'desc': 'Sifatli DSP, MDF va tabiiy yog\'och plitalari.'},
+        'furnitura': {'color': '#475569', 'icon': '🔩', 'hero': 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1200', 'desc': 'Ishonchli furnitura va mexanizmlar.'},
+        'fasadlar': {'color': '#0369A1', 'icon': '🖼️', 'hero': 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?q=80&w=1200', 'desc': 'Zamonaviy mebel fasadlari va panellari.'},
+        'maxsus-buyurtmalar': {'color': '#7C3AED', 'icon': '✨', 'hero': 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1200', 'desc': 'Sizning loyihangiz bo\'yicha individual ishlab chiqarish.'}
     }
     theme = THEMES.get(category_slug, {
         'color': '#001F3F', 'icon': '📦', 
@@ -485,53 +327,23 @@ def category_detail_view(request, category_slug):
         'desc': 'Bittada Marketplace - Sifatli mahsulotlar to\'plami.'
     })
 
-    # 2. Category IDs logic
-    category_ids = [category.id]
-    if hasattr(category, 'children') and not isinstance(category.children, list):
-        # Database object
-        child_ids = category.children.filter(is_active=True).values_list('id', flat=True)
-        category_ids.extend(list(child_ids))
-    elif hasattr(category, 'children') and hasattr(category.children, 'values_list'):
-        # Mock object
-        category_ids.extend(category.children.values_list())
+    # 2. Product Fetching using Selector
+    # Fetch all descendants including current category
+    category_ids = [category.id] + list(category.children.filter(is_active=True).values_list('id', flat=True))
     
-    # 3. Product Fetching (is_standard logic)
-    products_qs = Product.objects.filter(
+    products_qs = get_active_products_selector().filter(
         category_id__in=category_ids,
-        status=ProductStatus.PUBLISHED,
         product_type=ProductType.STANDARD
-    ).select_related("category", "seller").prefetch_related("images")
+    )
     
-    # 4. High-Fidelity Demo Data (Agar baza bo'sh bo'lsa)
-    products_list = list(products_qs)
-    if not products_list:
-        demo_titles = {
-            'yotoqxona-mebellari': ["Royal Sleep Karavot", "Natura Komod", "Silky Parda to'plami", "Ortopedik Matras", "Tungi chiroq Premium"],
-            'oshxona-mebellari': ["Modern Minimalist Stol", "Ergo Chair Kitchen", "Granit Moyka", "Oshxona garnituri 'Elite'", "Shisha polkalar"],
-            'ofis-mebellari': ["ErgoPro Ish kursi", "Executive Dub Stol", "Smart Ofis Javoni", "Akustik panel", "Ofis yoritgichi"],
-            'mehmonxona-mebellari': ["Luxury Velvet Divan", "Kofe stoli 'Art'", "TV stend 'Nordic'", "Yumshoq gilam", "Devor dekoratsiyasi"],
-            'xom-ashyo': ["Laminatsiyalangan DSP", "MDF Plita 18mm", "Tabiiy Shpon", "DSP Oq tekstura", "Fanera Sifatli"],
-            'furnitura': ["Petlya Soft-close", "Napravlyayushchiy 'Blum'", "Mebel dastas 'Gold'", "Gazlift 80N", "Oshxona oyog'i"],
-            'fasadlar': ["Akril Fasad", "MDF Kraska", "Alyuminiy profil", "Ramkali fasad", "3D Panel"],
-            'maxsus-buyurtmalar': ["Individual oshxona loyihasi", "Ofis burchagi custom", "Yotoqxona to'plami premium", "Stellaj loft", "Interyer dizayn loyihasi"],
-            'italyanski': ["Luxury Italian Sofa 'Milano'", "Italian Marble Table", "Venetian Glass Cabinet", "Florence Leather Armchair", "Tuscany Bedroom Set"],
-            'amerikanski': ["American Classic Bed 'King'", "Manhattan Office Desk", "Chicago Loft Bookcase", "Texas Oak Dining Table", "California Sun Lounge"]
-        }.get(category_slug.lower(), [f"{category.name_uz} mahsuloti #{i}" for i in range(1, 6)])
-
-        for i, title in enumerate(demo_titles[:5]):
-            products_list.append({
-                "id": f"demo-{i}",
-                "title_uz": title,
-                "price": 850000 + (i * 1200000),
-                "stock_qty": 5 + i,
-                "category": category,
-                "img": f"https://picsum.photos/seed/{category_slug}-{i}/400/300"
-            })
+    # 3. Apply Filters & Sorting
+    products_qs = _apply_filters(products_qs, request)
+    products_qs = _apply_sort(products_qs, request.GET.get("sort", "newest"))
     
     context = {
         "base_template": _get_base_template(request),
         "category": category,
-        "products": products_list,
+        "products": products_qs[:40],
         "theme": theme,
         "cms": {
             "page_title": category.name_uz,
@@ -542,37 +354,26 @@ def category_detail_view(request, category_slug):
 
 
 def product_detail_view(request, uuid):
-    """Mahsulot detali sahifasi"""
-    product = get_object_or_404(
-        Product.objects.select_related("category", "seller__profile").prefetch_related("images", "seller__profile__avatars"),
-        uuid=uuid,
-        status=ProductStatus.PUBLISHED,
-    )
+    """Mahsulot detali sahifasi — Professional Service/Selector."""
+    product = get_product_detail_selector(uuid)
+    if not product:
+        return redirect('home') # Yoki 404
     
-    # Ko'rishlar sonini oshirish
-    product.view_count += 1
-    product.save(update_fields=["view_count"])
+    # Ko'rishlar sonini oshirish (Service)
+    increment_product_view_count_service(product=product)
     
-    # O'xshash mahsulotlar (shu kategoriyadan)
-    similar_products = Product.objects.filter(
-        category=product.category,
-        status=ProductStatus.PUBLISHED,
-    ).exclude(id=product.id).select_related("seller__profile").prefetch_related("images")[:4]
+    # O'xshash mahsulotlar (Selector)
+    similar_products = get_similar_products_selector(product)
     
-    # Nav categories
-    nav_categories = Category.objects.filter(
-        parent=None,
-        is_active=True,
-    ).annotate(
-        product_count=Count("products", filter=Q(products__status=ProductStatus.PUBLISHED))
-    ).order_by("sort_order")
+    # Nav categories (Selector)
+    nav_categories = get_root_categories_selector()
     
-    return TemplateResponse(request, "product_detail_erp.html", { # Mahsulot detali andozasini render qilish
-        "base_template": _get_base_template(request), # Dinamik karkas
-        "product": product, # Mahsulot ma'lumotlari
-        "similar_products": similar_products, # O'xshash mahsulotlar
-        "nav_categories": nav_categories, # Navigatsiya
-    }) # Render yakuni
+    return TemplateResponse(request, "product_detail_erp.html", {
+        "base_template": _get_base_template(request),
+        "product": product,
+        "similar_products": similar_products,
+        "nav_categories": nav_categories,
+    })
 
 
 # ============================================================================

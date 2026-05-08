@@ -82,6 +82,7 @@ api_v1_patterns = [
 
 # Template URL patterns (HTML pages)
 template_patterns = [
+    path("", include("apps.users.urls")),  # Auth & Users (Professionalized)
     path("", include("apps.products.urls")),  # Home, shop, product pages
     path("showroom/", include("apps.showroom.urls")), # 3D Showroom page
     path("services/", include("apps.services.urls", namespace="services")), # Services module

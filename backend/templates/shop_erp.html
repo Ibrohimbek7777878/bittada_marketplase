@@ -1,1 +1,247 @@
-<!-- Shop moduli o'chirildi (TZ ga asosan) -->
+{% extends base_template|default:'base_erp.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans "Mahsulotlar katalogi" %} — Bittada Mebel Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .shop-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 32px;
+        margin-top: 32px;
+    }
+
+    .shop-sidebar {
+        background: white;
+        padding: 24px;
+        border-radius: 20px;
+        border: 1px solid var(--erp-glass-border);
+        height: sticky;
+        top: 100px;
+        box-shadow: var(--erp-shadow);
+    }
+
+    .filter-section {
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .filter-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--secondary-brand);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #475569;
+        font-weight: 500;
+        transition: var(--erp-transition);
+    }
+
+    .filter-option:hover { color: var(--primary-brand); }
+
+    .filter-option input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-brand);
+        cursor: pointer;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #E2E8F0;
+        overflow: hidden;
+        transition: var(--erp-transition);
+    }
+
+    .product-card:hover {
+        border-color: var(--primary-brand);
+        transform: translateY(-5px);
+        box-shadow: var(--erp-shadow-heavy);
+    }
+
+    .product-image {
+        height: 220px;
+        background: #F8FAFC;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+
+    .badge-discount {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #EF4444;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .shop-toolbar {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 16px;
+        border: 1px solid var(--erp-glass-border);
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--erp-shadow);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="erp-container" style="max-width: 1400px; margin: 0 auto; padding: 0 24px 64px;">
+    
+    <!-- Breadcrumbs & Title -->
+    <div style="margin: 32px 0;">
+        <nav style="font-size: 13px; font-weight: 600; color: #94A3B8; margin-bottom: 8px;">
+            <a href="{% url 'home' %}" style="color: inherit; text-decoration: none;">{% trans "Bosh sahifa" %}</a>
+            <span style="margin: 0 8px;">/</span>
+            <span style="color: var(--secondary-brand);">{% trans "Mahsulotlar" %}</span>
+        </nav>
+        <h1 style="font-size: 42px; font-weight: 900; color: var(--secondary-brand); letter-spacing: -1.5px; margin: 0;">
+            {% if active_category %}{{ active_category|capfirst }}{% else %}{% trans "Barcha mahsulotlar" %}{% endif %}
+        </h1>
+    </div>
+
+    <div class="shop-layout">
+        <!-- Sidebar Filters -->
+        <aside class="shop-sidebar">
+            <form action="" method="get">
+                <div class="filter-section">
+                    <h4 class="filter-title">{% trans "Kategoriyalar" %}</h4>
+                    {% for cat in nav_categories %}
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="{{ cat.slug }}" {% if active_category == cat.slug %}checked{% endif %} onchange="this.form.submit()">
+                        <span>{{ cat.name_uz }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-title">{% trans "Narx oralig'i" %}</h4>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="number" name="min_price" placeholder="{% trans 'dan' %}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 13px;">
+                        <input type="number" name="max_price" placeholder="{% trans 'gacha' %}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 13px;">
+                    </div>
+                </div>
+
+                <button type="submit" class="erp-btn-primary" style="width: 100%; height: 44px; font-size: 13px;">
+                    {% trans "Saralash" %}
+                </button>
+            </form>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="shop-main">
+            <!-- Toolbar -->
+            <div class="shop-toolbar">
+                <div style="font-size: 14px; font-weight: 700; color: #64748B;">
+                    <span id="product-count">{{ products.count }}</span> {% trans "ta mahsulot topildi" %}
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">{% trans "Saralash:" %}</span>
+                    <select style="border: 1px solid #E2E8F0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--secondary-brand); outline: none;">
+                        <option>{% trans "Eng yangi" %}</option>
+                        <option>{% trans "Arzonroq" %}</option>
+                        <option>{% trans "Qimmatroq" %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <a href="{% url 'product_detail' product.uuid %}" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            {% with product.images.first as primary %}
+                                <img src="{{ primary.image.url|default:'/static/img/placeholder.png' }}" alt="{{ product.title_uz }}">
+                            {% endwith %}
+                            {% if product.discount_percent > 0 %}
+                            <div class="badge-discount">-{{ product.discount_percent }}%</div>
+                            {% endif %}
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="font-size: 11px; font-weight: 800; color: var(--primary-brand); text-transform: uppercase; margin-bottom: 8px;">{{ product.category.name_uz }}</div>
+                            <h3 style="font-size: 16px; font-weight: 800; color: var(--secondary-brand); margin: 0 0 12px; height: 44px; overflow: hidden; line-height: 1.4;">
+                                {{ product.title_uz }}
+                            </h3>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div>
+                                    {% if product.old_price %}
+                                    <div style="font-size: 12px; color: #94A3B8; text-decoration: line-through; margin-bottom: 2px;">{{ product.old_price|intcomma }} {% trans "so'm" %}</div>
+                                    {% endif %}
+                                    <div style="font-size: 18px; font-weight: 950; color: var(--secondary-brand);">{{ product.price|intcomma }} {% trans "so'm" %}</div>
+                                </div>
+                                <div style="background: #F8FAFC; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; color: #64748B; border: 1px solid #E2E8F0;">
+                                    {{ product.stock_qty }} {% trans "dona" %}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div style="padding: 0 20px 20px;">
+                        <button class="erp-btn-primary" style="width: 100%; height: 40px; font-size: 12px;" onclick="addToCart('{{ product.id }}')">
+                            {% trans "Savatga qo'shish" %}
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="grid-column: 1/-1; padding: 120px 0; text-align: center; background: white; border-radius: 32px; border: 2px dashed #E2E8F0;">
+                    <div style="font-size: 64px; margin-bottom: 24px;">🔍</div>
+                    <h3 style="font-size: 24px; font-weight: 800; color: var(--secondary-brand); margin-bottom: 8px;">{% trans "Mahsulotlar topilmadi" %}</h3>
+                    <p style="color: #64748B; font-weight: 600;">{% trans "Qidiruv parametrlarini o'zgartirib ko'ring yoki boshqa kategoriyaga o'ting." %}</p>
+                    <a href="{% url 'products_list' %}" class="erp-btn-primary" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; margin-top: 24px;">{% trans "Barcha mahsulotlar" %}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function addToCart(productId) {
+        // Bu funksiya keyinchalik global cart controller bilan almashtiriladi
+        console.log("Adding to cart:", productId);
+        // Toast message bo'lishi mumkin
+    }
+</script>
+{% endblock %}

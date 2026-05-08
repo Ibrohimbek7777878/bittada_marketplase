@@ -1,0 +1,376 @@
+{# 2026-05-06 — Yangi public yon menyu (hover bilan ochiladi). #}
+{# Asosiy g'oya: chap chetda doimo 8px ingichka chiziq turadi, mishka kelganda 280px ga kengayadi. #}
+{# Mishka ketganda — yana 8px ga qaytadi (CSS transition orqali). #}
+{# QOIDA: bu yangi alohida fayl — eski erp_sidebar.html (ERP /dashboard/ uchun) o'zgartirilmaydi. #}
+{% load i18n %}{# Tarjima teglari uchun. #}
+
+{# ─────────────────────────────────────────────────────────────────── #}
+{# YON MENYU — fixed, chap tomonda, 100vh balandlikda                  #}
+{# ─────────────────────────────────────────────────────────────────── #}
+<aside id="hoverSidebar" class="hover-sidebar" aria-label="{% trans 'Asosiy navigatsiya' %}">
+
+    {# Doimo ko'rinadigan ingichka chiziq — vizual ko'rsatkich (mishka olib kelishni so'raydi). #}
+    {# Ichida vertikal grip belgisi — foydalanuvchiga ko'rinadi. #}
+    <div class="hover-sidebar__grip" aria-hidden="true">
+        <i class="bi bi-grip-vertical"></i>
+    </div>
+
+    {# Asosiy menyu mazmuni — kengaytirilganda ko'rinadi. #}
+    <div class="hover-sidebar__content">
+
+        {# Brand sarlavha — sidebar ochilganda yuqorida turadi. #}
+        <div class="hover-sidebar__brand">
+            <div class="hover-sidebar__logo">B</div>
+            <div>
+                <div class="hover-sidebar__title">Bittada</div>
+                <div class="hover-sidebar__subtitle">{% trans "Marketplace" %}</div>
+            </div>
+        </div>
+
+        {# Navigatsiya ro'yxati — barcha asosiy sayt sahifalari. #}
+        <nav class="hover-sidebar__nav">
+
+            {# Asosiy guruh sarlavhasi. #}
+            <div class="hover-sidebar__group-label">{% trans "Asosiy" %}</div>
+
+            {# 1) Bosh sahifa. #}
+            <a href="{% url 'home' %}" class="hover-sidebar__link {% if request.path == '/' or request.path == '/uz/' or request.path == '/ru/' or request.path == '/en/' %}active{% endif %}">
+                <i class="bi bi-house-door-fill"></i>
+                <span>{% trans "Bosh sahifa" %}</span>
+            </a>
+
+            {# 2) Mahsulotlar — yangi /products/ sahifasi. #}
+            <a href="{% url 'products_list' %}" class="hover-sidebar__link {% if '/products/' in request.path or '/product/' in request.path %}active{% endif %}">
+                <i class="bi bi-bag-fill"></i>
+                <span>{% trans "Mahsulotlar" %}</span>
+            </a>
+
+            {# 3) Showroom (3D). #}
+            <a href="{% url 'showroom' %}" class="hover-sidebar__link {% if 'showroom' in request.path %}active{% endif %}">
+                <i class="bi bi-box"></i>
+                <span>{% trans "Showroom (3D)" %}</span>
+            </a>
+
+            {# 4) Xizmatlar. #}
+            <a href="{% url 'services' %}" class="hover-sidebar__link {% if '/services' in request.path and 'dashboard' not in request.path %}active{% endif %}">
+                <i class="bi bi-tools"></i>
+                <span>{% trans "Xizmatlar" %}</span>
+            </a>
+
+            {# 5) Ishlab chiqarish. #}
+            <a href="{% url 'manufacturing' %}" class="hover-sidebar__link {% if 'manufacturing' in request.path %}active{% endif %}">
+                <i class="bi bi-bricks"></i>
+                <span>{% trans "Ishlab chiqarish" %}</span>
+            </a>
+
+            {# 6) Ishlab chiqaruvchilar (manufacturers). #}
+            <a href="{% url 'manufacturers' %}" class="hover-sidebar__link {% if 'manufacturers' in request.path %}active{% endif %}">
+                <i class="bi bi-building"></i>
+                <span>{% trans "Ishlab chiqaruvchilar" %}</span>
+            </a>
+
+            {# Foydalanuvchi guruhi — faqat tizimga kirgan bo'lsa ko'rsatiladi. #}
+            {% if user.is_authenticated %}
+            <div class="hover-sidebar__group-label">{% trans "Mening hisobim" %}</div>
+
+            {# 7) Profil. #}
+            <a href="{% url 'profile' %}" class="hover-sidebar__link {% if '/profile' in request.path %}active{% endif %}">
+                <i class="bi bi-person-circle"></i>
+                <span>{% trans "Profil" %}</span>
+            </a>
+
+            {# 8) Buyurtmalar. #}
+            <a href="{% url 'orders' %}" class="hover-sidebar__link {% if '/orders' in request.path and 'dashboard' not in request.path %}active{% endif %}">
+                <i class="bi bi-clipboard-check"></i>
+                <span>{% trans "Buyurtmalar" %}</span>
+            </a>
+
+            {# 9) Saqlangan e'lonlar. #}
+            <a href="{% url 'wishlist' %}" class="hover-sidebar__link {% if 'wishlist' in request.path %}active{% endif %}">
+                <i class="bi bi-bookmark-heart"></i>
+                <span>{% trans "Saqlangan e'lonlar" %}</span>
+            </a>
+
+            {# 10) Savatcha. #}
+            <a href="{% url 'cart' %}" class="hover-sidebar__link {% if '/cart' in request.path %}active{% endif %}">
+                <i class="bi bi-cart3"></i>
+                <span>{% trans "Savatcha" %}</span>
+            </a>
+            {% endif %}
+
+            {# Platforma guruhi — kompaniya/escrow ma'lumotlari. #}
+            <div class="hover-sidebar__group-label">{% trans "Platforma" %}</div>
+
+            {# 11) Kompaniya haqida. #}
+            <a href="{% url 'company' %}" class="hover-sidebar__link {% if '/company' in request.path %}active{% endif %}">
+                <i class="bi bi-info-circle"></i>
+                <span>{% trans "Kompaniya haqida" %}</span>
+            </a>
+
+            {# 12) Escrow (xavfsiz to'lov). #}
+            <a href="{% url 'escrow' %}" class="hover-sidebar__link {% if '/escrow' in request.path and 'dashboard' not in request.path %}active{% endif %}">
+                <i class="bi bi-shield-lock"></i>
+                <span>{% trans "Escrow Fund" %}</span>
+            </a>
+
+            {# Admin (super admin) uchun ERP havolasi — faqat is_superuser bo'lsa. #}
+            {% if user.is_authenticated and user.is_superuser %}
+            <div class="hover-sidebar__group-label">{% trans "Boshqaruv" %}</div>
+            <a href="/dashboard/" class="hover-sidebar__link" title="{% trans 'Bittada ERP boshqaruv tizimi' %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>{% trans "Command Center" %}</span>
+            </a>
+            {% endif %}
+
+            {# Logout — tizimga kirgan bo'lsa, sidebar oxirida. #}
+            {% if user.is_authenticated %}
+            <div style="margin-top: auto; padding-top: 16px;"></div>
+            <a href="{% url 'logout' %}" class="hover-sidebar__link hover-sidebar__link--danger">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>{% trans "Chiqish" %}</span>
+            </a>
+            {% else %}
+            <div style="margin-top: auto; padding-top: 16px;"></div>
+            <a href="{% url 'login' %}" class="hover-sidebar__link hover-sidebar__link--accent">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>{% trans "Kirish" %}</span>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+</aside>
+
+<style>
+    /* ────────────────────────────────────────────────────────────────── */
+    /* Hover-ochiladigan yon menyu                                         */
+    /* ────────────────────────────────────────────────────────────────── */
+
+    .hover-sidebar {
+        /* Fixed pozitsiya — sahifani aylanma surishda ham joyida turadi. */
+        position: fixed;
+        top: 72px;  /* Yuqori navbar balandligi (72px) dan keyin boshlanadi. */
+        left: 0;
+        height: calc(100vh - 72px);  /* Navbar minus qoldiq joy. */
+        /* Default holatda — ingichka chiziq (8px). */
+        width: 8px;
+        /* Yon menyu fonida brand secondary rangda yuqori-pastga gradient. */
+        background: linear-gradient(180deg, var(--secondary-brand) 0%, #001022 100%);
+        z-index: 1500;  /* Modal'lardan past, content'dan yuqori. */
+        /* Kengaytirish/qisqartirish animatsiyasi — yumshoq. */
+        transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        /* Ichkari mazmun chiqib ketmasin uchun. */
+        overflow: hidden;
+        /* Yon shadow — kengaytirilganda chiroyliroq ko'rinishi uchun. */
+        box-shadow: 4px 0 20px rgba(0, 31, 63, 0.04);
+    }
+
+    /* Hover holatida — sidebar 280px ga kengayadi. */
+    .hover-sidebar:hover,
+    .hover-sidebar:focus-within {
+        width: 280px;
+        box-shadow: 6px 0 30px rgba(0, 31, 63, 0.18);
+    }
+
+    /* Grip (ushlagich) — chap chetdagi vertikal chiziq belgisi. */
+    .hover-sidebar__grip {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-brand);
+        font-size: 16px;
+        opacity: 0.8;
+        transition: opacity 180ms cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;  /* Mishka eventlari aside'ga to'g'ridan-to'g'ri o'tadi. */
+    }
+    .hover-sidebar:hover .hover-sidebar__grip {
+        opacity: 0;  /* Kengayganda yashiriladi. */
+    }
+
+    /* Asosiy mazmun — hover bo'lmaganda ko'rinmaydi (opacity 0 + clip). */
+    .hover-sidebar__content {
+        width: 280px;
+        height: 100%;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateX(-12px);
+        transition: opacity 220ms cubic-bezier(0.4, 0, 0.2, 1) 80ms,
+                    transform 220ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+        overflow-y: auto;
+    }
+    .hover-sidebar:hover .hover-sidebar__content,
+    .hover-sidebar:focus-within .hover-sidebar__content {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* Brand sarlavha — sidebar tepasida. */
+    .hover-sidebar__brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 8px 24px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .hover-sidebar__logo {
+        width: 44px;
+        height: 44px;
+        background: var(--primary-brand);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary-brand);
+        font-size: 22px;
+        font-weight: 950;
+        box-shadow: 0 4px 12px rgba(164, 212, 108, 0.3);
+    }
+    .hover-sidebar__title {
+        color: white;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+    }
+    .hover-sidebar__subtitle {
+        color: var(--primary-brand);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Navigatsiya konteyneri. */
+    .hover-sidebar__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;  /* Logout/login pastga otildi. */
+    }
+
+    /* Guruh sarlavhalari — kichik, paxta caps. */
+    .hover-sidebar__group-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        padding: 16px 12px 8px;
+    }
+
+    /* Har bir havola — ikonka + matn. */
+    .hover-sidebar__link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 160ms cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 3px solid transparent;
+    }
+    .hover-sidebar__link i {
+        font-size: 18px;
+        color: var(--primary-brand);
+        flex-shrink: 0;
+        width: 22px;
+        text-align: center;
+    }
+    .hover-sidebar__link:hover {
+        background: rgba(164, 212, 108, 0.12);
+        color: white;
+        border-left-color: var(--primary-brand);
+        padding-left: 16px;
+    }
+    .hover-sidebar__link.active {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        font-weight: 800;
+        border-left-color: white;
+    }
+    .hover-sidebar__link.active i {
+        color: var(--secondary-brand);
+    }
+
+    /* Maxsus rang — Chiqish (qizil) va Kirish (yashil). */
+    .hover-sidebar__link--danger:hover {
+        background: rgba(239, 68, 68, 0.15);
+        border-left-color: #EF4444;
+    }
+    .hover-sidebar__link--danger i {
+        color: #F87171;
+    }
+    .hover-sidebar__link--accent {
+        background: var(--primary-brand);
+        color: var(--secondary-brand);
+        font-weight: 800;
+    }
+    .hover-sidebar__link--accent i {
+        color: var(--secondary-brand);
+    }
+
+    /* Kontent — sidebar oldidagi padding-left (8px chiziqdan boshlab). */
+    /* base_erp.html da .erp-main margin-left: 8px qo'yiladi (sidebar trigger 8px). */
+
+    /* Mobil rejimda — sidebar burger orqali ochiladi (hover ishlamaydi). */
+    @media (max-width: 768px) {
+        .hover-sidebar {
+            /* Mobile da default — to'liq yashirin, JS bilan ochiladi. */
+            transform: translateX(-100%);
+            width: 280px;
+            transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-sidebar.is-open {
+            transform: translateX(0);
+        }
+        .hover-sidebar:hover {
+            /* Mobile da hover ishlamaydi — JS toggle bilan ochiladi. */
+            width: 280px;
+        }
+        .hover-sidebar__content {
+            opacity: 1;
+            transform: none;
+        }
+        .hover-sidebar__grip {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // ──────────────────────────────────────────────────────────────────
+    // Mobil rejimda sidebar ni burger menyu orqali ochish/yopish.
+    // (Desktop'da hover orqali avtomatik ochiladi — JS kerak emas.)
+    // ──────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('hoverSidebar');
+        if (!sidebar) return;
+
+        // Tashqari bosilganda mobile rejimda yopiladi.
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth > 768) return;  // Faqat mobile.
+            if (!sidebar.contains(e.target) && sidebar.classList.contains('is-open')) {
+                sidebar.classList.remove('is-open');
+            }
+        });
+
+        // Sidebar ichidagi havola bosilganda mobile da yopiladi (sahifaga o'tish uchun).
+        sidebar.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('is-open');
+                }
+            });
+        });
+    });
+</script>
